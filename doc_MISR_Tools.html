@@ -1,0 +1,972 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+   <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <title>Documentation for the IDL routines in project MISR_Tools</title>
+   </head>
+<body>
+<h1>Documentation for the IDL routines in project MISR_Tools</h1>
+<h2>block2str</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number into a properly formatted <code>STRING</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_block</code>, provided as an <code>INT</code> value and converts it into a zero-padded <code>STRING</code> formatted as <code>Bzzz</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = block2str(misr_block, misr_block_str, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_block {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number.</p></li>
+<li><p><code>misr_block_str {STRING} [O]:</code> The required <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span>.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_block_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_block_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_block</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_block = 90
+IDL&gt; rc = block2str(misr_block, misr_block_str, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_block_str = &gt;&#39; + misr_block_str +&#39;&lt;&#39;
+misr_block_str = &gt;B090&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_band</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_band</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function verifies that the input positional parameter <code>misr_band</code> is of type <code>STRING</code> and that its value is one of <code>[&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_band(misr_band, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_band {STRING} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR</span> spectral <span style="font-variant: small-caps;">Band</span> name.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, indicating that the input argument is valid, and the output keyword parameter <code>excpt_cond</code> is set to a null string. On output, <code>misr_band</code> is properly capitalized.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_band</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_band</code> is invalid: must be one of <code>[&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>capitalize.pro</code></p></li>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>set_misr_specs.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_band</code> is properly capitalized on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_band = &#39;nir&#39;
+IDL&gt; rc = chk_misr_band(misr_band, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc = 0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_band = &#39;, misr_band
+misr_band = NIR</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_block</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_block</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function verifies that the input positional parameter <code>misr_block</code> is of type <code>INT</code> and that its value is within [1, 180].</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_block(misr_block, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_block {INTEGER} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, indicating that the input argument is valid, and the output keyword parameter <code>excpt_cond</code> is set to a null string. On output, <code>misr_block</code> is of type <code>INT</code>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_block</code> is not of type numeric.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_block</code> is invalid: must be within [1, 180].</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_numeric.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_block</code> is recast as type <code>INT</code> on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; rc = chk_misr_block(110, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_camera</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_camera</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function verifies that the input positional parameter <code>misr_camera</code> is of type <code>STRING</code> and that its value is one of <code>[&#8217;DF&#8217;, &#8217;CF&#8217;, &#8217;BF&#8217;, &#8217;AF&#8217;, &#8217;AN&#8217;, &#8217;AA&#8217;, &#8217;BA&#8217;, &#8217;CA&#8217;, &#8217;DA&#8217;]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_camera(misr_camera, EXCPT_COND = excp_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_camera {STRING} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Camera</span> name.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, indicating that the input argument is valid, and the output keyword parameter <code>excpt_cond</code> is set to a null string. On output, <code>misr_camera</code> is properly capitalized.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_camera</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_camera</code> is invalid: must be one of <code>[&#8217;DF&#8217;, &#8217;CF&#8217;, &#8217;BF&#8217;, &#8217;AF&#8217;, &#8217;AN&#8217;, &#8217;AA&#8217;, &#8217;BA&#8217;, &#8217;CA&#8217;, &#8217;DA&#8217;]</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>set_misr_specs.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_camera</code> is properly capitalized on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_camera = &#39;AA&#39;
+IDL&gt; rc = chk_misr_camera(misr_camera, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc = 0 and excpt_cond = &gt;&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_orbit</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_orbit</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function verifies that the input positional parameter <code>misr_orbit</code> is of type <code>LONG</code> and that its value is within <code>[995L, 112000L]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_orbit(misr_orbit, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_orbit {LONG} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, indicating that the input argument is valid, and the output keyword parameter <code>excpt_cond</code> is set to a null string. On output, <code>misr_orbit</code> is of type <code>LONG</code>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_orbit</code> is not of type numeric.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_orbit</code> is invalid: must be within <code>[995L, 112000L]</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_numeric.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_orbit</code> is recast as type <code>LONG</code> on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; rc = chk_misr_orbit(68050L, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_path</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_path</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function verifies that the input positional parameter <code>misr_path</code> is of type <code>INT</code> and that its value is within <code>[1, 233]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_path(misr_path, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, indicating that the input argument is valid, and the output keyword parameter <code>excpt_cond</code> is set to a null string. On output, <code>misr_path</code> is of type <code>INT</code>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_path</code> is not of type numeric.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_path</code> is invalid: must be within <code>[1, 233]</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_numeric.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_path</code> is recast as type <code>INT</code> on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; rc = chk_misr_path(168, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>clear_dates</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This program ranks the set of available <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> product files for the specified <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span> in increasing order of cloudiness and saves the results in an output file.</p></li>
+<li><p><strong>Algorithm:</strong> This program relies on the function <code>clear_misrhr_dates</code> to rank the time series of available <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> product files in decreasing order of file size (larger files correspond to clearer scenes) and to generate approximate seasonal statistics of cloudiness for the selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span>. The results are saved in a file in the standard location.</p></li>
+<li><p><strong>Syntax:</strong> <code>clear_dates, misr_path, misr_block</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number.</p></li>
+<li><p><code>misr_block {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> N/A.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this program saves a file named<br />
+<code>MISR-HR_Clearest_Pxxx_Bzzz.txt</code> in the subdirectory<br />
+<code>misr_roots[2] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>misr_roots[2]</code> is defined by the function <code>set_misr_roots</code>.</p></li>
+<li><p>If an exception condition has been detected, this program prints an error message on the console and no output file is saved.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: The input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: The input positional parameter <code>misr_block</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>block2str.pro</code></p></li>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>clear_misrhr_dates.pro</code></p></li>
+<li><p><code>is_writable.pro</code></p></li>
+<li><p><code>path2str.pro</code></p></li>
+<li><p><code>set_misr_roots.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+<li><p><code>today.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> This program is a wrapper for the function <code>clear_misrhr_dates</code>.</p></li>
+<li><p><strong>Note 2:</strong> This program does not rely on any standard <span style="font-variant: small-caps;">MISR</span> cloud product, and can only report on the approximate cloud cover in the selected <span style="font-variant: small-caps;">Block</span> after the <span style="font-variant: small-caps;">L1B2</span> files have been processed by the <span style="font-variant: small-caps;">MISR-HR</span> system.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; clear_dates, 169, 111, EXCPT_COND = excpt_cond
+Found 296 RPV files for P169 and B111 in directory
+/Volumes/MISR-HR/P169/B111/RPV/
+Output file containing the list of RPV product files
+sorted in decreasing order of size has been saved in
+/Users/mmverstraete/Documents/MISR_HR/Outcomes/P169_B111/
+MISR-HR_clear_Dates_MicMac_2017-07-11_20-32-09.txt
+
+IDL&gt; SPAWN, &#39;head &#39; + $
+&#39;/Users/mmverstraete/Documents/MISR_HR/Outcomes/P169_B111/
+MISR-HR_clear_Dates_MicMac_2017-07-11_20-32-09.txt&#39;
+Ranked list of RPV files for P169 and B111 in decreasing order
+of size.
+Larger file sizes correspond to clearer scenes.
+
+Date of file creation: 2017-07-11 at 20:32:09
+Software used: clear_dates, clear_misrhr_dates.
+
+0000 67434891 MISR_HR_RPV_20041105_P169_O025979_B111_V1.04-5.hdf
+0001 67234160 MISR_HR_RPV_20080929_P169_O046716_B111_V1.04-5.hdf
+0002 67213680 MISR_HR_RPV_20061213_P169_O037163_B111_V1.04-5.hdf
+0003 67205487 MISR_HR_RPV_20011012_P169_O009669_B111_V1.04-5.hdf
+...
+
+IDL&gt; SPAWN, &#39;tail -n 20 &#39; + $
+&#39;/Users/mmverstraete/Documents/MISR_HR/Outcomes/P169_B111/
+MISR-HR_clear_Dates_MicMac_2017-07-11_20-32-09.txt&#39;
+0292 461167 MISR_HR_RPV_20011028_P169_O009902_B111_V1.04-5.hdf
+0293 461167 MISR_HR_RPV_20040122_P169_O021785_B111_V1.04-5.hdf
+0294 461167 MISR_HR_RPV_20000228_P169_O001048_B111_V1.04-5.hdf
+0295 461166 MISR_HR_RPV_20040207_P169_O022018_B111_V1.04-5.hdf
+
+Total size of all available RPV files for P169 and B111 falling
+within the indicated month:
+Jan     628.42 (MB)
+Feb     556.49 (MB)
+Mar     631.25 (MB)
+Apr     762.22 (MB)
+May    1089.48 (MB)
+Jun    1203.86 (MB)
+Jul    1113.30 (MB)
+Aug    1284.08 (MB)
+Sep    1156.53 (MB)
+Oct     715.23 (MB)
+Nov     705.86 (MB)
+Dec     313.74 (MB)
+
+Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;04&#8211;11: Version 0.8 &#8212; Initial release under the name <code>best_dates</code>.</p></li>
+<li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Changed the function name to <code>clear_dates.pro</code>.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>clear_misrhr_dates</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function ranks the available <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> product files contained within the directory <code>rpv_path</code> in increasing order of cloudiness and reports on the long-term seasonal variability of cloudiness for that location.</p></li>
+<li><p><strong>Algorithm:</strong> This function uses the size of <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> product files in the specified folder as a proxy for scene cloudiness [given the compression mechanism inherent to <code>HDF</code> files, a smaller file implies a larger cloud cover and a reduced availability of <span style="font-variant: small-caps;">RPV</span> (and downstream <span style="font-variant: small-caps;">TIP</span>) products], ranks those files in decreasing order of file size, computes statistics on the long-term seasonal variability of cloudiness for that location, and returns the output structure <code>cdates</code> containing ordered lists of file sizes and file names.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = clear_misrhr_dates(rpv_path, cdates, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>rpv_path {STRING} [I]:</code> The directory name of the folder containing the available <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> products for the selected <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span>.</p></li>
+<li><p><code>cdates {STRUCTURE} [O]:</code> The structure containing the ordered list of <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> file names, together with their rank and file size.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, saves the ordered list of files in the output structure <code>cdates</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered. The variable <code>cdates</code> is set to a null <code>STRING</code>.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>rpv_path</code> is not found or unreadable.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>day_of_year.pro</code></p></li>
+<li><p><code>force_path_sep.pro</code></p></li>
+<li><p><code>is_readable.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+<li><p><code>today.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> For generic purposes, use the program <code>clear_dates.pro</code> instead of this function.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; rpv_path = &#39;/Volumes/MISR-HR/P169/B111/RPV&#39;
+IDL&gt; rc = clear_misrhr_dates(rpv_path, cdates, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, rc
+       0
+IDL&gt; HELP, cdates
+** Structure &lt;1c0a5b58&gt;, 6 tags, length=7184, data length=7180, refs=1:
+   TITLE           STRING    &#39;Clearest MISR-HR scenes&#39;
+   NUMFILES        LONG               296
+   FILESIZES       LONG64    Array[296]
+   FILENAMES       STRING    Array[296]
+   SEASONSTATS     FLOAT     Array[13]
+   TOTALSIZE       FLOAT           10160.5</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;04&#8211;11: Version 0.8 &#8212; Initial release under the name <code>best_misrhr_dates</code>.</p></li>
+<li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Changed the function name to <code>clear_misrhr_dates.pro</code>.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>find_orbits_paths_dates</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function identifies the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>s belonging to the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span>s in the range <code>misr_path_1</code> to <code>misr_path_2</code> and between the dates <code>date_1</code> and <code>date_2</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies on the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> function<br />
+<code>MTK_PATH_TIMERANGE_TO_ORBITLIST</code> to deliver the required information.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = find_orbits_paths_dates (misr_path_1, misr_path_2, date_1, date_2, misr_orbits, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path_1 {INTEGER} [I] (Default value: None):</code> The first <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> to be considered.</p></li>
+<li><p><code>misr_path_2 {INTEGER} [I] (Default value: None):</code> The last <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> to be considered.</p></li>
+<li><p><code>date_1 {STRING} [I] (Default value: None):</code> The first date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers.</p></li>
+<li><p><code>date_2 {STRING} [I] (Default value: None):</code> The last date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers.</p></li>
+<li><p><code>misr_orbits {STRUCTURE} [O]:</code> A structure containing the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>s belonging to each <span style="font-variant: small-caps;">Path</span> within the range <code>[misr_path_1, misr_path_2]</code> and acquired in the time period <code>[date_1, date_2]</code>.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns the value <code>0</code>, the list of of <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>s is provided to the calling routine in the output argument <code>misr_orbits</code>, and the keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, the list of of <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>s is set to a null <code>STRING</code>, and the keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Positional parameter <code>misr_path_1</code> is invalid.</p></li>
+<li><p>Error 120: Positional parameter <code>misr_path_2</code> is invalid.</p></li>
+<li><p>Error 130: Positional parameter <code>date_1</code> is invalid.</p></li>
+<li><p>Error 140: Positional parameter <code>date_2</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_date_ymd.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> This function returns information on the <span style="font-variant: small-caps;">Orbit</span>s that are theoretically available within the specified <span style="font-variant: small-caps;">Path</span>s and between the given dates. Data for those <span style="font-variant: small-caps;">Orbit</span>s may not be available at all if there was a technical problem on the platform, and may not be available locally if they have not been explicitly downloaded from the NASA Langley DAAC.</p></li>
+<li><p><strong>Note 2:</strong> The input argument <code>misr_path_1</code> is deemed smaller than <code>misr_path_2</code>; however, if this is not the case, the values of the two <span style="font-variant: small-caps;">Paths</span> are interchanged.</p></li>
+<li><p><strong>Note 3:</strong> Similarly, the input arguments <code>date_1</code> and <code>date_2</code> are expected to be given in chronological order; however, if this is not the case, the values of the two dates are interchanged.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path_1 = 168
+IDL&gt; misr_path_2 = 169
+IDL&gt; date_1 = &#39;2010-01-01&#39;
+IDL&gt; date_2 = &#39;2010-01-31&#39;
+IDL&gt; rc = find_orbits_paths_dates(misr_path_1, misr_path_2, $
+   date_1, date_2, misr_orbits, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; HELP, misr_orbits
+** Structure &lt;1abeedc8&gt;, 8 tags, length=40, data length=38, refs=1:
+   TITLE           STRING    &#39;MISR_Orbits&#39;
+   N_MISR_PATHS    INT              2
+   MISR_PATH_168   INT            168
+   MISR_PATH_168_ORBIT_0
+                   LONG             53604
+   MISR_PATH_168_ORBIT_1
+                   LONG             53837
+   MISR_PATH_169   INT            169
+   MISR_PATH_169_ORBIT_0
+                   LONG             53473
+   MISR_PATH_169_ORBIT_1
+                   LONG             53706
+IDL&gt; PRINT, misr_orbits
+{ MISR_Orbits 2 168 53604 53837 169 53473 53706}</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;09&#8211;07: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>orbit2date</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function returns the date of acquisition of the specified <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies on <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> routine <code>MTK_ORBIT_TO_TIMERANGE</code> to determine and return the date on which the specified <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> was acquired.</p></li>
+<li><p><strong>Syntax:</strong> <code>res = orbit2date(misr_orbit, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_orbit {LONG} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>STRING</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns to the calling routine a <code>STRING</code> containing the date when the selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> was acquired, formatted as <code>YYYY-MM-DD</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, this function returns a null string and the keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Positional parameter <code>misr_orbit</code> is invalid.</p></li>
+<li><p>Error 200: An exception condition was encountered in <span style="font-variant: small-caps;">Mtk</span> routine<br />
+<code>MTK_ORBIT_TO_TIMERANGE</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> Argument <code>misr_orbit</code> cannot be smaller than <code>995L</code> (the first <span style="font-variant: small-caps;">Orbit</span> for which <span style="font-variant: small-caps;">MISR</span> acquired data, on February 24, 2000) or larger than <code>112000L</code> (to be acquired on July 1, 2021).</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; res = orbit2date(68050)
+IDL&gt; PRINT, res
+2012-10-03
+
+IDL&gt; res = orbit2date(200000, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, excpt_cond
+Error 110 in ORBIT2DATE: Error 220 in CHK_POB:
+Incorrect misr_orbit number: must be within [995L, 112000L].</code></pre></li>
+<li><p><strong>References:</strong></p>
+<ul>
+<li><p>Web site: <code>https://www-misr.jpl.nasa.gov/</code>, select <code>Gallery</code> and search for <code>First Light</code>, accessed on 5 Nov 2017.</p></li>
+<li><p><span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> documentation.</p></li>
+</ul></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2009&#8211;11&#8211;11: Version 0.5 &#8212; Initial release by Linda Hunt (as <code>orbit_to_date</code>).</p></li>
+<li><p>2017&#8211;07&#8211;05: Version 0.9 &#8212; Changed function name to <code>orbit2date</code>, updated the in-line documentation and added argument checking logic.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>orbit2str</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> number into a properly formatted <code>STRING</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_orbit</code>, provided as an <code>LONG</code> value and converts it into a zero-padded <code>STRING</code> formatted as <code>Oyyyyyy</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = orbit2str(misr_orbit, misr_orbit_str, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_orbit {LONG} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> number.</p></li>
+<li><p><code>misr_orbit_str {STRING} [O]:</code> The required <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_orbit_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_orbit_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_orbit</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_orbit = 68050
+IDL&gt; rc = orbit2str(misr_orbit, misr_orbit_str, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_orbit_str = &gt;&#39; + misr_orbit_str +&#39;&lt;&#39;
+misr_orbit_str = &gt;O068050&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>path2str</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number into a properly formatted <code>STRING</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_path</code>, provided as an <code>INT</code> value and converts it into a zero-padded <code>STRING</code> formatted as <code>Pxxx</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = path2str(misr_path, misr_path_str, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number.</p></li>
+<li><p><code>misr_path_str {STRING} [O]:</code> The required <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span>.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_path_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_path_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_path</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path = 4
+IDL&gt; rc = path2str(misr_path, misr_path_str, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_path_str = &gt;&#39; + misr_path_str +&#39;&lt;&#39;
+misr_path_str = &gt;P004&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>set_misr_roots</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function sets the root directories of the 3 main sets of files used by the MISR-HR processing system on the current machine, namely those containing (1) the <span style="font-variant: small-caps;">MISR</span> input data files, (2) the <span style="font-variant: small-caps;">MISR-HR</span> output products, and (3) the outcomes of the <span style="font-variant: small-caps;">MISR-HR</span> post-processing routines.</p></li>
+<li><p><strong>Algorithm:</strong> This function requires no input, performs no error detection and generates no exception conditions. It spawns a child process to execute a command to identify the current computer platform and then sets the paths to the input data, output products, and outcomes of the post-processing files to predefined fixed values. This function currently recognizes <code>MicMac</code> and <code>pc18</code>, it can be modified to work in other contexts by adding more options in the <code>CASE</code> statement. This setup assumes that the subdirectory structures below those root directories conforms to a preset standard, and allows other programs and functions in this system to read from and write to folders in predefined locations, without requiring the user to specify the directory addresses.</p></li>
+<li><p><strong>Syntax:</strong> <code>res = set_misr_roots()</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Returned value type:</strong> <code>STRING</code> array.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If the hostname of the current computer is recognized by the function, it returns a string array <code>[&#8217;path1&#8217;, &#8217;path2&#8217;, &#8217;path3&#8217;]</code>, where <code>&#8217;path1&#8217;</code> points to the root directory for <span style="font-variant: small-caps;">MISR</span> input data files, <code>&#8217;path2&#8217;</code> points to the root directory for <span style="font-variant: small-caps;">MISR-HR</span> output product files, and <code>&#8217;path3&#8217;</code> points to the root directory for the outcomes of the post-processing of those products.</p></li>
+<li><p>If the hostname of the current computer is not recognized by the function, it returns an array of three strings containing <code>&#8217;Unrecognized computer&#8217;</code>.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong> None.</p></li>
+<li><p><strong>Dependencies:</strong> None.</p></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>[On MicMac:]
+IDL&gt; misr_roots = set_misr_roots()
+IDL&gt; PRINT, misr_roots
+/Volumes/MISR_Data*/
+/Volumes/MISR-HR/
+/Users/mmverstraete/Documents/MISR_HR/Outcomes/</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;07&#8211;09: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>set_misr_specs</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function returns a structure containing standard information on the <span style="font-variant: small-caps;">MISR</span> instrument specifications, such as the number, names and angles of the 9 cameras; the number, names and positions of the 4 spectral bands; and the sequence of 36 data channels.</p></li>
+<li><p><strong>Algorithm:</strong> This function requires no input; it returns a structure containing various specifications of the MISR instrument, as described below.</p></li>
+<li><p><strong>Syntax:</strong> <code>res = set_misr_specs()</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Returned value type:</strong> <code>STRUCTURE</code>.</p></li>
+<li><p><strong>Outcome:</strong> This function accepts no positional or keyword parameters and returns a structure containing the following elements:</p>
+<ul>
+<li><p><code>Title = &#8217;MISR Instrument Specifications&#8217;</code>.</p></li>
+<li><p><code>NCameras = 9</code>.</p></li>
+<li><p><code>CameraNames = [&#8217;DF&#8217;, &#8217;CF&#8217;, &#8217;BF&#8217;, &#8217;AF&#8217;, &#8217;AN&#8217;, &#8217;AA&#8217;, &#8217;BA&#8217;, &#8217;CA&#8217;, &#8217;DA&#8217;]</code>.</p></li>
+<li><p><code>CameraIDs = [1, 2, 3, 4, 5, 6, 7, 8, 9]</code>.</p></li>
+<li><p><code>CameraAngles = [70.3, 60.2, 45.7, 26.2, 0.1, 26.2, 45.7, 60.2, 70.6]</code>.</p></li>
+<li><p><code>NBands = 4</code>.</p></li>
+<li><p><code>BandNames = [&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
+<li><p><code>BandPositions = [446.4, 557.5, 671.7, 866.4]</code>.</p></li>
+<li><p><code>NChannels = 36</code>.</p></li>
+<li><p><code>ChannelNames = [&#8217;DF_Blue&#8217;, &#8217;DF_Green&#8217;, &#8217;DF_Red&#8217;, ..., &#8217;DA_Green&#8217;, &#8217;DA_Red&#8217;, &#8217;DA_NIR&#8217;]</code>.</p></li>
+<li><p><code>NL1B2Grids = 6</code>.</p></li>
+<li><p><code>L1B2GridNames = [&#8217;BlueBand&#8217;, &#8217;GreenBand&#8217;, &#8217;RedBand&#8217;, &#8217;NIRBand&#8217;, &#8217;BRF Conversion Factors&#8217;, &#8217;GeometricParameters&#8217;]</code></p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong> None.</p></li>
+<li><p><strong>Dependencies:</strong> None.</p></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at 1 (for DF), not at 0.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; HELP, res
+** Structure &lt;1ba68608&gt;, 12 tags, length=1000, data length=974, refs=1:
+   TITLE           STRING    &#39;MISR Instrument Specifications&#39;
+   NCAMERAS        INT              9
+   CAMERANAMES     STRING    Array[9]
+   CAMERAIDS       INT       Array[9]
+   CAMERAANGLES    FLOAT     Array[9]
+   NBANDS          INT              4
+   BANDNAMES       STRING    Array[4]
+   BANDPOSITIONS   FLOAT     Array[4]
+   NCHANNELS       INT             36
+   CHANNELNAMES    STRING    Array[36]
+   NL1B2GRIDS      INT              6
+   L1B2GRIDNAMES   STRING    Array[6]
+IDL&gt; res = set_misr_specs()
+IDL&gt; PRINT, res.CAMERANAMES
+DF CF BF AF AN AA BA CA DA
+IDL&gt; PRINT, res.BANDPOSITIONS
+      446.400      557.500      671.700      866.400</code></pre></li>
+<li><p><strong>References:</strong></p>
+<ul>
+<li><p>Web site: <code>https://www-misr.jpl.nasa.gov/Mission/misrInstrument/</code>, accessed on 6 Nov 2017.</p></li>
+<li><p><span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> documentation.</p></li>
+</ul></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;07&#8211;08: Version 0.8 &#8212; Initial release.</p></li>
+<li><p>2017&#8211;09&#8211;03: Version 0.9 &#8212; Add <code>CameraIDs</code> to the output structure.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>set_misrhr_latlon</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function calculates, returns and saves the geographical location (latitude and longitude) of each pixel in a <span style="font-variant: small-caps;">MISR-HR</span> product for the specified <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span> numbers. The results are saved in a plain <code>ASCII</code> file as well as in a <code>SAVE</code> file, and both are written in the appropriate standard output directory under <code>misr_roots[2]</code> defined by the function <code>set_misr_roots.pro</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies on the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> function <code>MTK_BLS_TO_LATLON</code> to compute the latitude and longitude of every pixel in the specified <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = set_misrhr_latlon(misr_path, misr_block, latitudes, longitudes, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number.</p></li>
+<li><p><code>misr_block {INTEGER} [I]:</code> The selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number.</p></li>
+<li><p><code>latitudes {DOUBLE array} [O]:</code> The array of pixel latitudes, dimensioned <code>n_lines = 512</code> by <code>n_samples = 2048</code>.</p></li>
+<li><p><code>longitudes {DOUBLE array} [O]:</code> The array of pixel longitudes, dimensioned <code>n_lines = 512</code> by <code>n_samples = 2048</code>.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function saves the arrays of pixel latitudes and longitudes in a plain <code>ASCII</code> text file as well as in an <code>IDL</code> <code>SAVE</code> file and returns <code>0</code>; the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered. The output files are not created.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: Positional parameter <code>misr_block</code> is invalid.</p></li>
+<li><p>Error 210: An exception condition occurred in function <code>path2str</code>.</p></li>
+<li><p>Error 220: An exception condition occurred in function <code>block2str</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>block2str.pro</code></p></li>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>is_dir.pro</code></p></li>
+<li><p><code>is_writable.pro</code></p></li>
+<li><p><code>path2str.pro</code></p></li>
+<li><p><code>set_misr_roots.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; rc = set_misrhr_latlon(168, 112, latitudes, longitudes, $
+   EXCPT_COND = excpt_cond)
+IDL&gt; SPAWN, &#39;ls ~/Documents/MISR_HR/Outcomes/P168_B112&#39;
+MISR-HR_LAT-LON_P168_B112.sav
+MISR-HR_LAT-LON_P168_B112.txt
+IDL&gt; sf = &#39;/Users/mmverstraete/Documents/MISR_HR/Outcomes/&#39; + $
+   &#39;P168_B112/MISR-HR_LAT-LON_P168_B112.sav&#39;
+IDL&gt; sObj = OBJ_NEW(&#39;IDL_Savefile&#39;, sf)
+IDL&gt; sContents = sObj-&gt;Contents()
+IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
+4    LATITUDES LONGITUDES N_LINES N_SAMPLES</code></pre></li>
+<li><p><strong>References:</strong></p>
+<ul>
+<li><p><span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Toolkit</span> documentation.</p></li>
+</ul></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;08&#8211;21: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>str2block</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <code>STRING</code> representation of a <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> into its <code>INT</code> equivalent; it performs the converse operation of function <code>block2str</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_block_str</code>, provided as an <code>STRING</code> value and converts the numerical component of the argument into an <code>INT</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = str2block(misr_block_str, misr_block, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_block_str {STRING} [I]:</code> The selected <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span>.</p></li>
+<li><p><code>misr_block {INT} [O]:</code> The required <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_block</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_block</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_block_str</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 120: Input positional parameter <code>misr_block_str</code> does not start with the expected character <code>P</code>.</p></li>
+<li><p>Error 130: The numerical value of input argument <code>misr_block_str</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>first_char.pro</code></p></li>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input argument <code>misr_block_str</code> is expected to be formatted as <code>Bzzz</code> where <code>zzz</code> is the numeric value of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Block</span>, but a lower case <code>b</code> and the presence of blank spaces before or after this initial character, or after the number <code>zzz</code>, is tolerated. See the example below.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_block_str = &#39; b 111 &#39;
+IDL&gt; rc = str2block(misr_block_str, misr_block, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_block = &#39;, misr_block
+misr_block =      111</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>str2orbit</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <code>STRING</code> representation of a <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> into its <code>LONG</code> equivalent; it performs the converse operation of function <code>orbit2str</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_orbit_str</code>, provided as an <code>STRING</code> value and converts the numerical component of the argument into an <code>LONG</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = str2orbit(misr_orbit_str, misr_orbit, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_orbit_str {STRING} [I]:</code> The selected <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>.</p></li>
+<li><p><code>misr_orbit {LONG} [O]:</code> The required <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_orbit</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_orbit</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_orbit_str</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 120: Input positional parameter <code>misr_orbit_str</code> does not start with the expected character <code>P</code>.</p></li>
+<li><p>Error 130: The numerical value of input argument <code>misr_orbit_str</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>first_char.pro</code></p></li>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input argument <code>misr_orbit_str</code> is expected to be formatted as <code>Oyyyyyy</code> where <code>yyyyyy</code> is the numeric value of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span>, but a lower case <code>o</code> and the presence of blank spaces before or after this initial character, or after the number <code>yyyyyy</code>, is tolerated. See the example below.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_orbit_str = &#39; o 68050 &#39;
+IDL&gt; rc = str2orbit(misr_orbit_str, misr_orbit, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_orbit = &#39;, misr_orbit
+misr_orbit =        68050</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+<h2>str2path</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function converts a valid <code>STRING</code> representation of a <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> into its <code>INT</code> equivalent; it performs the converse operation of function <code>path2str</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the positional parameter <code>misr_path_str</code>, provided as an <code>STRING</code> value and converts the numerical component of the argument into an <code>INT</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = str2path(misr_path_str, misr_path, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path_str {STRING} [I]:</code> The selected <code>STRING</code> representation of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span>.</p></li>
+<li><p><code>misr_path {INT} [O]:</code> The required <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_path</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, the output argument <code>misr_path</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_path_str</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 120: Input positional parameter <code>misr_path_str</code> does not start with the expected character <code>P</code>.</p></li>
+<li><p>Error 130: The numerical value of input argument <code>misr_path_str</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>first_char.pro</code></p></li>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input argument <code>misr_path_str</code> is expected to be formatted as <code>Pxxx</code> where <code>xxx</code> is the numeric value of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span>, but a lower case <code>p</code> and the presence of blank spaces before or after this initial character, or after the number <code>xxx</code>, is tolerated. See the example below.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path_str = &#39;p 170 &#39;
+IDL&gt; rc = str2path(misr_path_str, misr_path, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc =        0 and excpt_cond = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_path = &#39;, misr_path
+misr_path =      170</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial release.</p></li>
+</ul></li>
+</ul>
+</body>
+</html>
