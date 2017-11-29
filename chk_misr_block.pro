@@ -65,7 +65,9 @@ FUNCTION chk_misr_block, misr_block, EXCPT_COND = excpt_cond
    ;
    ;  VERSIONING:
    ;
-   ;  *   2017–11–30: Version 1.0 — Initial release.
+   ;  *   2017–11–15: Version 0.9 — Initial release.
+   ;
+   ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;
    ;Sec-Lic
