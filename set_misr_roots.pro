@@ -20,7 +20,7 @@ FUNCTION set_misr_roots
    ;  write to folders in predefined locations, without requiring the user
    ;  to specify the directory addresses.
    ;
-   ;  SYNTAX: res = set_misr_roots()
+   ;  SYNTAX: misr_roots = set_misr_roots()
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]: None.
    ;
@@ -54,7 +54,14 @@ FUNCTION set_misr_roots
    ;      IDL> PRINT, misr_roots
    ;      /Volumes/MISR_Data*/
    ;      /Volumes/MISR-HR/
-   ;      /Users/mmverstraete/Documents/MISR_HR/Outcomes/
+   ;      ~/Documents/MISR_HR/Outcomes/
+   ;
+   ;      [On pc18:]
+   ;      IDL> misr_roots = set_misr_roots()
+   ;      IDL> PRINT, misr_roots
+   ;      /Volumes/Input1/
+   ;      /Volumes/Output1/
+   ;      /Volumes/Output2/
    ;
    ;  REFERENCES: None.
    ;

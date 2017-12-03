@@ -75,7 +75,8 @@ misr_block_str = &gt;B090&lt;</code></pre></li>
 <ul>
 <li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
 <li><p>Error 110: Input positional parameter <code>misr_band</code> is not of type <code>STRING</code>.</p></li>
-<li><p>Error 300: Input positional parameter <code>misr_band</code> is invalid: must be one of <code>[&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_band</code> is invalid: must be one of<br />
+<code>[&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
@@ -440,7 +441,7 @@ IDL&gt; HELP, cdates
 <li><p><strong>Versioning:</strong></p>
 <ul>
 <li><p>2017&#8211;04&#8211;11: Version 0.8 &#8212; Initial release under the name <code>best_misrhr_dates</code>.</p></li>
-<li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Changed the function name to <code>clear_misrhr_dates.pro</code>.</p></li>
+<li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Renamed the function <code>clear_misrhr_dates.pro</code>.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 </ul></li>
 </ul>
@@ -671,7 +672,7 @@ misr_path_str = &gt;P004&lt;</code></pre></li>
 <ul>
 <li><p><strong>Purpose:</strong> This function sets the root directories of the 3 main sets of files used by the MISR-HR processing system on the current machine, namely those containing (1) the <span style="font-variant: small-caps;">MISR</span> input data files, (2) the <span style="font-variant: small-caps;">MISR-HR</span> output products, and (3) the outcomes of the <span style="font-variant: small-caps;">MISR-HR</span> post-processing routines.</p></li>
 <li><p><strong>Algorithm:</strong> This function requires no input, performs no error detection and generates no exception conditions. It spawns a child process to execute a command to identify the current computer platform and then sets the paths to the input data, output products, and outcomes of the post-processing files to predefined fixed values. This function currently recognizes <code>MicMac</code> and <code>pc18</code>, it can be modified to work in other contexts by adding more options in the <code>CASE</code> statement. This setup assumes that the subdirectory structures below those root directories conforms to a preset standard, and allows other programs and functions in this system to read from and write to folders in predefined locations, without requiring the user to specify the directory addresses.</p></li>
-<li><p><strong>Syntax:</strong> <code>res = set_misr_roots()</code></p></li>
+<li><p><strong>Syntax:</strong> <code>misr_roots = set_misr_roots()</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Returned value type:</strong> <code>STRING</code> array.</p></li>
@@ -689,7 +690,14 @@ IDL&gt; misr_roots = set_misr_roots()
 IDL&gt; PRINT, misr_roots
 /Volumes/MISR_Data*/
 /Volumes/MISR-HR/
-/Users/mmverstraete/Documents/MISR_HR/Outcomes/</code></pre></li>
+~/Documents/MISR_HR/Outcomes/
+
+[On pc18:]
+IDL&gt; misr_roots = set_misr_roots()
+IDL&gt; PRINT, misr_roots
+/Volumes/Input1/
+/Volumes/Output1/
+/Volumes/Output2/</code></pre></li>
 <li><p><strong>References:</strong> None.</p></li>
 <li><p><strong>Versioning:</strong></p>
 <ul>

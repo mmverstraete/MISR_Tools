@@ -94,7 +94,7 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, EXCPT_COND = excpt_cond
    ;  *   2017–04–11: Version 0.8 — Initial release under the name
    ;      best_misrhr_dates.
    ;
-   ;  *   2017–10–01: Version 0.9 — Changed the function name to
+   ;  *   2017–10–01: Version 0.9 — Renamed the function
    ;      clear_misrhr_dates.pro.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.

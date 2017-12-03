@@ -42,7 +42,8 @@ FUNCTION chk_misr_band, misr_band, EXCPT_COND = excpt_cond
    ;      STRING.
    ;
    ;  *   Error 300: Input positional parameter misr_band is invalid: must
-   ;      be one of [’Blue’, ’Green’, ’Red’, ’NIR’].
+   ;      be one of
+   ;      [’Blue’, ’Green’, ’Red’, ’NIR’].
    ;
    ;  DEPENDENCIES:
    ;
