@@ -230,7 +230,16 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    o_dir = misr_roots[2] + pb2
 
    ;  Call the function 'clear_misrhr_dates' to gather the desired information:
-   res = clear_misrhr_dates(i_dir, bdates, EXCPT_COND = excpt_cond)
+   rc = clear_misrhr_dates(i_dir, cdates, EXCPT_COND = excpt_cond)
+   IF (rc NE 0) THEN BEGIN
+      info = SCOPE_TRACEBACK(/STRUCTURE)
+      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+      error_code = 200
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': ' + excpt_cond
+      PRINT, excpt_cond
+      RETURN
+   ENDIF
 
    ;  Identify the current computer:
    SPAWN, 'hostname -s', computer
@@ -257,9 +266,9 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    PRINTF, o_unit, 'Date of file creation: ' + today(FMT = 'NICE')
    PRINTF, o_unit, 'Software used: clear_dates, clear_misrhr_dates.'
    PRINTF, o_unit
-   FOR i = 0, bdates.NumFiles - 1 DO BEGIN
-      PRINTF, o_unit, i, bdates.FileSizes[i], $
-         bdates.FileNames[i], FORMAT = '(I04, 3X, I9, 3X, A)'
+   FOR i = 0, cdates.NumFiles - 1 DO BEGIN
+      PRINTF, o_unit, i, cdates.FileSizes[i], $
+         cdates.FileNames[i], FORMAT = '(I04, 3X, I9, 3X, A)'
    ENDFOR
    PRINTF, o_unit
 
@@ -269,12 +278,12 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
       misr_path_str + ' and ' + misr_block_str + $
       ' falling within the indicated month:'
    FOR i = 1, 12 DO BEGIN
-      PRINTF, o_unit, monthname[i], bdates.SeasonStats[i], ' (MB)', $
+      PRINTF, o_unit, monthname[i], cdates.SeasonStats[i], ' (MB)', $
          FORMAT = '(A3, 3X, F8.2, A5)'
    ENDFOR
    PRINTF, o_unit
    PRINTF, o_unit, 'Total size of all RPV files for ' + misr_path_str + $
-      ' and ' + misr_block_str + ': ' + strstr(bdates.TotalSize) + ' (MB).'
+      ' and ' + misr_block_str + ': ' + strstr(cdates.TotalSize) + ' (MB).'
 
    FREE_LUN, o_unit
    CLOSE, /ALL
