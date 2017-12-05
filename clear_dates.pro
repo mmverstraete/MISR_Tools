@@ -47,6 +47,9 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;
    ;  *   Error 120: The input positional parameter misr_block is invalid.
    ;
+   ;  *   Error 200: An exception condition occurred in
+   ;      clear_misrhr_dates.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   block2str.pro
