@@ -223,7 +223,9 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    latlon_path = misr_roots[2] + pb + PATH_SEP()
 
    ;  Create this output directory if it does not already exist:
-   IF ((is_dir(latlon_path) NE 1) OR (is_writable(latlon_path) NE 1)) THEN BEGIN
+   isd = is_dir(latlon_path)
+   isw = is_writable(latlon_path)
+   IF ((isd NE 1) OR (isw NE 1)) THEN BEGIN
       FILE_MKDIR, latlon_path
    ENDIF
 
