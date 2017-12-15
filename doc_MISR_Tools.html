@@ -312,6 +312,7 @@ rc =        0 and excpt_cond = &gt;&lt;</code></pre></li>
 <li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
 <li><p>Error 110: The input positional parameter <code>misr_path</code> is invalid.</p></li>
 <li><p>Error 120: The input positional parameter <code>misr_block</code> is invalid.</p></li>
+<li><p>Error 200: An exception condition occurred in <code>clear_misrhr_dates</code>.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
@@ -666,6 +667,50 @@ misr_path_str = &gt;P004&lt;</code></pre></li>
 <ul>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>range_misr_blocks</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function reports on the range of <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Blocks</span> containing actual data (instead of fill data) in a <span style="font-variant: small-caps;">L1B2</span> Global or Local Mode file.</p></li>
+<li><p><strong>Algorithm:</strong> This function checks the validity of the input arguments and returns the first and last <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Blocks</span> containing usable data in a <span style="font-variant: small-caps;">L1B2</span> Global or Local Mode file.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = range_misr_blocks(l1b2_fspec, start_block, end_block, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>l1b2_fspec {STRING} [I]:</code> The specification (path and name) of the <span style="font-variant: small-caps;">L1B2</span> Global or Local Mode file to inspect.</p></li>
+<li><p><code>start_block {INT} [O]:</code> The nothernmost <span style="font-variant: small-caps;">Block</span> number containing actual data.</p></li>
+<li><p><code>end_block {INT} [O]:</code> The southernmost <span style="font-variant: small-caps;">Block</span> number containing actual data.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, the values of the starting and ending <span style="font-variant: small-caps;">Block</span> numbers in output arguments, the output keyword parameter <code>excpt_cond</code> is set to a null string.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, the values of the starting and ending <span style="font-variant: small-caps;">Block</span> numbers may be undefined, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>l1b2_fspec</code> is not found or not readable.</p></li>
+<li><p>Error 200: An exception condition occurred in routine <code>MTK_FILEATTR_GET</code> while recovering <code>start_block</code>.</p></li>
+<li><p>Error 210: An exception condition occurred in routine <code>MTK_FILEATTR_GET</code> while recovering <code>end_block</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>is_readable.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>[Insert the command and its outcome]</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;12&#8211;13: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2017&#8211;12&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
 </ul></li>
 </ul>
 <h2>set_misr_roots</h2>
