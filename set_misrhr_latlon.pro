@@ -1,5 +1,5 @@
 FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
-   EXCPT_COND = excpt_cond
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function calculates, returns and saves the
@@ -13,8 +13,8 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  MTK_BLS_TO_LATLON to compute the latitude and longitude of every
    ;  pixel in the specified PATH and BLOCK.
    ;
-   ;  SYNTAX:
-   ;  rc = set_misrhr_latlon(misr_path, misr_block, latitudes, longitudes, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = set_misrhr_latlon(misr_path, misr_block, latitudes, $
+   ;  longitudes, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -30,6 +30,9 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
+   ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
@@ -41,12 +44,16 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   If no exception condition has been detected, this function saves
    ;      the arrays of pixel latitudes and longitudes in a plain ASCII
    ;      text file as well as in an IDL SAVE file and returns 0; the
-   ;      output keyword parameter excpt_cond is set to a null string.
+   ;      output keyword parameter excpt_cond is set to a null string, if
+   ;      the optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
-   ;      encountered. The output files are not created.
+   ;      encountered. The output files are not created, if the optional
+   ;      input keyword parameter DEBUG is set and if the optional output
+   ;      keyword parameter EXCPT_COND is provided.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -60,6 +67,8 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  *   Error 220: An exception condition occurred in function
    ;      block2str.
+   ;
+   ;  *   Error 230: The directory latlon_path exists but is unwritable.
    ;
    ;  DEPENDENCIES:
    ;
@@ -86,7 +95,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  EXAMPLES:
    ;
    ;      IDL> rc = set_misrhr_latlon(168, 112, latitudes, longitudes, $
-   ;         EXCPT_COND = excpt_cond)
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> SPAWN, 'ls ~/Documents/MISR_HR/Outcomes/P168_B112'
    ;      MISR-HR_LAT-LON_P168_B112.sav
    ;      MISR-HR_LAT-LON_P168_B112.txt
@@ -106,6 +115,8 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   2017–08–21: Version 0.9 — Initial release.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;
    ;Sec-Lic
@@ -143,8 +154,13 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the default return code and error message of the function:
+   ;  Initialize the default return code and the exception condition message:
    return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
    excpt_cond = ''
 
    ;  Set the spatial resolution, number of lines and number of samples in
@@ -157,46 +173,51 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    latitudes = DBLARR(n_lines, n_samples)
    longitudes = DBLARR(n_lines, n_samples)
 
+   IF (debug) THEN BEGIN
+
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-   n_reqs = 4
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameters: misr_path, misr_block, latitudes, longitudes.'
-      RETURN, error_code
-   ENDIF
+      n_reqs = 4
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameters: misr_path, misr_block, ' + $
+            'latitudes, longitudes.'
+         RETURN, error_code
+      ENDIF
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with an invalid MISR Path:
-   rc = chk_misr_path(misr_path, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      RETURN, error_code
-   ENDIF
+      rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         RETURN, error_code
+      ENDIF
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with an invalid MISR Block:
-   rc = chk_misr_block(misr_block, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 120
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      RETURN, error_code
+      rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 120
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    ;  Set the string version of the MISR Path and Block numbers:
-   rc = path2str(misr_path, misr_path_str, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
+   rc = path2str(misr_path, misr_path_str, $
+      DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rc NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
@@ -204,8 +225,10 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
          ': ' + excpt_cond
       RETURN, error_code
    ENDIF
-   rc = block2str(misr_block, misr_block_str, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
+
+   rc = block2str(misr_block, misr_block_str, $
+      DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rc NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 220
@@ -223,10 +246,18 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    latlon_path = misr_roots[2] + pb + PATH_SEP()
 
    ;  Create this output directory if it does not already exist:
-   isd = is_dir(latlon_path)
-   isw = is_writable(latlon_path)
-   IF ((isd NE 1) OR (isw NE 1)) THEN BEGIN
+   isd = is_dir(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+   isw = is_writable(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((isd NE 1) OR (isw EQ -1)) THEN BEGIN
       FILE_MKDIR, latlon_path
+   ENDIF
+   IF ((debug) AND (isd EQ 1) AND (isw EQ 0)) THEN BEGIN
+      info = SCOPE_TRACEBACK(/STRUCTURE)
+      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+      error_code = 230
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': ' + excpt_cond
+      RETURN, error_code
    ENDIF
 
    ;  Generate the specification of the lat-lon file:

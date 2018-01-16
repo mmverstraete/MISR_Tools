@@ -1,4 +1,5 @@
-FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
+FUNCTION str2path, misr_path_str, misr_path, $
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function converts a valid STRING representation of a
@@ -9,8 +10,8 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;  parameter misr_path_str, provided as an STRING value and converts
    ;  the numerical component of the argument into an INT.
    ;
-   ;  SYNTAX:
-   ;  rc = str2path(misr_path_str, misr_path, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = str2path(misr_path_str, misr_path, $
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -20,6 +21,9 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;  *   misr_path {INT} [O]: The required MISR PATH number.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
+   ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
    ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
@@ -32,12 +36,16 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;  *   If no exception condition has been detected, this function
    ;      provides the desired result in the output argument misr_path,
    ;      returns the value 0, and the output keyword parameter excpt_cond
-   ;      is set to a null string.
+   ;      is set to a null string, if the optional input keyword parameter
+   ;      DEBUG is set and if the optional output keyword parameter
+   ;      EXCPT_COND is provided.
    ;
    ;  *   If an exception condition has been detected, the output argument
    ;      misr_path is set to 0, this function returns a non-zero error
    ;      code, and the output keyword parameter excpt_cond contains a
-   ;      message about the exception condition encountered.
+   ;      message about the exception condition encountered, if the
+   ;      optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -73,7 +81,8 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;  EXAMPLES:
    ;
    ;      IDL> misr_path_str = 'p 170 '
-   ;      IDL> rc = str2path(misr_path_str, misr_path, EXCPT_COND = excpt_cond)
+   ;      IDL> rc = str2path(misr_path_str, misr_path, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
    ;      rc =        0 and excpt_cond = ><
    ;      IDL> PRINT, 'misr_path = ', misr_path
@@ -86,6 +95,8 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;  *   2017–11–15: Version 0.9 — Initial release.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;
    ;Sec-Lic
@@ -123,53 +134,76 @@ FUNCTION str2path, misr_path_str, misr_path, EXCPT_COND = excpt_cond
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the return code and the error message:
+   ;  Initialize the default return code and the exception condition message:
    return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
    excpt_cond = ''
+
+   ;  Initialize the output positional parameters to invalid values:
+   misr_path = 0
+
+   IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-   n_reqs = 2
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameter(s): misr_path_str, misr_path.'
-      misr_path = 0
-      RETURN, error_code
+      n_reqs = 2
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameter(s): misr_path_str, misr_path.'
+         RETURN, error_code
+      ENDIF
+
+   ;  Return to the calling routine with an error message if this function is
+   ;  called with an invalid misr_path_str:
+      IF (is_string(misr_path_str) NE 1) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Input argument misr_path_str is not a string.'
+         RETURN, error_code
+      ENDIF
    ENDIF
 
-   ;  Check the validity of the input positional parameter PATH:
-   IF (is_string(misr_path_str) NE 1) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Input argument misr_path_str is not a string.'
-      misr_path = 0
-      RETURN, error_code
+   misr_path_str = strstr(misr_path_str, DEBUG = debug, $
+      EXCPT_COND = excpt_cond)
+
+   IF (debug) THEN BEGIN
+
+      IF (STRUPCASE(first_char(misr_path_str)) NE 'P') THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 120
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Input argument misr_path_str is not starting with P.'
+         misr_path = 0
+         RETURN, error_code
+      ENDIF
    ENDIF
-   misr_path_str = strstr(misr_path_str)
-   IF (STRUPCASE(first_char(misr_path_str)) NE 'P') THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 120
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Input argument misr_path_str is not starting with P.'
-      misr_path = 0
-      RETURN, error_code
-   ENDIF
-   misr_path = FIX(strstr(STRMID(misr_path_str, 1)))
-   IF (chk_misr_path(misr_path, EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 130
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Numerical value of input argument misr_path_str is invalid.'
-      misr_path = 0
-      RETURN, error_code
+
+   misr_path = FIX(strstr(STRMID(misr_path_str, 1), $
+      DEBUG = debug, EXCPT_COND = excpt_cond))
+
+   IF (debug) THEN BEGIN
+
+      IF (chk_misr_path(misr_path, DEBUG = debug, $
+         EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 130
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Numerical value of input argument misr_path_str is invalid.'
+         misr_path = 0
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    RETURN, return_code

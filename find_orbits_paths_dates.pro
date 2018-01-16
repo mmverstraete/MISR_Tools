@@ -1,16 +1,16 @@
 FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
-   date_1, date_2, misr_orbits, EXCPT_COND = excpt_cond
+   date_1, date_2, misr_orbits, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
-   ;  PURPOSE: This function identifies the MISR ORBITs belonging to the
-   ;  MISR PATHs in the range misr_path_1 to misr_path_2 and between the
-   ;  dates date_1 and date_2.
+   ;  PURPOSE: This function creates a list of the MISR ORBITs belonging
+   ;  to the MISR PATHs in the range misr_path_1 to misr_path_2 and
+   ;  between the dates date_1 and date_2.
    ;
    ;  ALGORITHM: This function relies on the MISR TOOLKIT function
    ;  MTK_PATH_TIMERANGE_TO_ORBITLIST to deliver the required information.
    ;
-   ;  SYNTAX:
-   ;  rc = find_orbits_paths_dates (misr_path_1, misr_path_2, date_1, date_2, misr_orbits, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = find_orbits_paths_dates (misr_path_1, misr_path_2, $
+   ;  date_1, date_2, misr_orbits, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -35,6 +35,9 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
+   ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
@@ -44,14 +47,19 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      returns the value 0, the list of of MISR ORBITs is provided to
-   ;      the calling routine in the output argument misr_orbits, and the
-   ;      keyword parameter excpt_cond is set to a null string.
+   ;      returns the value 0, the output positional parameter misr_orbits
+   ;      is a stucture containing the deisred information, and the
+   ;      keyword parameter excpt_cond is set to a null string, if the
+   ;      optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, the list of of MISR ORBITs is set
-   ;      to a null STRING, and the keyword parameter excpt_cond contains
-   ;      a message about the exception condition encountered.
+   ;      returns a non-zero error code, the output positional parameter
+   ;      misr_orbits is set to a null structure, and the keyword
+   ;      parameter excpt_cond contains a message about the exception
+   ;      condition encountered, if the optional input keyword parameter
+   ;      DEBUG is set and if the optional output keyword parameter
+   ;      EXCPT_COND is provided.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -78,9 +86,9 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   NOTE 1: This function returns information on the ORBITs that are
    ;      theoretically available within the specified PATHs and between
    ;      the given dates. Data for those ORBITs may not be available at
-   ;      all if there was a technical problem on the platform, and may
-   ;      not be available locally if they have not been explicitly
-   ;      downloaded from the NASA Langley DAAC.
+   ;      all if there was a technical problem on the platform, or may not
+   ;      be available locally if they have not been explicitly downloaded
+   ;      from the NASA Langley DAAC.
    ;
    ;  *   NOTE 2: The input argument misr_path_1 is deemed smaller than
    ;      misr_path_2; however, if this is not the case, the values of the
@@ -97,7 +105,7 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      IDL> date_1 = '2010-01-01'
    ;      IDL> date_2 = '2010-01-31'
    ;      IDL> rc = find_orbits_paths_dates(misr_path_1, misr_path_2, $
-   ;         date_1, date_2, misr_orbits, EXCPT_COND = excpt_cond)
+   ;         date_1, date_2, misr_orbits, /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
    ;      rc =        0 and excpt_cond = ><
    ;      IDL> HELP, misr_orbits
@@ -124,6 +132,8 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   2017–09–07: Version 0.9 — Initial release.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;
    ;Sec-Lic
@@ -161,46 +171,54 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the default error message and return code of the function:
-   excpt_cond = ''
+   ;  Initialize the default return code and the exception condition message:
    return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
+   excpt_cond = ''
+
+   ;  Initialize the output positional parameters to invalid values:
+   misr_orbits = {}
+
+   IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-   n_reqs = 5
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameters: misr_path_1, misr_path_2, ' + $
-         'date_1, date_2, misr_orbits.'
-      misr_orbits = ''
-      RETURN, error_code
-   ENDIF
+      n_reqs = 5
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameters: misr_path_1, misr_path_2, ' + $
+            'date_1, date_2, misr_orbits.'
+         RETURN, error_code
+      ENDIF
 
    ;  Return to the calling routine with an error message if misr_path_1 or
    ;  misr_path_2 is invalid:
-   rc1 = chk_misr_path(misr_path_1, EXCPT_COND = excpt_cond)
-   IF (rc1 NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      misr_orbits = ''
-      RETURN, error_code
-   ENDIF
-   rc2 = chk_misr_path(misr_path_2, EXCPT_COND = excpt_cond)
-   IF (rc2 NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 120
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      misr_orbits = ''
-      RETURN, error_code
+      rc1 = chk_misr_path(misr_path_1, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc1 NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         RETURN, error_code
+      ENDIF
+      rc2 = chk_misr_path(misr_path_2, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc2 NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 120
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    ;  Verify that 'misr_path_2' is larger than or equal to 'misr_path_1', and
@@ -211,27 +229,32 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
       misr_path_2 = temp
    ENDIF
 
+   ;  Define the numeric output date elements of the two string input dates:
+   rc1 = chk_date_ymd(date_1, year_1, month_1, day_1, $
+      DEBUG = debug, EXCPT_COND = excpt_cond1)
+   rc2 = chk_date_ymd(date_2, year_2, month_2, day_2, $
+      DEBUG = debug, EXCPT_COND = excpt_cond2)
+
+   IF (debug) THEN BEGIN
+
    ;  Return to the calling routine with an error message if date_1 or date_2
    ;  is invalid:
-   rc = chk_date_ymd(date_1, year_1, month_1, day_1, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 130
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      misr_orbits = ''
-      RETURN, error_code
-   ENDIF
-   rc = chk_date_ymd(date_2, year_2, month_2, day_2, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 140
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      misr_orbits = ''
-      RETURN, error_code
+      IF (rc1 NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 130
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond1
+         RETURN, error_code
+      ENDIF
+      IF (rc2 NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 140
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond2
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    ;  Verify that 'date_2' is later than or equal to 'date_1', and if not,

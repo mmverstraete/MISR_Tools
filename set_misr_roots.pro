@@ -118,7 +118,7 @@ FUNCTION set_misr_roots
       (computer EQ 'MicMac') OR (computer EQ 'micmac'): BEGIN
          misr_roots[0] = '/Volumes/MISR_Data*/'
          misr_roots[1] = '/Volumes/MISR-HR/'
-         misr_roots[2] = '/Users/mmverstraete/Documents/MISR_HR/Outcomes/'
+         misr_roots[2] = '~/Documents/MISR_HR/Outcomes/'
       END
 
       (computer EQ 'pc18'): BEGIN
@@ -127,6 +127,13 @@ FUNCTION set_misr_roots
          misr_roots[2] = '/Volumes/Output2/'
       END
 
+   ;  Add other computers here:
+   ;  (computer EQ 'newname'): BEGIN
+   ;     misr_roots[0] = 'Folder containing MISR data'
+   ;     misr_roots[1] = 'Folder containing MISR-HR products'
+   ;     misr_roots[2] = 'Folder containing the outcomes of post-processing'
+
+   ;  Leave the ELSE case untouched:
       ELSE: BEGIN
          misr_roots[0] = 'Unrecognized computer'
          misr_roots[1] = 'Unrecognized computer'

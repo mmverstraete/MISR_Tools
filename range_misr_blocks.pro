@@ -1,5 +1,5 @@
 FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
-   EXCPT_COND = excpt_cond
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function reports on the range of MISR BLOCKS
@@ -10,8 +10,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  and returns the first and last MISR BLOCKS containing usable data in
    ;  a L1B2 Global or Local Mode file.
    ;
-   ;  SYNTAX:
-   ;  rc = range_misr_blocks(l1b2_fspec, start_block, end_block, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = range_misr_blocks(l1b2_fspec, start_block, end_block, $
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -26,6 +26,9 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
+   ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
@@ -36,14 +39,18 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;  *   If no exception condition has been detected, this function
    ;      returns 0, the values of the starting and ending BLOCK numbers
-   ;      in output arguments, the output keyword parameter excpt_cond is
-   ;      set to a null string.
+   ;      are provided in output arguments, and the output keyword
+   ;      parameter excpt_cond is set to a null string, if the optional
+   ;      input keyword parameter DEBUG is set and if the optional output
+   ;      keyword parameter EXCPT_COND is provided.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, the values of the starting and
-   ;      ending BLOCK numbers may be undefined, and the output keyword
-   ;      parameter excpt_cond contains a message about the exception
-   ;      condition encountered.
+   ;      returns a non-zero error code, the starting and ending BLOCK
+   ;      numbers are set to 0, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -70,7 +77,16 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;  EXAMPLES:
    ;
-   ;      [Insert the command and its outcome]
+   ;      IDL> l1b2_fspec = '/Volumes/MISR_Data3/P168/L1_GM/' + $
+   ;         'MISR_AM1_GRP_TERRAIN_GM_P168_O068050_CF_F03_0024.hdf'
+   ;      IDL> rc = range_misr_blocks(l1b2_fspec, start_block, end_block, $
+   ;         DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0 and excpt_cond = ><
+   ;      IDL> PRINT, 'start_block = ' + strstr(start_block)
+   ;      start_block = 19
+   ;      IDL> PRINT, 'end_block = ' + strstr(end_block)
+   ;      end_block = 162
    ;
    ;  REFERENCES: None.
    ;
@@ -79,6 +95,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  *   2017–12–13: Version 0.9 — Initial release.
    ;
    ;  *   2017–12–20: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;
    ;Sec-Lic
@@ -116,37 +134,51 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the return code and the error message:
-   ret_code = 0
+   ;  Initialize the default return code and the exception condition message:
+   return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
    excpt_cond = ''
+
+   ;  Initialize the output positional parameters to invalid values:
+   start_block = 0
+   end_block = 0
+
+   IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-   n_reqs = 3
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameter(s): l1b2_fspec, start_block, end_block.'
-      RETURN, error_code
-   ENDIF
+      n_reqs = 3
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameter(s): l1b2_fspec, start_block, end_block.'
+         RETURN, error_code
+      ENDIF
 
-   ;  Check that the input argument l1b2_fspec points to a readable L1B2 file:
-   IF (is_readable(l1b2_fspec) NE 1) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': File specification ' + strstr(l1b2_fspec) + $
-         ' not found or unreadable.'
-      RETURN, error_code
+   ;  Return to the calling routine with an error message if l1b2_fspec does
+   ;  not points to a readable L1B2 file:
+      IF (is_readable(l1b2_fspec, DEBUG = debug, $
+         EXCPT_COND = excpt_cond) NE 1) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': File specification ' + strstr(l1b2_fspec) + $
+            ' not found or unreadable.'
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    ;  Use he MISR Toolkit routine to identify the first and last Blocks:
    status = MTK_FILEATTR_GET(l1b2_fspec, 'Start_block', start_block)
-   IF (status NE 0) THEN BEGIN
+   IF ((debug) AND (status NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 200
@@ -155,8 +187,9 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
          'recovering start_block in ' + l1b2_fspec
       RETURN, error_code
    ENDIF
+
    status = MTK_FILEATTR_GET(l1b2_fspec, 'End block', end_block)
-   IF (status NE 0) THEN BEGIN
+   IF ((debug) AND (status NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
@@ -166,6 +199,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
       RETURN, error_code
    ENDIF
 
-   RETURN, ret_code
+   RETURN, return_code
 
 END

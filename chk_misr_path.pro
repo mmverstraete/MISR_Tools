@@ -1,20 +1,23 @@
-FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
+FUNCTION chk_misr_path, misr_path, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the positional
    ;  parameter misr_path.
    ;
-   ;  ALGORITHM: This function verifies that the input positional
-   ;  parameter misr_path is of type INT and that its value is within
-   ;  [1, 233].
+   ;  ALGORITHM: This function indicates whether the value of the input
+   ;  positional parameter misr_path is within [1, 233].
    ;
-   ;  SYNTAX: rc = chk_misr_path(misr_path, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = chk_misr_path(misr_path, $
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_path {INTEGER} [I/O]: The selected MISR PATH number.
+   ;  *   misr_path {INT} [I/O]: The selected MISR PATH number.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
+   ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
    ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
@@ -24,15 +27,18 @@ FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
    ;
    ;  OUTCOME:
    ;
-   ;  *   If no exception condition has been detected, this function
-   ;      returns 0, indicating that the input argument is valid, and the
-   ;      output keyword parameter excpt_cond is set to a null string. On
-   ;      output, misr_path is of type INT.
+   ;  *   If no exception condition has been detected and the misr_path is
+   ;      valid, this function returns 0, and the output keyword parameter
+   ;      excpt_cond is set to a null string, if the optional input
+   ;      keyword parameter DEBUG is set and if the optional output
+   ;      keyword parameter EXCPT_COND is provided.
    ;
-   ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, and the output keyword parameter
-   ;      excpt_cond contains a message about the exception condition
-   ;      encountered.
+   ;  *   If an exception condition has been detected, or if the argument
+   ;      misr_path is invalid, this function returns a non-zero error
+   ;      code, and the output keyword parameter excpt_cond contains a
+   ;      message about the exception condition encountered, if the
+   ;      optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -40,6 +46,8 @@ FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
    ;
    ;  *   Error 110: Input positional parameter misr_path is not of type
    ;      numeric.
+   ;
+   ;  *   Error 120: Input positional parameter misr_path is not a scalar.
    ;
    ;  *   Error 300: Input positional parameter misr_path is invalid: must
    ;      be within [1, 233].
@@ -57,9 +65,14 @@ FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> rc = chk_misr_path(168, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc =        0 and excpt_cond = ><
+   ;      IDL> rc = chk_misr_path(168, /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0 and excpt_cond = ><
+   ;
+   ;      IDL> rc = chk_misr_path(368, /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 300 and excpt_cond = >Error 300 in CHK_MISR_PATH:
+   ;      Invalid misr_path number: must be within [1, 233].<
    ;
    ;  REFERENCES: None.
    ;
@@ -68,6 +81,8 @@ FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
    ;  *   2017–11–15: Version 0.9 — Initial release.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;
    ;Sec-Lic
@@ -105,45 +120,67 @@ FUNCTION chk_misr_path, misr_path, EXCPT_COND = excpt_cond
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the return code and the error message:
+   ;  Initialize the default return code and the exception condition message:
    return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
    excpt_cond = ''
+
+   IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-   n_reqs = 1
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameter(s): misr_path.'
-      RETURN, error_code
-   ENDIF
+      n_reqs = 1
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameter(s): misr_path.'
+         RETURN, error_code
+      ENDIF
 
    ;  Return to the calling routine with an error message if the positional
    ;  parameter 'misr_path' is not of numeric type:
-   IF (is_numeric(misr_path) NE 1) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Input argument misr_path must be of numeric type.'
-      RETURN, error_code
+      IF (is_numeric(misr_path) NE 1) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Input argument misr_path must be of numeric type.'
+         RETURN, error_code
+      ENDIF
+
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misr_block' is not a scalar:
+      IF (is_scalar(misr_path) NE 1) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 120
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+            rout_name + ': Input argument misr_path must be a scalar.'
+         RETURN, error_code
+      ENDIF
    ENDIF
 
    ;  Ensure the variable 'misr_path' is of INT type:
    misr_path = FIX(misr_path)
 
+   IF ((misr_path LT 1) OR (misr_path GT 233)) THEN BEGIN
+      error_code = 300
+
    ;  Return to the calling routine with an error message if the positional
    ;  parameter 'misr_path' is invalid:
-   IF ((misr_path LT 1) OR (misr_path GT 233)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 300
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Invalid misr_path number: must be within [1, 233].'
+      IF (debug) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Invalid misr_path number: must be within [1, 233].'
+      ENDIF
       RETURN, error_code
    ENDIF
 

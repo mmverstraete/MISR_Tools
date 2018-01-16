@@ -1,4 +1,4 @@
-PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
+PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This program ranks the set of available MISR-HR RPV product
@@ -12,7 +12,8 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;  cloudiness for the selected MISR PATH and BLOCK. The results are
    ;  saved in a file in the standard location.
    ;
-   ;  SYNTAX: clear_dates, misr_path, misr_block
+   ;  SYNTAX: clear_dates, misr_path, misr_block, $
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -21,6 +22,9 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;  *   misr_block {INTEGER} [I]: The selected MISR BLOCK number.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
+   ;
+   ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
+   ;      or skip (0) debugging tests.
    ;
    ;  *   EXCPT_COND = excpt_cond {STRING} [O] (Default value: ”):
    ;      Description of the exception condition if one has been
@@ -47,8 +51,14 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;
    ;  *   Error 120: The input positional parameter misr_block is invalid.
    ;
-   ;  *   Error 200: An exception condition occurred in
-   ;      clear_misrhr_dates.
+   ;  *   Error 200: An exception condition occurred in path2str.pro.
+   ;
+   ;  *   Error 210: An exception condition occurred in block2str.pro.
+   ;
+   ;  *   Error 220: An exception condition occurred in
+   ;      clear_misrhr_dates.pro.
+   ;
+   ;  *   Error 230: An exception condition occurred in is_writable.pro.
    ;
    ;  DEPENDENCIES:
    ;
@@ -82,7 +92,7 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> clear_dates, 169, 111, EXCPT_COND = excpt_cond
+   ;      IDL> clear_dates, 169, 111, /DEBUG, EXCPT_COND = excpt_cond
    ;      Found 296 RPV files for P169 and B111 in directory
    ;      /Volumes/MISR-HR/P169/B111/RPV/
    ;      Output file containing the list of RPV product files
@@ -143,6 +153,8 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
    ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
@@ -179,49 +191,79 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    ;
    ;
    ;Sec-Cod
-   ;  Initialize the default error message:
+   ;  Initialize the default return code and the exception condition message:
+   return_code = 0
+   IF KEYWORD_SET(debug) THEN BEGIN
+      debug = 1
+   ENDIF ELSE BEGIN
+      debug = 0
+   ENDELSE
    excpt_cond = ''
+
+   IF (debug) THEN BEGIN
 
    ;  Print an error message and exit from this program if it is called
    ;  with the wrong number of required positional parameters:
-   n_reqs = 2
-   IF (N_PARAMS() NE n_reqs) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 100
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameters: misr_path, misr_block.'
-      PRINT, excpt_cond
-      RETURN
-   ENDIF
+      n_reqs = 2
+      IF (N_PARAMS() NE n_reqs) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 100
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Routine must be called with ' + strstr(n_reqs) + $
+            ' positional parameters: misr_path, misr_block.'
+         PRINT, excpt_cond
+         RETURN
+      ENDIF
 
    ;  Print an error message if either the 'misr_path' or the 'misr_block'
    ;  input positional parameter is invalid:
-   rc = chk_misr_path(misr_path, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 110
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         PRINT, excpt_cond
+         RETURN
+      ENDIF
+      rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
+         info = SCOPE_TRACEBACK(/STRUCTURE)
+         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+         error_code = 120
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': ' + excpt_cond
+         PRINT, excpt_cond
+         RETURN
+      ENDIF
    ENDIF
-   rc = chk_misr_block(misr_block, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
+
+   ;  Set the string versions of the MISR Path and Block numbers:
+   rcp = path2str(misr_path, misr_path_str, $
+      DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rcp NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 120
+      error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
       PRINT, excpt_cond
       RETURN
    ENDIF
 
-   ;  Set the string versions of the MISR Path and Block numbers:
-   rcp = path2str(misr_path, misr_path_str, EXCPT_COND = excpt_cond)
-   rcb = block2str(misr_block, misr_block_str, EXCPT_COND = excpt_cond)
+   rcb = block2str(misr_block, misr_block_str, $
+      DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rcp NE 0)) THEN BEGIN
+      info = SCOPE_TRACEBACK(/STRUCTURE)
+      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+      error_code = 210
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': ' + excpt_cond
+      PRINT, excpt_cond
+      RETURN
+   ENDIF
 
    ;  Define the standard locations for the MISR and MISR-HR files on this
    ;  computer:
@@ -233,11 +275,13 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    o_dir = misr_roots[2] + pb2
 
    ;  Call the function 'clear_misrhr_dates' to gather the desired information:
-   rc = clear_misrhr_dates(i_dir, cdates, EXCPT_COND = excpt_cond)
-   IF (rc NE 0) THEN BEGIN
+   rc = clear_misrhr_dates(i_dir, cdates, $
+      DEBUG = debug, EXCPT_COND = excpt_cond)
+
+   IF ((debug) AND (rc NE 0)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 200
+      error_code = 220
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
       PRINT, excpt_cond
@@ -255,9 +299,18 @@ PRO clear_dates, misr_path, misr_block, EXCPT_COND = excpt_cond
    o_spec = o_dir + o_name
 
    ;  Ensure that the output directory exists, and if not create it:
-   rc = is_writable(o_dir, EXCPT_COND = excpt_cond)
-   IF (rc NE 1) THEN BEGIN
+   rc = is_writable(o_dir, DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF (rc EQ -1) THEN BEGIN
       FILE_MKDIR, o_dir
+   ENDIF
+   IF ((debug) AND (rc EQ 0)) THEN BEGIN
+      info = SCOPE_TRACEBACK(/STRUCTURE)
+      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+      error_code = 230
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': ' + excpt_cond
+      PRINT, excpt_cond
+      RETURN
    ENDIF
 
    ;  Output the results in that output file:
