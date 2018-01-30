@@ -28,18 +28,19 @@ FUNCTION chk_misr_band, misr_band, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  OUTCOME:
    ;
-   ;  *   If no exception condition has been detected and the misr_band is
-   ;      valid, this function returns 0, and the output keyword parameter
-   ;      excpt_cond is set to a null string, if the optional input
-   ;      keyword parameter DEBUG is set and if the optional output
-   ;      keyword parameter EXCPT_COND is provided.
+   ;  *   If no exception condition has been detected, this function
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The input positional parameter misr_band
+   ;      is valid.
    ;
-   ;  *   If an exception condition has been detected, or if the argument
-   ;      misr_band is invalid, this function returns a non-zero error
-   ;      code, and the output keyword parameter excpt_cond contains a
-   ;      message about the exception condition encountered, if the
-   ;      optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided.
+   ;  *   If an exception condition has been detected, this function
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The input positional parameter misr_band is invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;

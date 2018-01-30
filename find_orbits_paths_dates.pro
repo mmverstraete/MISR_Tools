@@ -47,19 +47,21 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      returns the value 0, the output positional parameter misr_orbits
-   ;      is a stucture containing the deisred information, and the
-   ;      keyword parameter excpt_cond is set to a null string, if the
-   ;      optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided.
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The output positional parameter
+   ;      misr_orbits is a stucture containing a list of the MISR ORBITS
+   ;      belonging to the PATHS in the range misr_path_1 to misr_path_2
+   ;      and between the dates date_1 and date_2.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, the output positional parameter
-   ;      misr_orbits is set to a null structure, and the keyword
-   ;      parameter excpt_cond contains a message about the exception
-   ;      condition encountered, if the optional input keyword parameter
-   ;      DEBUG is set and if the optional output keyword parameter
-   ;      EXCPT_COND is provided.
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The output positional parameter misr_orbits is a
+   ;      stucture that may be empty, incomplete or useless.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -97,6 +99,11 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   NOTE 3: Similarly, the input arguments date_1 and date_2 are
    ;      expected to be given in chronological order; however, if this is
    ;      not the case, the values of the two dates are interchanged.
+   ;
+   ;  *   NOTE 4: This function assumes that the MISR input files are
+   ;      systematically available for full ORBITS, i.e., include all
+   ;      available BLOCKS. It does not report on the eventual
+   ;      availability of subsetted data files.
    ;
    ;  EXAMPLES:
    ;

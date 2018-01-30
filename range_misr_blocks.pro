@@ -38,19 +38,20 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      returns 0, the values of the starting and ending BLOCK numbers
-   ;      are provided in output arguments, and the output keyword
-   ;      parameter excpt_cond is set to a null string, if the optional
-   ;      input keyword parameter DEBUG is set and if the optional output
-   ;      keyword parameter EXCPT_COND is provided.
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The output positional parameters
+   ;      start_block and end_block contain the values of the starting and
+   ;      ending BLOCK numbers, respectively.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, the starting and ending BLOCK
-   ;      numbers are set to 0, and the output keyword parameter
+   ;      returns a non-zero error code, and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
    ;      encountered, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided.
+   ;      provided. The output positional parameters start_block and
+   ;      end_block are set to 0.
    ;
    ;  EXCEPTION CONDITIONS:
    ;

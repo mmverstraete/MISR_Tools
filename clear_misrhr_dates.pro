@@ -43,18 +43,20 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      returns 0, saves the ordered list of files in the output
-   ;      structure cdates, and the output keyword parameter excpt_cond is
-   ;      set to a null string, if the optional input keyword parameter
-   ;      DEBUG is set and if the optional output keyword parameter
-   ;      EXCPT_COND is provided.
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The output positional parameter cdates is
+   ;      a structure that contains the list of MISR-HR RPV files in
+   ;      decreasing ordered of file size.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code and the output keyword parameter
+   ;      returns a non-zero error code, and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
    ;      encountered, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The variable cdates is set to a null STRING.
+   ;      provided. The output positional parameter cdates is a structure
+   ;      that may be empty, incomplete or useless.
    ;
    ;  EXCEPTION CONDITIONS:
    ;

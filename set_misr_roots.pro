@@ -112,6 +112,7 @@ FUNCTION set_misr_roots
 
    ;  Identify the current computer:
    SPAWN, 'hostname -s', computer
+   computer = computer[0]
 
    ;  Set the 3 paths for the recognized computer platforms:
    CASE 1 OF

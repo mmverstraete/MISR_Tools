@@ -1,18 +1,21 @@
-FUNCTION chk_misr_block, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the positional
-   ;  parameter misr_block.
+   ;  parameter misrhr_tip_field.
    ;
    ;  ALGORITHM: This function indicates whether the value of the input
-   ;  positional parameter misr_block is within [1, 180].
+   ;  positional parameter misrhr_tip_field is one of
+   ;  [’EffLAI’, ’EffSSA_VIS’, ’EffAsym_VIS’, ’TrueBkgdAlbedo_VIS’, ’EffSSA_NIR’, ’EffAsym_NIR’, ’TrueBkgdAlbedo_NIR’, ’Cost’, ’BHR_VIS’, ’BHR_NIR’, ’ABS_VIS’, ’ABS_NIR’, ’TRN_VIS’, ’TRN_NIR’, ’StdDevParams’, ’ObsCovarFluxes’, ’PriorBHR_Spectral’, ’PriorBHR_VIS’, ’PriorBHR_NIR’, ’Uncert’, ’Green’, ’SnowFlag’, ’SnowSolution’].
    ;
-   ;  SYNTAX: rc = chk_misr_block(misr_block, $
+   ;  SYNTAX: rc = chk_misrhr_tip_field(misrhr_tip_field, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_block {INTEGER} [I/O]: The selected MISR BLOCK number.
+   ;  *   misrhr_tip_field {STRING} [I/O]: The selected MISR-HR TIP field
+   ;      name.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -31,60 +34,47 @@ FUNCTION chk_misr_block, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      returns 0, and the output keyword parameter excpt_cond is set to
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
-   ;      provided in the call. The input positional parameter misr_block
-   ;      is valid.
+   ;      provided in the call. The input positional parameter
+   ;      misrhr_tip_field is valid.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code, and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
    ;      encountered, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The input positional parameter misr_block is invalid.
+   ;      provided. The input positional parameter misrhr_tip_field is
+   ;      invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
    ;  *   Error 100: One or more positional parameter(s) are missing.
    ;
-   ;  *   Error 110: Input positional parameter misr_block is not of type
-   ;      numeric.
-   ;
-   ;  *   Error 120: Input positional parameter misr_block is not a
-   ;      scalar.
-   ;
-   ;  *   Error 300: Input positional parameter misr_block is invalid:
-   ;      must be within [1, 180].
+   ;  *   Error 110: Input positional parameter misrhr_tip_field is not of
+   ;      type STRING.
    ;
    ;  DEPENDENCIES:
    ;
-   ;  *   is_numeric.pro
+   ;  *   is_string.pro
    ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The input positional parameter misr_block is recast as
-   ;      type INT on output.
+   ;  *   NOTE 1: This function...
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> rc = chk_misr_block(110, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 0 and excpt_cond = ><
+   ;      [Insert the command and its outcome]
    ;
-   ;      IDL> rc = chk_misr_block(0, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 300 and excpt_cond = >Error 300 in CHK_MISR_BLOCK:
-   ;      Invalid misr_block number: must be within [1, 180].<
+   ;  REFERENCES:
    ;
-   ;  REFERENCES: None.
+   ;  *   -   Paper and DOI
    ;
    ;  VERSIONING:
    ;
-   ;  *   2017–11–15: Version 0.9 — Initial release.
+   ;  *   2018–01–20: Version 0.9 — Initial release.
    ;
-   ;  *   2017–11–30: Version 1.0 — Initial public release.
-   ;
-   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;  *   2018–02–20: Version 1.0 — Initial public release.
    ;
    ;
    ;Sec-Lic
@@ -142,48 +132,47 @@ FUNCTION chk_misr_block, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameter(s): misr_block.'
+            ' positional parameter(s): misrhr_tip_field.'
          RETURN, error_code
       ENDIF
 
    ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_block' is not of numeric type:
-      IF (is_numeric(misr_block) NE 1) THEN BEGIN
+   ;  parameter 'misrhr_tip_field' is not of string type:
+      IF (is_string(misrhr_tip_field) NE 1) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + ': Input argument misr_block must be of numeric type.'
-         RETURN, error_code
-      ENDIF
-
-   ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_block' is not a scalar:
-      IF (is_scalar(misr_block) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-         error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + ': Input argument misr_block must be a scalar.'
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Input argument misrhr_tip_field must be of string type.'
          RETURN, error_code
       ENDIF
    ENDIF
 
-   ;  Ensure the variable 'misr_block' is of INT type:
-   misr_block = FIX(misr_block)
+   ;  Ensure the variable 'misrhr_tip_field' does not include heading or
+   ;  trailing spaces:
+   misrhr_tip_field = strstr(misrhr_tip_field)
 
-   ;  Check that the argument misr_block is valid:
-   IF ((misr_block LT 1) OR (misr_block GT 180)) THEN BEGIN
+   ;  Define the valid values of misrhr_tip_field:
+   misrhr_tip_fields = ['EffLAI', 'EffSSA_VIS', 'EffAsym_VIS', $
+      'TrueBkgdAlbedo_VIS', 'EffSSA_NIR', 'EffAsym_NIR', $
+      'TrueBkgdAlbedo_NIR', 'Cost', 'BHR_VIS', 'BHR_NIR', $
+      'ABS_VIS', 'ABS_NIR', 'TRN_VIS', 'TRN_NIR', 'StdDevParams', $
+      'ObsCovarFluxes', 'PriorBHR_Spectral', 'PriorBHR_VIS', $
+      'PriorBHR_NIR', 'Uncert', 'Green', 'SnowFlag', 'SnowSolution']
+
+   ;  Check that the argument misrhr_tip_field is valid:
+   idx = WHERE(misrhr_tip_field EQ misrhr_tip_fields, count)
+
+   IF (count NE 1) THEN BEGIN
       error_code = 300
 
    ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_block' is invalid:
+   ;  parameter 'misrhr_tip_field' is invalid:
       IF (debug) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + $
-            ': Invalid misr_block number: must be within [1, 180].'
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Invalid misrhr_tip_field name.'
       ENDIF
       RETURN, error_code
    ENDIF

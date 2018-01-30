@@ -41,12 +41,17 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  OUTCOME:
    ;
-   ;  *   If no exception condition has been detected, this function saves
-   ;      the arrays of pixel latitudes and longitudes in a plain ASCII
-   ;      text file as well as in an IDL SAVE file and returns 0; the
-   ;      output keyword parameter excpt_cond is set to a null string, if
-   ;      the optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided.
+   ;  *   If no exception condition has been detected, this function
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. This function saves 2 files in the folder
+   ;      misr_roots[2] + ’Pxxx_Bzzz/’: the arrays of pixel latitudes and
+   ;      longitudes in a plain ASCII text file as well as in an IDL SAVE
+   ;      file named
+   ;      lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].txt and
+   ;      lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].sav,
+   ;      respectively.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code and the output keyword parameter
@@ -240,6 +245,9 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  Get the standard locations of MISR and MISR-HR files on this computer:
    misr_roots = set_misr_roots()
 
+   ;  Get the MISR Toolkit version:
+   toolkit = MTK_VERSION()
+
    ;  Define the standard directory in which to save the file containing the
    ;  latitudes and longitudes of the MISR-HR pixels:
    pb = misr_path_str + '_' + misr_block_str
@@ -261,8 +269,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ENDIF
 
    ;  Generate the specification of the lat-lon file:
-   latlon_prefix = 'MISR-HR_LAT-LON_'
-   latlon_fname = latlon_prefix + pb
+   latlon_fname = 'lat-lon_' + pb + '_' + toolkit + '_' + date
    latlon_fspec = latlon_path + latlon_fname + '.txt'
 
    ;  Open this file:

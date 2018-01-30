@@ -33,18 +33,19 @@ FUNCTION path2str, misr_path, misr_path_str, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      provides the desired result in the output argument
-   ;      misr_path_str, returns the value 0, and the output keyword
-   ;      parameter excpt_cond is set to a null string, if the optional
-   ;      input keyword parameter DEBUG is set and if the optional output
-   ;      keyword parameter EXCPT_COND is provided.
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The output positional parameter
+   ;      misr_path_str contains the string version of the PATH.
    ;
-   ;  *   If an exception condition has been detected, the output argument
-   ;      misr_path_str is set to a null STRING, this function returns a
-   ;      non-zero error code, and the output keyword parameter excpt_cond
-   ;      contains a message about the exception condition encountered, if
-   ;      the optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided.
+   ;  *   If an exception condition has been detected, this function
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The output positional parameter misr_path_str is set
+   ;      to a null STRING.
    ;
    ;  EXCEPTION CONDITIONS:
    ;

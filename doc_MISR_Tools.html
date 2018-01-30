@@ -26,8 +26,8 @@
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_block_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_block_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_block_str</code> contains the string version of the <span style="font-variant: small-caps;">Block</span>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output argument <code>misr_block_str</code> is set to a null <code>STRING</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -84,8 +84,8 @@ misr_block_str = &gt;B088&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected and the <code>misr_band</code> is valid, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, or if the argument <code>misr_band</code> is invalid, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_band</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_band</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -148,8 +148,8 @@ misr_band = Violet</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected and the <code>misr_block</code> is valid, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, or if the argument <code>misr_block</code> is invalid, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_block</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_block</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -202,8 +202,8 @@ Invalid misr_block number: must be within [1, 180].&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected and the <code>misr_camera</code> is valid, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, or if the argument <code>misr_camera</code> is invalid, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_camera</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_camera</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -264,8 +264,8 @@ misr_camera = XY</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected and the <code>misr_orbit</code> is valid, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, or if the argument <code>misr_orbit</code> is invalid, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_orbit</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_orbit</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -318,8 +318,8 @@ Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected and the <code>misr_path</code> is valid, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, or if the argument <code>misr_path</code> is invalid, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_path</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_path</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -354,6 +354,54 @@ Invalid misr_path number: must be within [1, 233].&lt;</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 </ul></li>
 </ul>
+<h2>chk_misrhr_tip_field</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misrhr_tip_field</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function indicates whether the value of the input positional parameter <code>misrhr_tip_field</code> is one of <code>[&#8217;EffLAI&#8217;, &#8217;EffSSA_VIS&#8217;, &#8217;EffAsym_VIS&#8217;, &#8217;TrueBkgdAlbedo_VIS&#8217;, &#8217;EffSSA_NIR&#8217;, &#8217;EffAsym_NIR&#8217;, &#8217;TrueBkgdAlbedo_NIR&#8217;, &#8217;Cost&#8217;, &#8217;BHR_VIS&#8217;, &#8217;BHR_NIR&#8217;, &#8217;ABS_VIS&#8217;, &#8217;ABS_NIR&#8217;, &#8217;TRN_VIS&#8217;, &#8217;TRN_NIR&#8217;, &#8217;StdDevParams&#8217;, &#8217;ObsCovarFluxes&#8217;, &#8217;PriorBHR_Spectral&#8217;, &#8217;PriorBHR_VIS&#8217;, &#8217;PriorBHR_NIR&#8217;, &#8217;Uncert&#8217;, &#8217;Green&#8217;, &#8217;SnowFlag&#8217;, &#8217;SnowSolution&#8217;]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misrhr_tip_field(misrhr_tip_field, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misrhr_tip_field {STRING} [I/O]:</code> The selected <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">TIP</span> field name.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misrhr_tip_field</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misrhr_tip_field</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misrhr_tip_field</code> is not of type <code>STRING</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> This function...</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>[Insert the command and its outcome]</code></pre></li>
+<li><p><strong>References:</strong></p>
+<ul>
+<li></li>
+<li><p>Paper and DOI</p></li>
+</ul></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2018&#8211;01&#8211;20: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2018&#8211;02&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
 <h2>clear_dates</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This program ranks the set of available <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> product files for the specified <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Path</span> and <span style="font-variant: small-caps;">Block</span> in increasing order of cloudiness and saves the results in an output file.</p></li>
@@ -373,10 +421,10 @@ Invalid misr_path number: must be within [1, 233].&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> N/A.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this program saves a file named<br />
-<code>MISR-HR_Clearest_Pxxx_Bzzz.txt</code> in the subdirectory<br />
+<li><p>If no exception condition has been detected, the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This program saves a file named<br />
+<code>clear_Pxxx_Bzzz_hostname_[creation_date].txt</code> in the subdirectory<br />
 <code>misr_roots[2] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>misr_roots[2]</code> is defined by the function <code>set_misr_roots</code>.</p></li>
-<li><p>If an exception condition has been detected, this program prints an error message on the console and no output file is saved.</p></li>
+<li><p>If an exception condition has been detected, the optional output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. This program prints an error message on the console and no output file is saved.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -482,8 +530,8 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns <code>0</code>, saves the ordered list of files in the output structure <code>cdates</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, this function returns a non-zero error code and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The variable <code>cdates</code> is set to a null <code>STRING</code>.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>cdates</code> is a structure that contains the list of <span style="font-variant: small-caps;">MISR-HR</span> <span style="font-variant: small-caps;">RPV</span> files in decreasing ordered of file size.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>cdates</code> is a structure that may be empty, incomplete or useless.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -549,8 +597,8 @@ IDL&gt; HELP, cdates
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns the value <code>0</code>, the output positional parameter <code>misr_orbits</code> is a stucture containing the deisred information, and the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, this function returns a non-zero error code, the output positional parameter <code>misr_orbits</code> is set to a null structure, and the keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_orbits</code> is a stucture containing a list of the <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbits</span> belonging to the <span style="font-variant: small-caps;">Paths</span> in the range <code>misr_path_1</code> to <code>misr_path_2</code> and between the dates <code>date_1</code> and <code>date_2</code>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>misr_orbits</code> is a stucture that may be empty, incomplete or useless.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -571,6 +619,7 @@ IDL&gt; HELP, cdates
 <li><p><strong>Note 1:</strong> This function returns information on the <span style="font-variant: small-caps;">Orbit</span>s that are theoretically available within the specified <span style="font-variant: small-caps;">Path</span>s and between the given dates. Data for those <span style="font-variant: small-caps;">Orbit</span>s may not be available at all if there was a technical problem on the platform, or may not be available locally if they have not been explicitly downloaded from the NASA Langley DAAC.</p></li>
 <li><p><strong>Note 2:</strong> The input argument <code>misr_path_1</code> is deemed smaller than <code>misr_path_2</code>; however, if this is not the case, the values of the two <span style="font-variant: small-caps;">Paths</span> are interchanged.</p></li>
 <li><p><strong>Note 3:</strong> Similarly, the input arguments <code>date_1</code> and <code>date_2</code> are expected to be given in chronological order; however, if this is not the case, the values of the two dates are interchanged.</p></li>
+<li><p><strong>Note 4:</strong> This function assumes that the <span style="font-variant: small-caps;">MISR</span> input files are systematically available for full <span style="font-variant: small-caps;">Orbits</span>, i.e., include all available <span style="font-variant: small-caps;">Blocks</span>. It does not report on the eventual availability of subsetted data files.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; misr_path_1 = 168
@@ -622,8 +671,8 @@ IDL&gt; PRINT, misr_orbits
 <li><p><strong>Returned value type:</strong> <code>STRING</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns to the calling routine a <code>STRING</code> containing the date when the selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> was acquired, formatted as <code>YYYY-MM-DD</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, this function returns a null string and the keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns a <code>STRING</code> containing the date when the selected <span style="font-variant: small-caps;">MISR</span> <span style="font-variant: small-caps;">Orbit</span> was acquired, formatted as <code>YYYY-MM-DD</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call.</p></li>
+<li><p>If an exception condition has been detected, this function returns a null <code>STRING</code>, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -685,8 +734,8 @@ Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_orbit_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_orbit_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_orbit_str</code> contains the string version of the <span style="font-variant: small-caps;">Orbit</span>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output argument <code>misr_orbit_str</code> is set to a null <code>STRING</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -734,8 +783,8 @@ misr_orbit_str = &gt;O068050&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_path_str</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_path_str</code> is set to a null <code>STRING</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_path_str</code> contains the string version of the <span style="font-variant: small-caps;">Path</span>.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>misr_path_str</code> is set to a null <code>STRING</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -784,8 +833,8 @@ misr_path_str = &gt;P004&lt;</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns <code>0</code>, the values of the starting and ending <span style="font-variant: small-caps;">Block</span> numbers are provided in output arguments, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, this function returns a non-zero error code, the starting and ending <span style="font-variant: small-caps;">Block</span> numbers are set to <code>0</code>, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameters <code>start_block</code> and <code>end_block</code> contain the values of the starting and ending <span style="font-variant: small-caps;">Block</span> numbers, respectively.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameters <code>start_block</code> and <code>end_block</code> are set to <code>0</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -939,7 +988,9 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function saves the arrays of pixel latitudes and longitudes in a plain <code>ASCII</code> text file as well as in an <code>IDL</code> <code>SAVE</code> file and returns <code>0</code>; the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This function saves 2 files in the folder <code>misr_roots[2] + &#8217;Pxxx_Bzzz/&#8217;</code>: the arrays of pixel latitudes and longitudes in a plain <code>ASCII</code> text file as well as in an <code>IDL</code> <code>SAVE</code> file named<br />
+<code>lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].txt</code> and<br />
+<code>lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].sav</code>, respectively.</p></li>
 <li><p>If an exception condition has been detected, this function returns a non-zero error code and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered. The output files are not created, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
@@ -1006,8 +1057,8 @@ IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_block</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_block</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_block</code> contains the <span style="font-variant: small-caps;">Block</span> number.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>misr_block</code> is set to <code>0</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -1062,8 +1113,8 @@ misr_block =      111</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_orbit</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_orbit</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_orbit</code> contains the <span style="font-variant: small-caps;">Orbit</span> number.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>misr_orbit</code> is set to <code>0</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -1118,8 +1169,8 @@ misr_orbit =        68050</code></pre></li>
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function provides the desired result in the output argument <code>misr_path</code>, returns the value <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
-<li><p>If an exception condition has been detected, the output argument <code>misr_path</code> is set to <code>0</code>, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameter <code>misr_path</code> contains the <span style="font-variant: small-caps;">Path</span> number.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>misr_path</code> is set to <code>0</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>

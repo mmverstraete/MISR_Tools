@@ -34,18 +34,19 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  OUTCOME:
    ;
    ;  *   If no exception condition has been detected, this function
-   ;      provides the desired result in the output argument misr_block,
-   ;      returns the value 0, and the output keyword parameter excpt_cond
-   ;      is set to a null string, if the optional input keyword parameter
-   ;      DEBUG is set and if the optional output keyword parameter
-   ;      EXCPT_COND is provided.
+   ;      returns 0, and the output keyword parameter excpt_cond is set to
+   ;      a null string, if the optional input keyword parameter DEBUG was
+   ;      set and if the optional output keyword parameter EXCPT_COND was
+   ;      provided in the call. The output positional parameter misr_block
+   ;      contains the BLOCK number.
    ;
-   ;  *   If an exception condition has been detected, the output argument
-   ;      misr_block is set to 0, this function returns a non-zero error
-   ;      code, and the output keyword parameter excpt_cond contains a
-   ;      message about the exception condition encountered, if the
-   ;      optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided.
+   ;  *   If an exception condition has been detected, this function
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The output positional parameter misr_block is set to
+   ;      0.
    ;
    ;  EXCEPTION CONDITIONS:
    ;

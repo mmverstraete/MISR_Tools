@@ -34,14 +34,21 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  OUTCOME:
    ;
-   ;  *   If no exception condition has been detected, this program saves
-   ;      a file named
-   ;      MISR-HR_Clearest_Pxxx_Bzzz.txt in the subdirectory
+   ;  *   If no exception condition has been detected, the keyword
+   ;      parameter excpt_cond is set to a null string, if the optional
+   ;      input keyword parameter DEBUG was set and if the optional output
+   ;      keyword parameter EXCPT_COND was provided in the call. This
+   ;      program saves a file named
+   ;      clear_Pxxx_Bzzz_hostname_[creation_date].txt in the subdirectory
    ;      misr_roots[2] + ’/Pxxx_Bzzz’, where misr_roots[2] is defined by
    ;      the function set_misr_roots.
    ;
-   ;  *   If an exception condition has been detected, this program prints
-   ;      an error message on the console and no output file is saved.
+   ;  *   If an exception condition has been detected, the optional output
+   ;      keyword parameter excpt_cond contains a message about the
+   ;      exception condition encountered, if the optional input keyword
+   ;      parameter DEBUG is set and if the optional output keyword
+   ;      parameter EXCPT_COND is provided. This program prints an error
+   ;      message on the console and no output file is saved.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -290,12 +297,16 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;  Identify the current computer:
    SPAWN, 'hostname -s', computer
+   computer = computer[0]
 
    ;  Get the current date and time:
-   dat = today()
+   date = today(FMT = 'ymd')
 
    ;  Save the results in the output file:
-   o_name = 'MISR-HR_Clear_Dates_' + computer + '_' + dat + '.txt'
+   o_name = 'clear_' + $
+      misr_path_str + '_' + $
+      misr_block_str + '_' + $
+      computer + '_' + date + '.txt'
    o_spec = o_dir + o_name
 
    ;  Ensure that the output directory exists, and if not create it:
@@ -320,7 +331,9 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    PRINTF, o_unit, 'Larger file sizes correspond to clearer scenes.'
    PRINTF, o_unit
    PRINTF, o_unit, 'Date of file creation: ' + today(FMT = 'NICE')
-   PRINTF, o_unit, 'Software used: clear_dates, clear_misrhr_dates.'
+   PRINTF, o_unit, 'Software used: clear_dates, with the following inputs:'
+   PRINTF, o_unit, '   misr_path = ' + strstr(misr_path)
+   PRINTF, o_unit, '   misr_block = ' + strstr(misr_block)
    PRINTF, o_unit
    FOR i = 0, cdates.NumFiles - 1 DO BEGIN
       PRINTF, o_unit, i, cdates.FileSizes[i], $
