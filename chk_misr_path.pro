@@ -67,12 +67,12 @@ FUNCTION chk_misr_path, misr_path, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  EXAMPLES:
    ;
    ;      IDL> rc = chk_misr_path(168, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 0 and excpt_cond = ><
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
    ;
    ;      IDL> rc = chk_misr_path(368, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 300 and excpt_cond = >Error 300 in CHK_MISR_PATH:
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 300, excpt_cond = >Error 300 in CHK_MISR_PATH:
    ;      Invalid misr_path number: must be within [1, 233].<
    ;
    ;  REFERENCES: None.
@@ -84,12 +84,10 @@ FUNCTION chk_misr_path, misr_path, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -118,8 +116,6 @@ FUNCTION chk_misr_path, misr_path, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

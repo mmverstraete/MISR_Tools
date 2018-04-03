@@ -7,8 +7,9 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  operation of function block2str.
    ;
    ;  ALGORITHM: This function checks the validity of the positional
-   ;  parameter misr_block_str, provided as an STRING value and converts
-   ;  the numerical component of the argument into an INT.
+   ;  parameter
+   ;  misr_block_str, provided as a STRING value, and converts the
+   ;  numerical component of the argument into an INT.
    ;
    ;  SYNTAX: rc = str2block(misr_block_str, misr_block, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
@@ -98,12 +99,10 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -132,8 +131,6 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

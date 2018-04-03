@@ -91,12 +91,10 @@ FUNCTION set_misr_specs
    ;  *   2017–09–03: Version 0.9 — Add CameraIDs to the output structure.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -125,8 +123,6 @@ FUNCTION set_misr_specs
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Information about the camera geometry:
    ncameras = 9

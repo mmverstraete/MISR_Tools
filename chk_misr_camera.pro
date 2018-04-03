@@ -73,15 +73,15 @@ FUNCTION chk_misr_camera, misr_camera, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;      IDL> misr_camera = 'aa'
    ;      IDL> rc = chk_misr_camera(misr_camera, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 0 and excpt_cond = ><
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
    ;      IDL> PRINT, 'misr_camera = ' + misr_camera
    ;      misr_camera = AA
    ;
    ;      IDL> misr_camera = 'xy'
    ;      IDL> rc = chk_misr_camera(misr_camera, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 300 and excpt_cond = >Error 300 in CHK_MISR_CAMERA:
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 300, excpt_cond = >Error 300 in CHK_MISR_CAMERA:
    ;      Invalid misr_camera name: must be one of
    ;      ['DF', 'CF', 'BF', 'AF', 'AN', 'AA', 'BA', 'CA', 'DA'].<
    ;      IDL> PRINT, 'misr_camera = ' + misr_camera
@@ -96,12 +96,10 @@ FUNCTION chk_misr_camera, misr_camera, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -130,8 +128,6 @@ FUNCTION chk_misr_camera, misr_camera, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

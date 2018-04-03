@@ -42,8 +42,9 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
    ;      provided in the call. The output positional parameters
-   ;      start_block and end_block contain the values of the starting and
-   ;      ending BLOCK numbers, respectively.
+   ;      start_block and
+   ;      end_block contain the values of the starting and ending BLOCK
+   ;      numbers, respectively.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code, and the output keyword parameter
@@ -82,8 +83,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;         'MISR_AM1_GRP_TERRAIN_GM_P168_O068050_CF_F03_0024.hdf'
    ;      IDL> rc = range_misr_blocks(l1b2_fspec, start_block, end_block, $
    ;         DEBUG = debug, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 0 and excpt_cond = ><
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
    ;      IDL> PRINT, 'start_block = ' + strstr(start_block)
    ;      start_block = 19
    ;      IDL> PRINT, 'end_block = ' + strstr(end_block)
@@ -98,12 +99,10 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  *   2017–12–20: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -132,8 +131,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

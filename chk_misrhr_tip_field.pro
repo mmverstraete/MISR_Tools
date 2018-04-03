@@ -3,7 +3,8 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the positional
-   ;  parameter misrhr_tip_field.
+   ;  parameter
+   ;  misrhr_tip_field.
    ;
    ;  ALGORITHM: This function indicates whether the value of the input
    ;  positional parameter misrhr_tip_field is one of
@@ -64,7 +65,18 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;
    ;  EXAMPLES:
    ;
-   ;      [Insert the command and its outcome]
+   ;      IDL> misrhr_tip_field = 'BHR_VIS'
+   ;      IDL> rc = chk_misrhr_tip_field(misrhr_tip_field, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
+   ;
+   ;      IDL> misrhr_tip_field = 'FAPAR'
+   ;      IDL> rc = chk_misrhr_tip_field(misrhr_tip_field, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 300, excpt_cond = >Error 300 in CHK_MISRHR_TIP_FIELD:
+   ;         Invalid misrhr_tip_field name.<
    ;
    ;  REFERENCES:
    ;
@@ -75,12 +87,10 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;  *   2018–01–20: Version 0.9 — Initial release.
    ;
    ;  *   2018–02–20: Version 1.0 — Initial public release.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -109,8 +119,6 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

@@ -23,10 +23,12 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   misr_block {INTEGER} [I]: The selected MISR BLOCK number.
    ;
    ;  *   latitudes {DOUBLE array} [O]: The array of pixel latitudes,
-   ;      dimensioned n_lines = 512 by n_samples = 2048.
+   ;      dimensioned
+   ;      n_lines = 512 by n_samples = 2048.
    ;
    ;  *   longitudes {DOUBLE array} [O]: The array of pixel longitudes,
-   ;      dimensioned n_lines = 512 by n_samples = 2048.
+   ;      dimensioned
+   ;      n_lines = 512 by n_samples = 2048.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -122,12 +124,10 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -156,8 +156,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Initialize the default return code and the exception condition message:
    return_code = 0

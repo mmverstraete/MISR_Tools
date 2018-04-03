@@ -12,13 +12,13 @@ FUNCTION set_misr_roots
    ;  process to execute a command to identify the current computer
    ;  platform and then sets the paths to the input data, output products,
    ;  and outcomes of the post-processing files to predefined fixed
-   ;  values. This function currently recognizes MicMac and pc18, it can
-   ;  be modified to work in other contexts by adding more options in the
-   ;  CASE statement. This setup assumes that the subdirectory structures
-   ;  below those root directories conforms to a preset standard, and
-   ;  allows other programs and functions in this system to read from and
-   ;  write to folders in predefined locations, without requiring the user
-   ;  to specify the directory addresses.
+   ;  values. This function currently recognizes MicMac, MicMac2 and pc18,
+   ;  it can be modified to work in other contexts by adding more options
+   ;  in the CASE statement. This setup assumes that the subdirectory
+   ;  structures below those root directories conforms to a preset
+   ;  standard, and allows other programs and functions in this system to
+   ;  read from and write to folders in predefined locations, without
+   ;  requiring the user to specify the root directory addresses.
    ;
    ;  SYNTAX: misr_roots = set_misr_roots()
    ;
@@ -30,15 +30,15 @@ FUNCTION set_misr_roots
    ;
    ;  OUTCOME:
    ;
-   ;  *   If the hostname of the current computer is recognized by the
+   ;  *   If the hostname of the current computer is recognized by this
    ;      function, it returns a string array [’path1’, ’path2’, ’path3’],
    ;      where ’path1’ points to the root directory for MISR input data
    ;      files, ’path2’ points to the root directory for MISR-HR output
    ;      product files, and ’path3’ points to the root directory for the
    ;      outcomes of the post-processing of those products.
    ;
-   ;  *   If the hostname of the current computer is not recognized by the
-   ;      function, it returns an array of three strings containing
+   ;  *   If the hostname of the current computer is not recognized by
+   ;      this function, it returns an array of three strings containing
    ;      ’Unrecognized computer’.
    ;
    ;  EXCEPTION CONDITIONS: None.
@@ -71,11 +71,11 @@ FUNCTION set_misr_roots
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
-   ;
+   ;  *   2018–03–25: Version 1.1 — Add computer MicMac2.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -104,8 +104,6 @@ FUNCTION set_misr_roots
    ;
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
-   ;
-   ;
    ;Sec-Cod
    ;  Define the output string array:
    misr_roots = STRARR(3)
@@ -117,6 +115,12 @@ FUNCTION set_misr_roots
    ;  Set the 3 paths for the recognized computer platforms:
    CASE 1 OF
       (computer EQ 'MicMac') OR (computer EQ 'micmac'): BEGIN
+         misr_roots[0] = '/Volumes/MISR_Data*/'
+         misr_roots[1] = '/Volumes/MISR-HR/'
+         misr_roots[2] = '~/Documents/MISR_HR/Outcomes/'
+      END
+
+      (computer EQ 'MicMac2') OR (computer EQ 'micmac2'): BEGIN
          misr_roots[0] = '/Volumes/MISR_Data*/'
          misr_roots[1] = '/Volumes/MISR-HR/'
          misr_roots[2] = '~/Documents/MISR_HR/Outcomes/'
