@@ -64,6 +64,7 @@ misr_block_str = &gt;B088&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;05&#8211;14: Version 1.2 &#8212; Minor update.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_band</h2>
@@ -244,6 +245,59 @@ misr_camera = XY</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misr_mode</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter <code>misr_mode</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function indicates whether the value of the input positional parameter <code>misr_mode</code> is one of <code>[&#8217;GM&#8217;, &#8217;LM&#8217;]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misr_mode, misr_mode, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_mode {STRING} [I/O]:</code> The <span class="smallcaps">MISR</span> spectral mode name.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misr_mode</code> is valid; upon exiting this function, <code>misr_mode</code> is a 2-character upper case mode name.</p></li>
+<li><p>If an exception condition has been detected, this function returns [a non-zero error code, or some non-sandard returned value], and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misr_mode</code> may be invalid.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_mode</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_mode</code> is not a scalar.</p></li>
+<li><p>Error 300: Input positional parameter <code>misr_mode</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_scalar.pro</code></p></li>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>set_misr_specs.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The input positional parameter <code>misr_mode</code> is properly capitalized on output.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_mode = &#39; gm &#39;
+IDL&gt; rc = chk_misr_mode(misr_mode, /DEBUG, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;.&#39;
+rc = 0 and excpt_cond = &gt;&lt;.
+IDL&gt; PRINT, &#39;misr_mode = &gt;&#39; + misr_mode + &#39;&lt;.&#39;
+misr_mode = &gt;GM&lt;.</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2018&#8211;05&#8211;01: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2018&#8211;05&#8211;10: Version 1.0 &#8212; Initial public release.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_orbit</h2>
@@ -435,7 +489,7 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <ul>
 <li><p>If no exception condition has been detected, the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This program saves a file named<br />
 <code>clear_Pxxx_Bzzz_hostname_[creation_date].txt</code> in the subdirectory<br />
-<code>misr_roots[2] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>misr_roots[2]</code> is defined by the function <code>set_misr_roots</code>.</p></li>
+<code>root_dirs[3] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>root_dirs[3]</code> is defined by the function <code>set_root_dirs</code>.</p></li>
 <li><p>If an exception condition has been detected, the optional output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. This program prints an error message on the console and no output file is saved.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
@@ -446,7 +500,7 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <li><p>Error 200: An exception condition occurred in <code>path2str.pro</code>.</p></li>
 <li><p>Error 210: An exception condition occurred in <code>block2str.pro</code>.</p></li>
 <li><p>Error 220: An exception condition occurred in <code>clear_misrhr_dates.pro</code>.</p></li>
-<li><p>Error 230: An exception condition occurred in <code>is_writable.pro</code>.</p></li>
+<li><p>Error 400: An exception condition occurred in <code>is_writable.pro</code>.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
@@ -456,7 +510,7 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <li><p><code>clear_misrhr_dates.pro</code></p></li>
 <li><p><code>is_writable.pro</code></p></li>
 <li><p><code>path2str.pro</code></p></li>
-<li><p><code>set_misr_roots.pro</code></p></li>
+<li><p><code>set_root_dirs.pro</code></p></li>
 <li><p><code>strstr.pro</code></p></li>
 <li><p><code>today.pro</code></p></li>
 </ul></li>
@@ -521,6 +575,8 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Changed the function name to <code>clear_dates.pro</code>.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Update this function to use <code>set_root_dirs.pro</code> instead of <code>set_misr_roots.pro</code>.</p></li>
+<li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
 </ul></li>
 </ul>
 <h2>clear_misrhr_dates</h2>
@@ -550,6 +606,7 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
 <li><p>Error 110: Input positional parameter <code>rpv_path</code> is not found or unreadable.</p></li>
 <li><p>Error 200: An exception condition occurred in <code>force_path_sep.pro</code>.</p></li>
+<li><p>Error 210: No <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> files found.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
@@ -584,6 +641,7 @@ IDL&gt; HELP, cdates
 <li><p>2017&#8211;10&#8211;01: Version 0.9 &#8212; Renamed the function <code>clear_misrhr_dates.pro</code>.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Improve debugging information.</p></li>
 </ul></li>
 </ul>
 <h2>find_orbits_paths_dates</h2>
@@ -883,44 +941,6 @@ end_block = 162</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 </ul></li>
 </ul>
-<h2>set_misr_roots</h2>
-<ul>
-<li><p><strong>Purpose:</strong> This function sets the root directories of the 3 main sets of files used by the MISR-HR processing system on the current machine, namely those containing (1) the <span class="smallcaps">MISR</span> input data files, (2) the <span class="smallcaps">MISR-HR</span> output products, and (3) the outcomes of the <span class="smallcaps">MISR-HR</span> post-processing routines.</p></li>
-<li><p><strong>Algorithm:</strong> This function requires no input, performs no error detection and generates no exception conditions. It spawns a child process to execute a command to identify the current computer platform and then sets the paths to the input data, output products, and outcomes of the post-processing files to predefined fixed values. This function currently recognizes <code>MicMac</code>, <code>MicMac2</code> and <code>pc18</code>, it can be modified to work in other contexts by adding more options in the <code>CASE</code> statement. This setup assumes that the subdirectory structures below those root directories conforms to a preset standard, and allows other programs and functions in this system to read from and write to folders in predefined locations, without requiring the user to specify the root directory addresses.</p></li>
-<li><p><strong>Syntax:</strong> <code>misr_roots = set_misr_roots()</code></p></li>
-<li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
-<li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
-<li><p><strong>Returned value type:</strong> <code>STRING</code> array.</p></li>
-<li><p><strong>Outcome:</strong></p>
-<ul>
-<li><p>If the hostname of the current computer is recognized by this function, it returns a string array <code>[&#8217;path1&#8217;, &#8217;path2&#8217;, &#8217;path3&#8217;]</code>, where <code>&#8217;path1&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> input data files, <code>&#8217;path2&#8217;</code> points to the root directory for <span class="smallcaps">MISR-HR</span> output product files, and <code>&#8217;path3&#8217;</code> points to the root directory for the outcomes of the post-processing of those products.</p></li>
-<li><p>If the hostname of the current computer is not recognized by this function, it returns an array of three strings containing <code>&#8217;Unrecognized computer&#8217;</code>.</p></li>
-</ul></li>
-<li><p><strong>Exception conditions:</strong> None.</p></li>
-<li><p><strong>Dependencies:</strong> None.</p></li>
-<li><p><strong>Remarks:</strong> None.</p></li>
-<li><p><strong>Examples:</strong></p>
-<pre><code>[On MicMac:]
-IDL&gt; misr_roots = set_misr_roots()
-IDL&gt; PRINT, misr_roots
-/Volumes/MISR_Data*/
-/Volumes/MISR-HR/
-~/Documents/MISR_HR/Outcomes/
-
-[On pc18:]
-IDL&gt; misr_roots = set_misr_roots()
-IDL&gt; PRINT, misr_roots
-/Volumes/Input1/
-/Volumes/Output1/
-/Volumes/Output2/</code></pre></li>
-<li><p><strong>References:</strong> None.</p></li>
-<li><p><strong>Versioning:</strong></p>
-<ul>
-<li><p>2017&#8211;07&#8211;09: Version 0.9 &#8212; Initial release.</p></li>
-<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
-<li><p>2018&#8211;03&#8211;25: Version 1.1 &#8212; Add computer MicMac2.</p></li>
-</ul></li>
-</ul>
 <h2>set_misr_specs</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function returns a structure containing standard information on the <span class="smallcaps">MISR</span> instrument specifications, such as the number, names and angles of the 9 cameras; the number, names and positions of the 4 spectral bands; and the sequence of 36 data channels.</p></li>
@@ -932,6 +952,8 @@ IDL&gt; PRINT, misr_roots
 <li><p><strong>Outcome:</strong> This function accepts no positional or keyword parameters and returns a structure containing the following elements:</p>
 <ul>
 <li><p><code>Title = &#8217;MISR Instrument Specifications&#8217;</code>.</p></li>
+<li><p><code>NModes = 2</code>.</p></li>
+<li><p><code>ModeNames = [&#8217;GM&#8217;, &#8217;LM&#8217;]</code>.</p></li>
 <li><p><code>NCameras = 9</code>.</p></li>
 <li><p><code>CameraNames = [&#8217;DF&#8217;, &#8217;CF&#8217;, &#8217;BF&#8217;, &#8217;AF&#8217;, &#8217;AN&#8217;, &#8217;AA&#8217;, &#8217;BA&#8217;, &#8217;CA&#8217;, &#8217;DA&#8217;]</code>.</p></li>
 <li><p><code>CameraIDs = [1, 2, 3, 4, 5, 6, 7, 8, 9]</code>.</p></li>
@@ -980,11 +1002,12 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p>2017&#8211;07&#8211;08: Version 0.8 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;09&#8211;03: Version 0.9 &#8212; Add <code>CameraIDs</code> to the output structure.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+<li><p>2018&#8211;05&#8211;01: Version 1.1 &#8212; Add <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span> information.</p></li>
 </ul></li>
 </ul>
 <h2>set_misrhr_latlon</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function calculates, returns and saves the geographical location (latitude and longitude) of each pixel in a <span class="smallcaps">MISR-HR</span> product for the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span> numbers. The results are saved in a plain <code>ASCII</code> file as well as in a <code>SAVE</code> file, and both are written in the appropriate standard output directory under <code>misr_roots[2]</code> defined by the function <code>set_misr_roots.pro</code>.</p></li>
+<li><p><strong>Purpose:</strong> This function calculates, returns and saves the geographical location (latitude and longitude) of each pixel in a <span class="smallcaps">MISR-HR</span> product for the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span> numbers. The results are saved in a plain <code>ASCII</code> file as well as in a <code>SAVE</code> file, and both are written in the appropriate standard output directory under <code>root_dirs[3]</code> defined by the function <code>set_root_dirs.pro</code>.</p></li>
 <li><p><strong>Algorithm:</strong> This function relies on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> function <code>MTK_BLS_TO_LATLON</code> to compute the latitude and longitude of every pixel in the specified <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span>.</p></li>
 <li><p><strong>Syntax:</strong> <code>rc = set_misrhr_latlon(misr_path, misr_block, latitudes, $</code><br />
 <code>longitudes, DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
@@ -1005,7 +1028,7 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This function saves 2 files in the folder <code>misr_roots[2] + &#8217;Pxxx_Bzzz/&#8217;</code>: the arrays of pixel latitudes and longitudes in a plain <code>ASCII</code> text file as well as in an <code>IDL</code> <code>SAVE</code> file named<br />
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This function saves 2 files in the folder <code>root_dirs[3] + &#8217;Pxxx_Bzzz/&#8217;</code>: the arrays of pixel latitudes and longitudes in a plain <code>ASCII</code> text file as well as in an <code>IDL</code> <code>SAVE</code> file named<br />
 <code>lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].txt</code> and<br />
 <code>lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].sav</code>, respectively.</p></li>
 <li><p>If an exception condition has been detected, this function returns a non-zero error code and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered. The output files are not created, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
@@ -1015,9 +1038,9 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
 <li><p>Error 110: Positional parameter <code>misr_path</code> is invalid.</p></li>
 <li><p>Error 120: Positional parameter <code>misr_block</code> is invalid.</p></li>
-<li><p>Error 210: An exception condition occurred in function <code>path2str</code>.</p></li>
-<li><p>Error 220: An exception condition occurred in function <code>block2str</code>.</p></li>
-<li><p>Error 230: The directory <code>latlon_path</code> exists but is unwritable.</p></li>
+<li><p>Error 210: An exception condition occurred in function <code>path2str.pro</code>.</p></li>
+<li><p>Error 220: An exception condition occurred in function <code>block2str.pro</code>.</p></li>
+<li><p>Error 400: An exception condition occurred in function <code>is_writable.pro</code>.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
@@ -1028,7 +1051,7 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p><code>is_dir.pro</code></p></li>
 <li><p><code>is_writable.pro</code></p></li>
 <li><p><code>path2str.pro</code></p></li>
-<li><p><code>set_misr_roots.pro</code></p></li>
+<li><p><code>set_root_dirs.pro</code></p></li>
 <li><p><code>strstr.pro</code></p></li>
 </ul></li>
 <li><p><strong>Remarks:</strong> None.</p></li>
@@ -1053,6 +1076,45 @@ IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
 <li><p>2017&#8211;08&#8211;21: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;04&#8211;17: Version 1.2 &#8212; Documentation update and bug fix: set and add the current date to the output filenames.</p></li>
+<li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
+</ul></li>
+</ul>
+<h2>set_root_dirs</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function returns a <code>STRING</code> array containing the root directories of the 4 main sets of files used by the MISR-HR processing system on the current machine, namely those containing (0) the <span class="smallcaps">MISR</span> AGP files, (1) the <span class="smallcaps">MISR</span> input data files, (2) the <span class="smallcaps">MISR-HR</span> output products, and (3) the outcomes of the <span class="smallcaps">MISR-HR</span> post-processing routines. The array elements may contain wildcard characters to point to one or more directories.</p></li>
+<li><p><strong>Algorithm:</strong> This function requires no input, performs no error detection and generates no exception conditions. It spawns a child process to identify the current computer platform and then sets the paths to the AGP, input data, output products, and outcomes of the post-processing files to predefined fixed values. This function currently recognizes <code>MicMac</code>, <code>MicMac2</code> and <code>pc18</code>, it can be modified to work in other contexts by adding more options in the <code>CASE</code> statement. This setup assumes that the subdirectory structures below those root directories conforms to a preset standard, and allows other programs and functions in this system to read from and write to folders in predefined locations, without requiring the user to specify the root directory addresses.</p></li>
+<li><p><strong>Syntax:</strong> <code>root_dirs = set_root_dirs()</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
+<li><p><strong>Returned value type:</strong> <code>STRING</code> array.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If the hostname of the current computer is recognized by this function, this function returns a string array <code>[&#8217;path0&#8217;, &#8217;path1&#8217;, &#8217;path2&#8217;, &#8217;path3&#8217;]</code>, where <code>&#8217;path0&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> AGP files, <code>&#8217;path1&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> input data files, <code>&#8217;path2&#8217;</code> points to the root directory for <span class="smallcaps">MISR-HR</span> output product files, and <code>&#8217;path3&#8217;</code> points to the root directory for the outcomes of the post-processing of those products.</p></li>
+<li><p>If the hostname of the current computer is not recognized by this function, this function returns an array of 4 strings, each containing <code>&#8217;Unrecognized computer&#8217;</code>.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong> None.</p></li>
+<li><p><strong>Dependencies:</strong> None.</p></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> The <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> Version 1.4.5 requires these directory addresses to be absolute addresses, i.e., from the root directory: Do not use the Linux shortcut &#160; to designate the home directory as part of those addresses.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; root_dirs = set_root_dirs()
+IDL&gt; FOR i = 0, 3 DO PRINT, &#39;root_dirs[&#39; + strstr(i) + $
+   &#39;] = &#39; + root_dirs[i]
+root_dirs[0] = ~/MISR_HR/Input/AGP/
+root_dirs[1] = /Volumes/MISR_Data*/
+root_dirs[2] = /Volumes/MISRHR_Products/
+root_dirs[3] = /Volumes/MISRHR_Outcomes/</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2017&#8211;07&#8211;09: Version 0.9 &#8212; Initial release as <code>set_misr_roots.pro</code>.</p></li>
+<li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
+<li><p>2018&#8211;03&#8211;25: Version 1.1 &#8212; Add computer MicMac2.</p></li>
+<li><p>2018&#8211;04&#8211;08: Version 1.2 &#8212; Add an array element to point to AGP files, update addresses for pc18 to allow for multiple input and output disks, and rename the function to <code>set_root_dirs.pro</code>.</p></li>
+<li><p>2018&#8211;05&#8211;12: Version 1.3 &#8212; Update the documentation to note that the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> requires absolute directory adresses.</p></li>
 </ul></li>
 </ul>
 <h2>str2block</h2>
@@ -1167,6 +1229,7 @@ misr_orbit =        68050</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Improve debugging diagnostic.</p></li>
 </ul></li>
 </ul>
 <h2>str2path</h2>

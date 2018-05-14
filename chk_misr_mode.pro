@@ -1,25 +1,18 @@
-FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION chk_misr_mode, misr_mode, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
-   ;  PURPOSE: This function converts a valid STRING representation of a
-   ;  MISR ORBIT into its LONG equivalent; it performs the converse
-   ;  operation of function orbit2str.
+   ;  PURPOSE: This function checks the validity of the positional
+   ;  parameter misr_mode.
    ;
-   ;  ALGORITHM: This function checks the validity of the positional
-   ;  parameter
-   ;  misr_orbit_str, provided as an STRING value and converts the
-   ;  numerical component of the argument into an LONG.
+   ;  ALGORITHM: This function indicates whether the value of the input
+   ;  positional parameter misr_mode is one of [’GM’, ’LM’].
    ;
-   ;  SYNTAX: rc = str2orbit(misr_orbit_str, misr_orbit, $
+   ;  SYNTAX: rc = chk_misr_mode, misr_mode, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_orbit_str {STRING} [I]: The selected STRING representation
-   ;      of the MISR ORBIT.
-   ;
-   ;  *   misr_orbit {LONG} [O]: The required MISR ORBIT number.
+   ;  *   misr_mode {STRING} [I/O]: The MISR spectral mode name.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -38,69 +31,60 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ;      returns 0, and the output keyword parameter excpt_cond is set to
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
-   ;      provided in the call. The output positional parameter misr_orbit
-   ;      contains the ORBIT number.
+   ;      provided in the call. The input positional parameter misr_mode
+   ;      is valid; upon exiting this function, misr_mode is a 2-character
+   ;      upper case mode name.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, and the output keyword parameter
-   ;      excpt_cond contains a message about the exception condition
-   ;      encountered, if the optional input keyword parameter DEBUG is
-   ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The output positional parameter misr_orbit is set to
-   ;      0.
+   ;      returns [a non-zero error code, or some non-sandard returned
+   ;      value], and the output keyword parameter excpt_cond contains a
+   ;      message about the exception condition encountered, if the
+   ;      optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided. The
+   ;      input positional parameter misr_mode may be invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
    ;  *   Error 100: One or more positional parameter(s) are missing.
    ;
-   ;  *   Error 110: Input positional parameter misr_orbit_str is not of
-   ;      type STRING.
+   ;  *   Error 110: Input positional parameter misr_mode is not of type
+   ;      STRING.
    ;
-   ;  *   Error 120: Input positional parameter misr_orbit_str does not
-   ;      start with the expected character P.
+   ;  *   Error 110: Input positional parameter misr_mode is not a scalar.
    ;
-   ;  *   Error 130: The numerical value of input argument misr_orbit_str
-   ;      is invalid.
+   ;  *   Error 300: Input positional parameter misr_mode is invalid.
    ;
    ;  DEPENDENCIES:
    ;
-   ;  *   chk_misr_orbit.pro
-   ;
-   ;  *   first_char.pro
+   ;  *   is_scalar.pro
    ;
    ;  *   is_string.pro
+   ;
+   ;  *   set_misr_specs.pro
    ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The input argument misr_orbit_str is expected to be
-   ;      formatted as Oyyyyyy where yyyyyy is the numeric value of the
-   ;      MISR ORBIT, but a lower case o and the presence of blank spaces
-   ;      before or after this initial character, or after the number
-   ;      yyyyyy, is tolerated. See the example below.
+   ;  *   NOTE 1: The input positional parameter misr_mode is properly
+   ;      capitalized on output.
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> misr_orbit_str = ' o 68050 '
-   ;      IDL> rc = str2orbit(misr_orbit_str, misr_orbit, $
-   ;         /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc =        0 and excpt_cond = ><
-   ;      IDL> PRINT, 'misr_orbit = ', misr_orbit
-   ;      misr_orbit =        68050
+   ;      IDL> misr_mode = ' gm '
+   ;      IDL> rc = chk_misr_mode(misr_mode, /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<.'
+   ;      rc = 0 and excpt_cond = ><.
+   ;      IDL> PRINT, 'misr_mode = >' + misr_mode + '<.'
+   ;      misr_mode = >GM<.
    ;
    ;  REFERENCES: None.
    ;
    ;  VERSIONING:
    ;
-   ;  *   2017–11–15: Version 0.9 — Initial release.
+   ;  *   2018–05–01: Version 0.9 — Initial release.
    ;
-   ;  *   2017–11–30: Version 1.0 — Initial public release.
-   ;
-   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
-   ;
-   ;  *   2018–04–24: Version 1.2 — Improve debugging diagnostic.
+   ;  *   2018–05–10: Version 1.0 — Initial public release.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -143,67 +127,64 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ENDELSE
    excpt_cond = ''
 
-   ;  Initialize the output positional parameters to invalid values:
-   misr_orbit = 0
-
    IF (debug) THEN BEGIN
 
-   ;  Return to the calling routine with an error message if this function is
-   ;  called with the wrong number of required positional parameters:
-      n_reqs = 2
+   ;  Return to the calling routine with an error message if one or more
+   ;  positional parameters are missing:
+      n_reqs = 1
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameter(s): misr_orbit_str, misr_orbit.'
+            ' positional parameter(s): misr_mode.'
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if this function is
-   ;  called with an invalid misr_orbit_str:
-      IF (is_string(misr_orbit_str) NE 1) THEN BEGIN
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misr_mode' is not of STRING type:
+      IF (is_string(misr_mode) NE 1) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_orbit_str is not a string.'
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+            rout_name + ': Input argument misr_mode must be of STRING type.'
          RETURN, error_code
       ENDIF
-   ENDIF
 
-   misr_orbit_str = strstr(misr_orbit_str, DEBUG = debug, $
-      EXCPT_COND = excpt_cond)
-
-   IF (debug) THEN BEGIN
-
-      IF (STRUPCASE(first_char(misr_orbit_str)) NE 'O') THEN BEGIN
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misr_mode' is not a scalar:
+      IF (is_scalar(misr_mode) NE 1) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_orbit_str is not starting with O.'
-         misr_orbit = 0
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+            rout_name + ': Input argument misr_mode must be a scalar.'
          RETURN, error_code
       ENDIF
    ENDIF
 
-   misr_orbit = LONG(strstr(STRMID(misr_orbit_str, 1), $
-      DEBUG = debug, EXCPT_COND = excpt_cond))
+   ;  Ensure the proper capitalization of the 'misr_mode' argument:
+   misr_mode = STRUPCASE(strstr(misr_mode))
 
-   IF (debug) THEN BEGIN
+   ;  Get the MISR mode names:
+   res = set_misr_specs()
+   misr_modes = res.ModeNames
 
-      IF (chk_misr_orbit(misr_orbit, DEBUG = debug, $
-         EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misr_mode' is invalid:
+   idx = WHERE(misr_mode EQ misr_modes, count)
+
+   IF (count NE 1) THEN BEGIN
+      error_code = 300
+      IF (debug) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-         error_code = 130
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': ' + excpt_cond
-         misr_orbit = 0
-         RETURN, error_code
+            ": Invalid misr_mode name: must be one of ['GM', 'LM']."
       ENDIF
+      RETURN, error_code
    ENDIF
 
    RETURN, return_code

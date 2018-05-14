@@ -95,6 +95,8 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–05–14: Version 1.2 — Minor update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -158,7 +160,7 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;  Return to the calling routine with an error message if the input
    ;  argument misr_block is invalid:
       rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
-      IF ((debug) AND (rc NE 0)) THEN BEGIN
+      IF (rc NE 0) THEN BEGIN
          info = SCOPE_TRACEBACK(/STRUCTURE)
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110

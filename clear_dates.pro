@@ -40,8 +40,8 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      keyword parameter EXCPT_COND was provided in the call. This
    ;      program saves a file named
    ;      clear_Pxxx_Bzzz_hostname_[creation_date].txt in the subdirectory
-   ;      misr_roots[2] + ’/Pxxx_Bzzz’, where misr_roots[2] is defined by
-   ;      the function set_misr_roots.
+   ;      root_dirs[3] + ’/Pxxx_Bzzz’, where root_dirs[3] is defined by
+   ;      the function set_root_dirs.
    ;
    ;  *   If an exception condition has been detected, the optional output
    ;      keyword parameter excpt_cond contains a message about the
@@ -65,7 +65,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   Error 220: An exception condition occurred in
    ;      clear_misrhr_dates.pro.
    ;
-   ;  *   Error 230: An exception condition occurred in is_writable.pro.
+   ;  *   Error 400: An exception condition occurred in is_writable.pro.
    ;
    ;  DEPENDENCIES:
    ;
@@ -81,7 +81,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  *   path2str.pro
    ;
-   ;  *   set_misr_roots.pro
+   ;  *   set_root_dirs.pro
    ;
    ;  *   strstr.pro
    ;
@@ -161,6 +161,12 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–04–24: Version 1.2 — Update this function to use
+   ;      set_root_dirs.pro instead of set_misr_roots.pro.
+   ;
+   ;  *   2018–05–14: Version 1.3 — Update this function to use the
+   ;      revised version of is_writable.pro.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -270,12 +276,12 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;  Define the standard locations for the MISR and MISR-HR files on this
    ;  computer:
-   misr_roots = set_misr_roots()
+   root_dirs = set_root_dirs()
    pb1 = misr_path_str + PATH_SEP() + misr_block_str + PATH_SEP() + $
       'RPV' + PATH_SEP()
-   i_dir = misr_roots[1] + pb1
+   i_dir = root_dirs[2] + pb1
    pb2 = misr_path_str + '_' + misr_block_str + PATH_SEP()
-   o_dir = misr_roots[2] + pb2
+   o_dir = root_dirs[3] + pb2
 
    ;  Call the function 'clear_misrhr_dates' to gather the desired information:
    rc = clear_misrhr_dates(i_dir, cdates, $
@@ -305,20 +311,20 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       computer + '_' + date + '.txt'
    o_spec = o_dir + o_name
 
-   ;  Ensure that the output directory exists, and if not create it:
+   ;  Return to the calling routine with an error message if the output
+   ;  directory 'o_dir' is not writable:
    rc = is_writable(o_dir, DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF (rc EQ -1) THEN BEGIN
-      FILE_MKDIR, o_dir
-   ENDIF
-   IF ((debug) AND (rc EQ 0)) THEN BEGIN
+   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 230
+      error_code = 400
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      RETURN, error_code
    ENDIF
+
+   ;  Create the folder 'out_path' if it does not exist:
+   IF (rc EQ -2) THEN FILE_MKDIR, o_dir
 
    ;  Output the results in that output file:
    OPENW, o_unit, o_spec, /GET_LUN

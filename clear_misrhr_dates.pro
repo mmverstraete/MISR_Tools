@@ -68,6 +68,8 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  *   Error 200: An exception condition occurred in
    ;      force_path_sep.pro.
    ;
+   ;  *   Error 210: No MISR-HR RPV files found.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   day_of_year.pro
@@ -114,6 +116,8 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–04–24: Version 1.2 — Improve debugging information.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -181,7 +185,8 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
          rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input directory rpv_path not found or unreadable.'
+            ': Input directory rpv_path ' + rpv_path + $
+            'not found or unreadable.'
          RETURN, error_code
       ENDIF
    ENDIF
@@ -207,6 +212,14 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    filespec = rpv_path + 'MISR_HR_RPV_*_' + misr_path_str + '_*_' + $
       misr_block_str + '_*.hdf'
    rpv_files = FILE_SEARCH(filespec, COUNT = count)
+   IF ((debug) AND (count LT 1)) THEN BEGIN
+      info = SCOPE_TRACEBACK(/STRUCTURE)
+      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+      error_code = 210
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': No MISR-HR RPV files found.'
+      RETURN, error_code
+   ENDIF
 
    ;  Generate arrays to contain the sizes, names, Julian dates and day of the
    ;  year of acquisition of these files:

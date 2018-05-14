@@ -24,6 +24,10 @@ FUNCTION set_misr_specs
    ;
    ;  *   Title = ’MISR Instrument Specifications’.
    ;
+   ;  *   NModes = 2.
+   ;
+   ;  *   ModeNames = [’GM’, ’LM’].
+   ;
    ;  *   NCameras = 9.
    ;
    ;  *   CameraNames = [’DF’, ’CF’, ’BF’, ’AF’, ’AN’, ’AA’, ’BA’, ’CA’, ’DA’].
@@ -91,6 +95,8 @@ FUNCTION set_misr_specs
    ;  *   2017–09–03: Version 0.9 — Add CameraIDs to the output structure.
    ;
    ;  *   2017–11–30: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–05–01: Version 1.1 — Add MISR MODE information.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -124,6 +130,10 @@ FUNCTION set_misr_specs
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+   ;  Information about the available modes:
+   nmodes = 2
+   modenames = ['GM', 'LM']
+
    ;  Information about the camera geometry:
    ncameras = 9
    cameranames = ['DF', 'CF', 'BF', 'AF', 'AN', 'AA', 'BA', 'CA', 'DA']
@@ -152,6 +162,8 @@ FUNCTION set_misr_specs
 
    ;  Setup the output structure:
    misr_specs = CREATE_STRUCT('Title', 'MISR Instrument Specifications')
+   misr_specs = CREATE_STRUCT(misr_specs, 'NModes', nmodes)
+   misr_specs = CREATE_STRUCT(misr_specs, 'ModeNames', modenames)
    misr_specs = CREATE_STRUCT(misr_specs, 'NCameras', ncameras)
    misr_specs = CREATE_STRUCT(misr_specs, 'CameraNames', cameranames)
    misr_specs = CREATE_STRUCT(misr_specs, 'CameraIDs', cameraids)

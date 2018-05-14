@@ -7,7 +7,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  MISR-HR product for the specified MISR PATH and BLOCK numbers. The
    ;  results are saved in a plain ASCII file as well as in a SAVE file,
    ;  and both are written in the appropriate standard output directory
-   ;  under misr_roots[2] defined by the function set_misr_roots.pro.
+   ;  under root_dirs[3] defined by the function set_root_dirs.pro.
    ;
    ;  ALGORITHM: This function relies on the MISR TOOLKIT function
    ;  MTK_BLS_TO_LATLON to compute the latitude and longitude of every
@@ -48,7 +48,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
    ;      provided in the call. This function saves 2 files in the folder
-   ;      misr_roots[2] + ’Pxxx_Bzzz/’: the arrays of pixel latitudes and
+   ;      root_dirs[3] + ’Pxxx_Bzzz/’: the arrays of pixel latitudes and
    ;      longitudes in a plain ASCII text file as well as in an IDL SAVE
    ;      file named
    ;      lat-lon_Pxxx_Bzzz_[Toolkit_version]_[creation_date].txt and
@@ -70,12 +70,14 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  *   Error 120: Positional parameter misr_block is invalid.
    ;
-   ;  *   Error 210: An exception condition occurred in function path2str.
+   ;  *   Error 210: An exception condition occurred in function
+   ;      path2str.pro.
    ;
    ;  *   Error 220: An exception condition occurred in function
-   ;      block2str.
+   ;      block2str.pro.
    ;
-   ;  *   Error 230: The directory latlon_path exists but is unwritable.
+   ;  *   Error 400: An exception condition occurred in function
+   ;      is_writable.pro.
    ;
    ;  DEPENDENCIES:
    ;
@@ -93,7 +95,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  *   path2str.pro
    ;
-   ;  *   set_misr_roots.pro
+   ;  *   set_root_dirs.pro
    ;
    ;  *   strstr.pro
    ;
@@ -124,6 +126,12 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–04–17: Version 1.2 — Documentation update and bug fix: set
+   ;      and add the current date to the output filenames.
+   ;
+   ;  *   2018–05–14: Version 1.3 — Update this function to use the
+   ;      revised version of is_writable.pro.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -240,8 +248,11 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
       RETURN, error_code
    ENDIF
 
+   ;  Get the current date:
+   date = today(FMT = 'ymd')
+
    ;  Get the standard locations of MISR and MISR-HR files on this computer:
-   misr_roots = set_misr_roots()
+   root_dirs = set_root_dirs()
 
    ;  Get the MISR Toolkit version:
    toolkit = MTK_VERSION()
@@ -249,22 +260,22 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  Define the standard directory in which to save the file containing the
    ;  latitudes and longitudes of the MISR-HR pixels:
    pb = misr_path_str + '_' + misr_block_str
-   latlon_path = misr_roots[2] + pb + PATH_SEP()
+   latlon_path = root_dirs[3] + pb + PATH_SEP()
 
-   ;  Create this output directory if it does not already exist:
-   isd = is_dir(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
-   isw = is_writable(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((isd NE 1) OR (isw EQ -1)) THEN BEGIN
-      FILE_MKDIR, latlon_path
-   ENDIF
-   IF ((debug) AND (isd EQ 1) AND (isw EQ 0)) THEN BEGIN
+   ;  Return to the calling routine with an error message if the output
+   ;  directory 'latlon_path' is not writable:
+   rc = is_writable(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1)) THEN BEGIN
       info = SCOPE_TRACEBACK(/STRUCTURE)
       rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-      error_code = 230
+      error_code = 400
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
       RETURN, error_code
    ENDIF
+
+   ;  Create the folder 'latlon_path' if it does not exist:
+   IF (rc EQ -2) THEN FILE_MKDIR, latlon_path
 
    ;  Generate the specification of the lat-lon file:
    latlon_fname = 'lat-lon_' + pb + '_' + toolkit + '_' + date
