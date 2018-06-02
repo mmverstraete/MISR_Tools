@@ -65,6 +65,7 @@ misr_block_str = &gt;B088&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.2 &#8212; Minor update.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_band</h2>
@@ -129,6 +130,7 @@ misr_band = Violet</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_block</h2>
@@ -183,6 +185,7 @@ Invalid misr_block number: must be within [1, 180].&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_camera</h2>
@@ -245,6 +248,7 @@ misr_camera = XY</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_mode</h2>
@@ -298,6 +302,7 @@ misr_mode = &gt;GM&lt;.</code></pre></li>
 <ul>
 <li><p>2018&#8211;05&#8211;01: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2018&#8211;05&#8211;10: Version 1.0 &#8212; Initial public release.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_orbit</h2>
@@ -352,6 +357,7 @@ Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_path</h2>
@@ -406,6 +412,66 @@ Invalid misr_path number: must be within [1, 233].&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+</ul></li>
+</ul>
+<h2>chk_misrhr_rpv_field</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks the validity of the positional parameter<br />
+<code>misrhr_rpv_field</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function indicates whether the value of the input positional parameter <code>misrhr_rpv_field</code> is one of <code>[&#8217;Rho&#8217;, &#8217;k&#8217;, &#8217;Theta&#8217;, &#8217;Rhoc&#8217;, &#8217;Cost&#8217;, &#8217;Sigmas_Rho&#8217;, &#8217;Sigmas_k&#8217;, &#8217;Sigmas_Theta&#8217;]</code>.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = chk_misrhr_rpv_field(misrhr_rpv_field, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misrhr_rpv_field {STRING} [I/O]:</code> The selected <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> field name.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The input positional parameter <code>misrhr_rpv_field</code> is valid.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The input positional parameter <code>misrhr_rpv_field</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misrhr_rpv_field</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 300: The input positional parameter <code>misrhr_rpv_field</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>is_string.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> Upon returning from this function, the value of the input positional parameter <code>misrhr_rpv_field</code> is properly capitalized.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misrhr_rpv_field = &#39;k&#39;
+IDL&gt; rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   /DEBUG, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39;, excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc = 0, excpt_cond = &gt;&lt;
+
+IDL&gt; misrhr_rpv_field = &#39;FAPAR&#39;
+IDL&gt; rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   /DEBUG, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39;, excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_RPV_FIELD:
+   Invalid misrhr_rpv_field name.&lt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2018&#8211;01&#8211;20: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2018&#8211;02&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
+<li><p>2018&#8211;05&#8211;28: Version 1.1 &#8212; Add logic to properly capitalize the input positional parameter <code>misrhr_rpv_field</code>, recognize 3 different <code>Sigmas</code> types, and documentation update.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misrhr_tip_field</h2>
@@ -434,17 +500,14 @@ Invalid misr_path number: must be within [1, 233].&lt;</code></pre></li>
 <ul>
 <li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
 <li><p>Error 110: Input positional parameter <code>misrhr_tip_field</code> is not of type <code>STRING</code>.</p></li>
+<li><p>Error 300: The input positional parameter <code>misrhr_tip_field</code> is invalid.</p></li>
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
 <li><p><code>is_string.pro</code></p></li>
 <li><p><code>strstr.pro</code></p></li>
 </ul></li>
-<li><p><strong>Remarks:</strong></p>
-<ul>
-<li><p><strong>Note 1:</strong> This function...</p></li>
-</ul></li>
-<li><p><strong>Examples:</strong></p>
+<li><p><strong>Remarks:</strong> None. item <strong>Examples:</strong></p>
 <pre><code>IDL&gt; misrhr_tip_field = &#39;BHR_VIS&#39;
 IDL&gt; rc = chk_misrhr_tip_field(misrhr_tip_field, $
    /DEBUG, EXCPT_COND = excpt_cond)
@@ -457,15 +520,13 @@ IDL&gt; rc = chk_misrhr_tip_field(misrhr_tip_field, $
 IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39;, excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
 rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
    Invalid misrhr_tip_field name.&lt;</code></pre></li>
-<li><p><strong>References:</strong></p>
-<ul>
-<li></li>
-<li><p>Paper and DOI</p></li>
-</ul></li>
+<li><p><strong>References:</strong> None.</p></li>
 <li><p><strong>Versioning:</strong></p>
 <ul>
 <li><p>2018&#8211;01&#8211;20: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2018&#8211;02&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
+<li><p>2018&#8211;05&#8211;28: Version 1.1 &#8212; Documentation update.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>clear_dates</h2>
@@ -577,6 +638,7 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Update this function to use <code>set_root_dirs.pro</code> instead of <code>set_misr_roots.pro</code>.</p></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>clear_misrhr_dates</h2>
@@ -642,6 +704,7 @@ IDL&gt; HELP, cdates
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Improve debugging information.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>find_orbits_paths_dates</h2>
@@ -722,6 +785,7 @@ IDL&gt; PRINT, misr_orbits
 <li><p>2017&#8211;09&#8211;07: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>orbit2date</h2>
@@ -784,6 +848,7 @@ Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p>2017&#8211;07&#8211;05: Version 0.9 &#8212; Changed function name to <code>orbit2date</code>, updated the in-line documentation and added argument checking logic.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>orbit2str</h2>
@@ -833,6 +898,7 @@ misr_orbit_str = &gt;O068050&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>path2str</h2>
@@ -882,6 +948,7 @@ misr_path_str = &gt;P004&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>range_misr_blocks</h2>
@@ -939,13 +1006,14 @@ end_block = 162</code></pre></li>
 <li><p>2017&#8211;12&#8211;13: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;12&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>set_misr_specs</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function returns a structure containing standard information on the <span class="smallcaps">MISR</span> instrument specifications, such as the number, names and angles of the 9 cameras; the number, names and positions of the 4 spectral bands; and the sequence of 36 data channels.</p></li>
 <li><p><strong>Algorithm:</strong> This function requires no input; it returns a structure containing various specifications of the MISR instrument, as described below.</p></li>
-<li><p><strong>Syntax:</strong> <code>res = set_misr_specs()</code></p></li>
+<li><p><strong>Syntax:</strong> <code>misr_specs = set_misr_specs()</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Returned value type:</strong> <code>STRUCTURE</code>.</p></li>
@@ -960,6 +1028,7 @@ end_block = 162</code></pre></li>
 <li><p><code>CameraAngles = [70.3, 60.2, 45.7, 26.2, 0.1, 26.2, 45.7, 60.2, 70.6]</code>.</p></li>
 <li><p><code>NBands = 4</code>.</p></li>
 <li><p><code>BandNames = [&#8217;Blue&#8217;, &#8217;Green&#8217;, &#8217;Red&#8217;, &#8217;NIR&#8217;]</code>.</p></li>
+<li><p><code>BandIDs = [0, 1, 2, 3]</code>.</p></li>
 <li><p><code>BandPositions = [446.4, 557.5, 671.7, 866.4]</code>.</p></li>
 <li><p><code>NChannels = 36</code>.</p></li>
 <li><p><code>ChannelNames = [&#8217;DF_Blue&#8217;, &#8217;DF_Green&#8217;, &#8217;DF_Red&#8217;, ..., &#8217;DA_Green&#8217;, &#8217;DA_Red&#8217;, &#8217;DA_NIR&#8217;]</code>.</p></li>
@@ -970,7 +1039,7 @@ end_block = 162</code></pre></li>
 <li><p><strong>Dependencies:</strong> None.</p></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at 1 (for DF), not at 0.</p></li>
+<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at 1 (for DF), not at 0, while the spectral band IDs are numeric values starting at 0 (for Blue).</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; HELP, res
@@ -982,6 +1051,7 @@ end_block = 162</code></pre></li>
    CAMERAANGLES    FLOAT     Array[9]
    NBANDS          INT              4
    BANDNAMES       STRING    Array[4]
+   BANDIDS         INT       Array[4]
    BANDPOSITIONS   FLOAT     Array[4]
    NCHANNELS       INT             36
    CHANNELNAMES    STRING    Array[36]
@@ -1003,6 +1073,8 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p>2017&#8211;09&#8211;03: Version 0.9 &#8212; Add <code>CameraIDs</code> to the output structure.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;05&#8211;01: Version 1.1 &#8212; Add <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span> information.</p></li>
+<li><p>2018&#8211;05&#8211;29: Version 1.2 &#8212; Add <span class="smallcaps">MISR</span> <span class="smallcaps">BandIDs</span> information.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>set_misrhr_latlon</h2>
@@ -1078,6 +1150,7 @@ IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;04&#8211;17: Version 1.2 &#8212; Documentation update and bug fix: set and add the current date to the output filenames.</p></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>set_root_dirs</h2>
@@ -1115,6 +1188,7 @@ root_dirs[3] = /Volumes/MISRHR_Outcomes/</code></pre></li>
 <li><p>2018&#8211;03&#8211;25: Version 1.1 &#8212; Add computer MicMac2.</p></li>
 <li><p>2018&#8211;04&#8211;08: Version 1.2 &#8212; Add an array element to point to AGP files, update addresses for pc18 to allow for multiple input and output disks, and rename the function to <code>set_root_dirs.pro</code>.</p></li>
 <li><p>2018&#8211;05&#8211;12: Version 1.3 &#8212; Update the documentation to note that the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> requires absolute directory adresses.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>str2block</h2>
@@ -1172,6 +1246,7 @@ misr_block =      111</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>str2orbit</h2>
@@ -1230,6 +1305,7 @@ misr_orbit =        68050</code></pre></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Improve debugging diagnostic.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 <h2>str2path</h2>
@@ -1286,6 +1362,7 @@ misr_path =      170</code></pre></li>
 <li><p>2017&#8211;11&#8211;15: Version 0.9 &#8212; Initial release.</p></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
+<li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 </ul></li>
 </ul>
 </body>

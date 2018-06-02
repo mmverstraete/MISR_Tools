@@ -82,6 +82,8 @@ FUNCTION set_root_dirs
    ;
    ;  *   2018–05–12: Version 1.3 — Update the documentation to note that
    ;      the MISR TOOLKIT requires absolute directory adresses.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -115,6 +117,7 @@ FUNCTION set_root_dirs
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
    ;  Define the output string array:
    root_dirs = STRARR(4)
 

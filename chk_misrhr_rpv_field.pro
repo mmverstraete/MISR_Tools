@@ -1,18 +1,22 @@
-FUNCTION chk_misr_mode, misr_mode, DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION chk_misrhr_rpv_field, misrhr_rpv_field, $
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the positional
-   ;  parameter misr_mode.
+   ;  parameter
+   ;  misrhr_rpv_field.
    ;
    ;  ALGORITHM: This function indicates whether the value of the input
-   ;  positional parameter misr_mode is one of [’GM’, ’LM’].
+   ;  positional parameter misrhr_rpv_field is one of
+   ;  [’Rho’, ’k’, ’Theta’, ’Rhoc’, ’Cost’, ’Sigmas_Rho’, ’Sigmas_k’, ’Sigmas_Theta’].
    ;
-   ;  SYNTAX: rc = chk_misr_mode, misr_mode, $
+   ;  SYNTAX: rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_mode {STRING} [I/O]: The MISR spectral mode name.
+   ;  *   misrhr_rpv_field {STRING} [I/O]: The selected MISR-HR RPV field
+   ;      name.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -31,60 +35,65 @@ FUNCTION chk_misr_mode, misr_mode, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      returns 0, and the output keyword parameter excpt_cond is set to
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
-   ;      provided in the call. The input positional parameter misr_mode
-   ;      is valid; upon exiting this function, misr_mode is a 2-character
-   ;      upper case mode name.
+   ;      provided in the call. The input positional parameter
+   ;      misrhr_rpv_field is valid.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns [a non-zero error code, or some non-sandard returned
-   ;      value], and the output keyword parameter excpt_cond contains a
-   ;      message about the exception condition encountered, if the
-   ;      optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided. The
-   ;      input positional parameter misr_mode may be invalid.
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The input positional parameter misrhr_rpv_field is
+   ;      invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
    ;  *   Error 100: One or more positional parameter(s) are missing.
    ;
-   ;  *   Error 110: Input positional parameter misr_mode is not of type
-   ;      STRING.
+   ;  *   Error 110: Input positional parameter misrhr_rpv_field is not of
+   ;      type STRING.
    ;
-   ;  *   Error 110: Input positional parameter misr_mode is not a scalar.
-   ;
-   ;  *   Error 300: Input positional parameter misr_mode is invalid.
+   ;  *   Error 300: The input positional parameter misrhr_rpv_field is
+   ;      invalid.
    ;
    ;  DEPENDENCIES:
    ;
-   ;  *   is_scalar.pro
-   ;
    ;  *   is_string.pro
-   ;
-   ;  *   set_misr_specs.pro
    ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The input positional parameter misr_mode is properly
-   ;      capitalized on output.
+   ;  *   NOTE 1: Upon returning from this function, the value of the
+   ;      input positional parameter misrhr_rpv_field is properly
+   ;      capitalized.
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> misr_mode = ' gm '
-   ;      IDL> rc = chk_misr_mode(misr_mode, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<.'
-   ;      rc = 0 and excpt_cond = ><.
-   ;      IDL> PRINT, 'misr_mode = >' + misr_mode + '<.'
-   ;      misr_mode = >GM<.
+   ;      IDL> misrhr_rpv_field = 'k'
+   ;      IDL> rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
+   ;
+   ;      IDL> misrhr_rpv_field = 'FAPAR'
+   ;      IDL> rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 300, excpt_cond = >Error 300 in CHK_MISRHR_RPV_FIELD:
+   ;         Invalid misrhr_rpv_field name.<
    ;
    ;  REFERENCES: None.
    ;
    ;  VERSIONING:
    ;
-   ;  *   2018–05–01: Version 0.9 — Initial release.
+   ;  *   2018–01–20: Version 0.9 — Initial release.
    ;
-   ;  *   2018–05–10: Version 1.0 — Initial public release.
+   ;  *   2018–02–20: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–05–28: Version 1.1 — Add logic to properly capitalize the
+   ;      input positional parameter misrhr_rpv_field, recognize 3
+   ;      different Sigmas types, and documentation update.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
@@ -134,52 +143,52 @@ FUNCTION chk_misr_mode, misr_mode, DEBUG = debug, EXCPT_COND = excpt_cond
 
    IF (debug) THEN BEGIN
 
-   ;  Return to the calling routine with an error message if one or more
-   ;  positional parameters are missing:
+   ;  Return to the calling routine with an error message if this function is
+   ;  called with the wrong number of required positional parameters:
       n_reqs = 1
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameter(s): misr_mode.'
+            ' positional parameter(s): misrhr_rpv_field.'
          RETURN, error_code
       ENDIF
 
    ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_mode' is not of STRING type:
-      IF (is_string(misr_mode) NE 1) THEN BEGIN
+   ;  parameter 'misrhr_rpv_field' is not of string type:
+      IF (is_string(misrhr_rpv_field) NE 1) THEN BEGIN
          error_code = 110
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + ': Input argument misr_mode must be of STRING type.'
-         RETURN, error_code
-      ENDIF
-
-   ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_mode' is not a scalar:
-      IF (is_scalar(misr_mode) NE 1) THEN BEGIN
-         error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + ': Input argument misr_mode must be a scalar.'
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Input argument misrhr_rpv_field must be of string type.'
          RETURN, error_code
       ENDIF
    ENDIF
 
-   ;  Ensure the proper capitalization of the 'misr_mode' argument:
-   misr_mode = STRUPCASE(strstr(misr_mode))
+   ;  Ensure the variable 'misrhr_rpv_field' does not include heading or
+   ;  trailing spaces:
+   misrhr_rpv_field = strstr(misrhr_rpv_field)
 
-   ;  Get the MISR mode names:
-   res = set_misr_specs()
-   misr_modes = res.ModeNames
+   ;  Ensure the proper capitalization of the input argument:
+   misrhr_rpv_field = misrhr_rpv_field.ToLower()
+   misrhr_rpv_field = misrhr_rpv_field.CapWords('_')
+   IF (misrhr_rpv_field EQ 'K') THEN misrhr_rpv_field = 'k'
+   IF (misrhr_rpv_field EQ 'Sigmas_K') THEN misrhr_rpv_field = 'Sigmas_k'
 
-   ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_mode' is invalid:
-   idx = WHERE(misr_mode EQ misr_modes, count)
+   ;  Define the valid values of misrhr_rpv_field:
+   misrhr_rpv_fields = ['Rho', 'k', 'Theta', 'Rhoc', 'Cost', $
+      'Sigmas_Rho', 'Sigmas_k', 'Sigmas_Theta']
+
+   ;  Check that the argument misrhr_rpv_field is valid:
+   idx = WHERE(misrhr_rpv_field EQ misrhr_rpv_fields, count)
 
    IF (count NE 1) THEN BEGIN
       error_code = 300
+
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misrhr_rpv_field' is invalid:
       IF (debug) THEN BEGIN
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ": Invalid misr_mode name: must be one of ['GM', 'LM']."
+            ': Invalid misrhr_rpv_field name.'
       ENDIF
       RETURN, error_code
    ENDIF

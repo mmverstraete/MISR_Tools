@@ -53,17 +53,16 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;  *   Error 110: Input positional parameter misrhr_tip_field is not of
    ;      type STRING.
    ;
+   ;  *   Error 300: The input positional parameter misrhr_tip_field is
+   ;      invalid.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   is_string.pro
    ;
    ;  *   strstr.pro
    ;
-   ;  REMARKS:
-   ;
-   ;  *   NOTE 1: This function...
-   ;
-   ;  EXAMPLES:
+   ;  REMARKS: None. item EXAMPLES:
    ;
    ;      IDL> misrhr_tip_field = 'BHR_VIS'
    ;      IDL> rc = chk_misrhr_tip_field(misrhr_tip_field, $
@@ -78,15 +77,17 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;      rc = 300, excpt_cond = >Error 300 in CHK_MISRHR_TIP_FIELD:
    ;         Invalid misrhr_tip_field name.<
    ;
-   ;  REFERENCES:
-   ;
-   ;  *   -   Paper and DOI
+   ;  REFERENCES: None.
    ;
    ;  VERSIONING:
    ;
    ;  *   2018–01–20: Version 0.9 — Initial release.
    ;
    ;  *   2018–02–20: Version 1.0 — Initial public release.
+   ;
+   ;  *   2018–05–28: Version 1.1 — Documentation update.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -120,14 +121,17 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
+
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
 
    IF (debug) THEN BEGIN
 
@@ -135,8 +139,6 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 1
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -147,8 +149,6 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;  Return to the calling routine with an error message if the positional
    ;  parameter 'misrhr_tip_field' is not of string type:
       IF (is_string(misrhr_tip_field) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input argument misrhr_tip_field must be of string type.'
@@ -177,8 +177,6 @@ FUNCTION chk_misrhr_tip_field, misrhr_tip_field, $
    ;  Return to the calling routine with an error message if the positional
    ;  parameter 'misrhr_tip_field' is invalid:
       IF (debug) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Invalid misrhr_tip_field name.'
       ENDIF

@@ -132,6 +132,8 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  *   2018–05–14: Version 1.3 — Update this function to use the
    ;      revised version of is_writable.pro.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -165,14 +167,17 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
+
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
 
    ;  Set the spatial resolution, number of lines and number of samples in
    ;  MISR-HR products:
@@ -190,8 +195,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 4
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -204,8 +207,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  called with an invalid MISR Path:
       rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
@@ -216,8 +217,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  called with an invalid MISR Block:
       rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
@@ -229,8 +228,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    rc = path2str(misr_path, misr_path_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rc NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -240,8 +237,6 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    rc = block2str(misr_block, misr_block_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rc NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 220
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -265,9 +260,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  Return to the calling routine with an error message if the output
    ;  directory 'latlon_path' is not writable:
    rc = is_writable(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1))) THEN BEGIN
       error_code = 400
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond

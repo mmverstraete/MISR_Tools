@@ -101,6 +101,8 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–04–24: Version 1.2 — Improve debugging diagnostic.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -134,16 +136,19 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
 
-   ;  Initialize the output positional parameters to invalid values:
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+
+   ;  Initialize the output positional parameter(s):
    misr_orbit = 0
 
    IF (debug) THEN BEGIN
@@ -152,8 +157,6 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -164,8 +167,6 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    ;  Return to the calling routine with an error message if this function is
    ;  called with an invalid misr_orbit_str:
       IF (is_string(misr_orbit_str) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input argument misr_orbit_str is not a string.'
@@ -179,8 +180,6 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
    IF (debug) THEN BEGIN
 
       IF (STRUPCASE(first_char(misr_orbit_str)) NE 'O') THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input argument misr_orbit_str is not starting with O.'
@@ -196,8 +195,6 @@ FUNCTION str2orbit, misr_orbit_str, misr_orbit, $
 
       IF (chk_misr_orbit(misr_orbit, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 130
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond

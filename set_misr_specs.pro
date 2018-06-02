@@ -11,7 +11,7 @@ FUNCTION set_misr_specs
    ;  containing various specifications of the MISR instrument, as
    ;  described below.
    ;
-   ;  SYNTAX: res = set_misr_specs()
+   ;  SYNTAX: misr_specs = set_misr_specs()
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]: None.
    ;
@@ -40,6 +40,8 @@ FUNCTION set_misr_specs
    ;
    ;  *   BandNames = [’Blue’, ’Green’, ’Red’, ’NIR’].
    ;
+   ;  *   BandIDs = [0, 1, 2, 3].
+   ;
    ;  *   BandPositions = [446.4, 557.5, 671.7, 866.4].
    ;
    ;  *   NChannels = 36.
@@ -57,7 +59,8 @@ FUNCTION set_misr_specs
    ;  REMARKS:
    ;
    ;  *   NOTE 1: The camera IDs are numeric values starting at 1 (for
-   ;      DF), not at 0.
+   ;      DF), not at 0, while the spectral band IDs are numeric values
+   ;      starting at 0 (for Blue).
    ;
    ;  EXAMPLES:
    ;
@@ -70,6 +73,7 @@ FUNCTION set_misr_specs
    ;         CAMERAANGLES    FLOAT     Array[9]
    ;         NBANDS          INT              4
    ;         BANDNAMES       STRING    Array[4]
+   ;         BANDIDS         INT       Array[4]
    ;         BANDPOSITIONS   FLOAT     Array[4]
    ;         NCHANNELS       INT             36
    ;         CHANNELNAMES    STRING    Array[36]
@@ -97,6 +101,10 @@ FUNCTION set_misr_specs
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–05–01: Version 1.1 — Add MISR MODE information.
+   ;
+   ;  *   2018–05–29: Version 1.2 — Add MISR BANDIDS information.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -130,6 +138,7 @@ FUNCTION set_misr_specs
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
    ;  Information about the available modes:
    nmodes = 2
    modenames = ['GM', 'LM']
@@ -143,6 +152,7 @@ FUNCTION set_misr_specs
    ;  Information about the spectral bands:
    nbands = 4
    bandnames = ['Blue', 'Green', 'Red', 'NIR']
+   bandids = [0, 1, 2, 3]
    bandpositions = [446.4, 557.5, 671.7, 866.4]
 
    ;  Information about the data channels:
@@ -170,6 +180,7 @@ FUNCTION set_misr_specs
    misr_specs = CREATE_STRUCT(misr_specs, 'CameraAngles', cameraangles)
    misr_specs = CREATE_STRUCT(misr_specs, 'NBands', nbands)
    misr_specs = CREATE_STRUCT(misr_specs, 'BandNames', bandnames)
+   misr_specs = CREATE_STRUCT(misr_specs, 'BandIDs', bandids)
    misr_specs = CREATE_STRUCT(misr_specs, 'BandPositions', bandpositions)
    misr_specs = CREATE_STRUCT(misr_specs, 'NChannels', nchannels)
    misr_specs = CREATE_STRUCT(misr_specs, 'ChannelNames', channelnames)

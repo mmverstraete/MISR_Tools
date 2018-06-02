@@ -97,6 +97,8 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -130,16 +132,19 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
 
-   ;  Initialize the output positional parameters to invalid values:
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+
+   ;  Initialize the output positional parameter(s):
    misr_path = 0
 
    IF (debug) THEN BEGIN
@@ -148,8 +153,6 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -160,8 +163,6 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  Return to the calling routine with an error message if this function is
    ;  called with an invalid misr_path_str:
       IF (is_string(misr_path_str) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input argument misr_path_str is not a string.'
@@ -175,8 +176,6 @@ FUNCTION str2path, misr_path_str, misr_path, $
    IF (debug) THEN BEGIN
 
       IF (STRUPCASE(first_char(misr_path_str)) NE 'P') THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input argument misr_path_str is not starting with P.'
@@ -192,8 +191,6 @@ FUNCTION str2path, misr_path_str, misr_path, $
 
       IF (chk_misr_path(misr_path, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 130
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Numerical value of input argument misr_path_str is invalid.'

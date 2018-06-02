@@ -99,6 +99,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  *   2017–12–20: Version 1.0 — Initial public release.
    ;
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -132,16 +134,19 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
 
-   ;  Initialize the output positional parameters to invalid values:
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+
+   ;  Initialize the output positional parameter(s):
    start_block = 0
    end_block = 0
 
@@ -151,8 +156,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 3
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -164,8 +167,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  not points to a readable L1B2 file:
       IF (is_readable(l1b2_fspec, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': File specification ' + strstr(l1b2_fspec) + $
@@ -177,8 +178,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  Use he MISR Toolkit routine to identify the first and last Blocks:
    status = MTK_FILEATTR_GET(l1b2_fspec, 'Start_block', start_block)
    IF ((debug) AND (status NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $
@@ -188,8 +187,6 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
 
    status = MTK_FILEATTR_GET(l1b2_fspec, 'End block', end_block)
    IF ((debug) AND (status NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $

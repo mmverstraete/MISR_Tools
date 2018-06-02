@@ -167,6 +167,8 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  *   2018–05–14: Version 1.3 — Update this function to use the
    ;      revised version of is_writable.pro.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -200,14 +202,16 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
+
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
 
    IF (debug) THEN BEGIN
 
@@ -215,8 +219,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  with the wrong number of required positional parameters:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -229,8 +231,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  input positional parameter is invalid:
       rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
@@ -239,8 +239,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       ENDIF
       rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
@@ -253,8 +251,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    rcp = path2str(misr_path, misr_path_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rcp NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -265,8 +261,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    rcb = block2str(misr_block, misr_block_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rcp NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -288,8 +282,6 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       DEBUG = debug, EXCPT_COND = excpt_cond)
 
    IF ((debug) AND (rc NE 0)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 220
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -312,18 +304,16 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    o_spec = o_dir + o_name
 
    ;  Return to the calling routine with an error message if the output
-   ;  directory 'o_dir' is not writable:
+   ;  directory 'o_dir' is not writable, and create it if it does not
+   ;  exist:
    rc = is_writable(o_dir, DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1))) THEN BEGIN
       error_code = 400
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      RETURN, error_code
+      PRINT, excpt_cond
+      RETURN
    ENDIF
-
-   ;  Create the folder 'out_path' if it does not exist:
    IF (rc EQ -2) THEN FILE_MKDIR, o_dir
 
    ;  Output the results in that output file:

@@ -118,6 +118,8 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–04–24: Version 1.2 — Improve debugging information.
+   ;
+   ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -151,16 +153,19 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
+   ;  Get the name of this routine:
+   info = SCOPE_TRACEBACK(/STRUCTURE)
+   rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
+
    ;  Initialize the default return code and the exception condition message:
    return_code = 0
-   IF KEYWORD_SET(debug) THEN BEGIN
-      debug = 1
-   ENDIF ELSE BEGIN
-      debug = 0
-   ENDELSE
    excpt_cond = ''
 
-   ;  Initialize the output positional parameters to invalid values:
+   ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+
+   ;  Initialize the output positional parameter(s):
    cdates = {}
 
    IF (debug) THEN BEGIN
@@ -169,8 +174,6 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  called with the wrong number of required positional parameters:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
@@ -181,8 +184,6 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  Return to the calling routine with an error message if the input
    ;  directory rpv_path does not exist or is unreadable:
       IF (is_readable(rpv_path) NE 1) THEN BEGIN
-         info = SCOPE_TRACEBACK(/STRUCTURE)
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Input directory rpv_path ' + rpv_path + $
@@ -195,8 +196,6 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
    ;  segment separator character for the current operating system:
    opath = force_path_sep(rpv_path, DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND excpt_cond NE '') THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
@@ -213,8 +212,6 @@ FUNCTION clear_misrhr_dates, rpv_path, cdates, $
       misr_block_str + '_*.hdf'
    rpv_files = FILE_SEARCH(filespec, COUNT = count)
    IF ((debug) AND (count LT 1)) THEN BEGIN
-      info = SCOPE_TRACEBACK(/STRUCTURE)
-      rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
       error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': No MISR-HR RPV files found.'
