@@ -53,7 +53,7 @@ FUNCTION set_root_dirs
    ;
    ;  *   NOTE 1: The MISR TOOLKIT Version 1.4.5 requires these directory
    ;      addresses to be absolute addresses, i.e., from the root
-   ;      directory: Do not use the Linux shortcut   to designate the home
+   ;      directory: Do not use the Linux shortcut ~ to designate the home
    ;      directory as part of those addresses.
    ;
    ;  EXAMPLES:
@@ -84,6 +84,10 @@ FUNCTION set_root_dirs
    ;      the MISR TOOLKIT requires absolute directory adresses.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2018–07–02: Version 1.6 — Revamp the logic to correctly detect
+   ;      and initialize computers running under the Microsoft Windows
+   ;      operating system.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -118,51 +122,88 @@ FUNCTION set_root_dirs
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
 
-   ;  Define the output string array:
+   ;  Define and initialize the output string array:
    root_dirs = STRARR(4)
+   root_dirs[0] = 'Unrecognized OS or computer.'
+   root_dirs[1] = 'Unrecognized OS or computer.'
+   root_dirs[2] = 'Unrecognized OS or computer.'
+   root_dirs[3] = 'Unrecognized OS or computer.'
 
-   ;  Identify the current computer:
-   SPAWN, 'hostname -s', computer
-   computer = computer[0]
+   ;  Identify the current operating system:
+	osname = strstr(!VERSION.OS)
 
-   ;  Set the 4 generic paths for the recognized computer platforms:
-   CASE 1 OF
-      (computer EQ 'MicMac') OR (computer EQ 'micmac'): BEGIN
-         root_dirs[0] = '/Users/mmverstraete/Documents/MISR_HR/Input/AGP/'
-         root_dirs[1] = '/Volumes/MISR_Data*/'
-         root_dirs[2] = '/Volumes/MISR-HR/'
-         root_dirs[3] = '/Users/mmverstraete/Documents/MISR_HR/Outcomes/'
-      END
+   ;  Identify Linux computers and set the root_dirs array:
+   IF (STRPOS(osname, 'linux') GE 0) THEN BEGIN
+		SPAWN, 'hostname -s', computer
+		computer = computer[0]
+      CASE 1 OF
 
-      (computer EQ 'MicMac2') OR (computer EQ 'micmac2'): BEGIN
-         root_dirs[0] = '/Users/michel/MISR_HR/Input/AGP/'
-         root_dirs[1] = '/Volumes/MISR_Data*/'
-         root_dirs[2] = '/Volumes/MISR-HR/'
-         root_dirs[3] = '/Users/michel/MISR_HR/Outcomes/'
-      END
+   ;  Add other Linux computers here:
+   ;     (computer EQ 'newname'): BEGIN
+   ;        root_dirs[0] = 'Folder containing AGP data'
+   ;        root_dirs[1] = 'Folder containing MISR data'
+   ;        root_dirs[2] = 'Folder containing MISR-HR products'
+   ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
 
-      (computer EQ 'pc18'): BEGIN
-         root_dirs[0] = '/Volumes/Input1/AGP/'
-         root_dirs[1] = '/Volumes/Input*/'
-         root_dirs[2] = '/Volumes/Output*/'
-         root_dirs[3] = '/Volumes/Output2/'
-      END
+      ENDCASE
+   ENDIF
 
-      ;  Add other computers here:
-      ;  (computer EQ 'newname'): BEGIN
-      ;     root_dirs[0] = 'Folder containing AGP data'
-      ;     root_dirs[1] = 'Folder containing MISR data'
-      ;     root_dirs[2] = 'Folder containing MISR-HR products'
-      ;     root_dirs[3] = 'Folder containing MISR-HR outcomes'
+   ;  Identify Mac computers and set the root_dirs array:
+	IF (STRPOS(osname, 'darwin') GE 0) THEN BEGIN
+		SPAWN, 'hostname -s', computer
+		computer = computer[0]
+		CASE 1 OF
+         (computer EQ 'MicMac') OR (computer EQ 'micmac'): BEGIN
+            root_dirs[0] = '/Users/mmverstraete/Documents/MISR_HR/Input/AGP/'
+            root_dirs[1] = '/Volumes/MISR_Data*/'
+            root_dirs[2] = '/Volumes/MISR-HR/'
+            root_dirs[3] = '/Users/mmverstraete/Documents/MISR_HR/Outcomes/'
+         END
 
-      ;  Leave the ELSE case untouched:
-      ELSE: BEGIN
-         root_dirs[0] = 'Unrecognized computer.'
-         root_dirs[1] = 'Unrecognized computer.'
-         root_dirs[2] = 'Unrecognized computer.'
-         root_dirs[3] = 'Unrecognized computer.'
-      END
-   ENDCASE
+         (computer EQ 'MicMac2') OR (computer EQ 'micmac2'): BEGIN
+            root_dirs[0] = '/Users/michel/MISR_HR/Input/AGP/'
+            root_dirs[1] = '/Volumes/MISR_Data*/'
+            root_dirs[2] = '/Volumes/MISR-HR/'
+            root_dirs[3] = '/Users/michel/MISR_HR/Outcomes/'
+         END
+
+         (computer EQ 'pc18'): BEGIN
+            root_dirs[0] = '/Volumes/Input1/AGP/'
+            root_dirs[1] = '/Volumes/Input*/'
+            root_dirs[2] = '/Volumes/Output*/'
+            root_dirs[3] = '/Volumes/Output2/'
+         END
+
+   ;  Add other Mac computers here:
+   ;     (computer EQ 'newname'): BEGIN
+   ;        root_dirs[0] = 'Folder containing AGP data'
+   ;        root_dirs[1] = 'Folder containing MISR data'
+   ;        root_dirs[2] = 'Folder containing MISR-HR products'
+   ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
+
+      ENDCASE
+   ENDIF
+
+   ;  Identify Microsoft Windows computers and set the root_dirs array:
+   IF (STRPOS(osname, 'Win') GE 0) THEN BEGIN
+      computer = strstr(GETENV('COMPUTERNAME'))
+		CASE 1 OF
+		   (computer EQ '5CG7213978'): BEGIN
+				root_dirs[0] = 'C:\Mtk-bin-win32\sandbox\data\AGP\'
+				root_dirs[1] = 'C:\Mtk-bin-win32\sandbox\data\MISR\'
+				root_dirs[2] = 'C:\Mtk-bin-win32\sandbox\data\MISR-HR\TIP\DEF\'
+				root_dirs[3] = 'C:\Mtk-bin-win32\sandbox\data\Output\'
+			END
+
+   ;  Add other Mac computers here:
+   ;     (computer EQ 'newname'): BEGIN
+   ;        root_dirs[0] = 'Folder containing AGP data'
+   ;        root_dirs[1] = 'Folder containing MISR data'
+   ;        root_dirs[2] = 'Folder containing MISR-HR products'
+   ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
+
+		ENDCASE
+   ENDIF
 
    RETURN, root_dirs
 
