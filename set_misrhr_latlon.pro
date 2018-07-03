@@ -105,11 +105,13 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;      IDL> rc = set_misrhr_latlon(168, 112, latitudes, longitudes, $
    ;         /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> SPAWN, 'ls ~/Documents/MISR_HR/Outcomes/P168_B112'
+   ;      [To confirm the existence of the output files:]
+   ;      IDL> loc = root_dirs[3] + 'P168_B112'
+   ;      IDL> SPAWN, 'ls ' + loc
    ;      MISR-HR_LAT-LON_P168_B112.sav
    ;      MISR-HR_LAT-LON_P168_B112.txt
-   ;      IDL> sf = '/Users/mmverstraete/Documents/MISR_HR/Outcomes/' + $
-   ;         'P168_B112/MISR-HR_LAT-LON_P168_B112.sav'
+   ;      [To explore the content of the SAVE file:]
+   ;      IDL> sf = loc + '/MISR-HR_LAT-LON_P168_B112.sav'
    ;      IDL> sObj = OBJ_NEW('IDL_Savefile', sf)
    ;      IDL> sContents = sObj->Contents()
    ;      IDL> PRINT, sContents.N_VAR, '   ', sObj->Names()
@@ -134,6 +136,8 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;      revised version of is_writable.pro.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2018–07–03: Version 1.6 — Documenttion update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
