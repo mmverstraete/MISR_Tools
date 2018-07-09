@@ -39,7 +39,8 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      input keyword parameter DEBUG was set and if the optional output
    ;      keyword parameter EXCPT_COND was provided in the call. This
    ;      program saves a file named
-   ;      clear_Pxxx_Bzzz_hostname_[creation_date].txt in the subdirectory
+   ;      clear_Pxxx_Bzzz_[comp_name]_[creation_date].txt in the
+   ;      subdirectory
    ;      root_dirs[3] + ’/Pxxx_Bzzz’, where root_dirs[3] is defined by
    ;      the function set_root_dirs.
    ;
@@ -76,6 +77,8 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   chk_misr_path.pro
    ;
    ;  *   clear_misrhr_dates.pro
+   ;
+   ;  *   get_host_info.pro
    ;
    ;  *   is_writable.pro
    ;
@@ -169,6 +172,10 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      revised version of is_writable.pro.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2018–07–05: Version 1.6 — Update this routine to rely on the new
+   ;      function get_host_info.pro and the updated version of the
+   ;      function set_root_dirs.pro.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -215,62 +222,69 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    IF (debug) THEN BEGIN
 
-   ;  Print an error message and exit from this program if it is called
-   ;  with the wrong number of required positional parameters:
+   ;  Return to the calling routine with an error message if one or more
+   ;  positional parameters are missing:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameters: misr_path, misr_block.'
-         PRINT, excpt_cond
-         RETURN
+            ' positional parameter(s): misr_path, misr_block.'
+         RETURN, error_code
       ENDIF
 
-   ;  Print an error message if either the 'misr_path' or the 'misr_block'
-   ;  input positional parameter is invalid:
+   ;  Return to the calling routine with an error message if the input
+   ;  positional parameter 'misr_path' is invalid:
       rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
-         PRINT, excpt_cond
-         RETURN
+         RETURN, error_code
       ENDIF
+
+   ;  Return to the calling routine with an error message if the input
+   ;  positional parameter 'misr_block' is invalid:
       rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
-         PRINT, excpt_cond
-         RETURN
+         RETURN, error_code
       ENDIF
    ENDIF
 
-   ;  Set the string versions of the MISR Path and Block numbers:
-   rcp = path2str(misr_path, misr_path_str, $
-      DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((debug) AND (rcp NE 0)) THEN BEGIN
+   ;  Identify the current operating system and computer name:
+   rc = get_host_info(os_name, comp_name)
+
+   ;  Set the standard locations for MISR and MISR-HR files on this computer:
+   root_dirs = set_root_dirs()
+
+   ;  Get today's date:
+   date = today(FMT = 'ymd')
+
+   ;  Generate the string version of the MISR Path number:
+   rc = path2str(misr_path, misr_path_str, DEBUG = debug, $
+      EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rc NE 0)) THEN BEGIN
       error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      RETURN, error_code
    ENDIF
 
-   rcb = block2str(misr_block, misr_block_str, $
-      DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((debug) AND (rcp NE 0)) THEN BEGIN
+   ;  Generate the string version of the MISR Block number:
+   rc = block2str(misr_block, misr_block_str, DEBUG = debug, $
+      EXCPT_COND = excpt_cond)
+   IF ((debug) AND (rc NE 0)) THEN BEGIN
       error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      RETURN, error_code
    ENDIF
 
    ;  Define the standard locations for the MISR and MISR-HR files on this
    ;  computer:
-   root_dirs = set_root_dirs()
    pb1 = misr_path_str + PATH_SEP() + misr_block_str + PATH_SEP() + $
       'RPV' + PATH_SEP()
    i_dir = root_dirs[2] + pb1
@@ -289,18 +303,11 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       RETURN
    ENDIF
 
-   ;  Identify the current computer:
-   SPAWN, 'hostname -s', computer
-   computer = computer[0]
-
-   ;  Get the current date and time:
-   date = today(FMT = 'ymd')
-
    ;  Save the results in the output file:
    o_name = 'clear_' + $
       misr_path_str + '_' + $
       misr_block_str + '_' + $
-      computer + '_' + date + '.txt'
+      comp_name + '_' + date + '.txt'
    o_spec = o_dir + o_name
 
    ;  Return to the calling routine with an error message if the output

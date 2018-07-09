@@ -549,7 +549,7 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <li><p><strong>Outcome:</strong></p>
 <ul>
 <li><p>If no exception condition has been detected, the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This program saves a file named<br />
-<code>clear_Pxxx_Bzzz_hostname_[creation_date].txt</code> in the subdirectory<br />
+<code>clear_Pxxx_Bzzz_[comp_name]_[creation_date].txt</code> in the subdirectory<br />
 <code>root_dirs[3] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>root_dirs[3]</code> is defined by the function <code>set_root_dirs</code>.</p></li>
 <li><p>If an exception condition has been detected, the optional output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. This program prints an error message on the console and no output file is saved.</p></li>
 </ul></li>
@@ -569,6 +569,7 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <li><p><code>chk_misr_block.pro</code></p></li>
 <li><p><code>chk_misr_path.pro</code></p></li>
 <li><p><code>clear_misrhr_dates.pro</code></p></li>
+<li><p><code>get_host_info.pro</code></p></li>
 <li><p><code>is_writable.pro</code></p></li>
 <li><p><code>path2str.pro</code></p></li>
 <li><p><code>set_root_dirs.pro</code></p></li>
@@ -639,6 +640,7 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Update this function to use <code>set_root_dirs.pro</code> instead of <code>set_misr_roots.pro</code>.</p></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+<li><p>2018&#8211;07&#8211;05: Version 1.6 &#8212; Update this routine to rely on the new function <code>get_host_info.pro</code> and the updated version of the function <code>set_root_dirs.pro</code>.</p></li>
 </ul></li>
 </ul>
 <h2>clear_misrhr_dates</h2>
@@ -1130,11 +1132,13 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; rc = set_misrhr_latlon(168, 112, latitudes, longitudes, $
    /DEBUG, EXCPT_COND = excpt_cond)
-IDL&gt; SPAWN, &#39;ls ~/Documents/MISR_HR/Outcomes/P168_B112&#39;
+[To confirm the existence of the output files:]
+IDL&gt; loc = root_dirs[3] + &#39;P168_B112&#39;
+IDL&gt; SPAWN, &#39;ls &#39; + loc
 MISR-HR_LAT-LON_P168_B112.sav
 MISR-HR_LAT-LON_P168_B112.txt
-IDL&gt; sf = &#39;/Users/mmverstraete/Documents/MISR_HR/Outcomes/&#39; + $
-   &#39;P168_B112/MISR-HR_LAT-LON_P168_B112.sav&#39;
+[To explore the content of the SAVE file:]
+IDL&gt; sf = loc + &#39;/MISR-HR_LAT-LON_P168_B112.sav&#39;
 IDL&gt; sObj = OBJ_NEW(&#39;IDL_Savefile&#39;, sf)
 IDL&gt; sContents = sObj-&gt;Contents()
 IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
@@ -1151,35 +1155,41 @@ IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
 <li><p>2018&#8211;04&#8211;17: Version 1.2 &#8212; Documentation update and bug fix: set and add the current date to the output filenames.</p></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+<li><p>2018&#8211;07&#8211;03: Version 1.6 &#8212; Documenttion update.</p></li>
 </ul></li>
 </ul>
 <h2>set_root_dirs</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function returns a <code>STRING</code> array containing the root directories of the 4 main sets of files used by the MISR-HR processing system on the current machine, namely those containing (0) the <span class="smallcaps">MISR</span> AGP files, (1) the <span class="smallcaps">MISR</span> input data files, (2) the <span class="smallcaps">MISR-HR</span> output products, and (3) the outcomes of the <span class="smallcaps">MISR-HR</span> post-processing routines. The array elements may contain wildcard characters to point to one or more directories.</p></li>
-<li><p><strong>Algorithm:</strong> This function requires no input, performs no error detection and generates no exception conditions. It spawns a child process to identify the current computer platform and then sets the paths to the AGP, input data, output products, and outcomes of the post-processing files to predefined fixed values. This function currently recognizes <code>MicMac</code>, <code>MicMac2</code> and <code>pc18</code>, it can be modified to work in other contexts by adding more options in the <code>CASE</code> statement. This setup assumes that the subdirectory structures below those root directories conforms to a preset standard, and allows other programs and functions in this system to read from and write to folders in predefined locations, without requiring the user to specify the root directory addresses.</p></li>
+<li><p><strong>Purpose:</strong> This function returns a <code>STRING</code> array containing the root directories of the 4 main sets of files used by the <span class="smallcaps">MISR-HR</span> processing system on the current computer, namely those containing (0) the <span class="smallcaps">MISR</span> <span class="smallcaps">AGP</span> files, (1) the <span class="smallcaps">MISR</span> input data files, (2) the <span class="smallcaps">MISR-HR</span> output products, and (3) the outcomes of the <span class="smallcaps">MISR-HR</span> post-processing routines. The array elements may contain wildcard characters to point to one or more directories.</p></li>
+<li><p><strong>Algorithm:</strong> This function requires no input and performs no specific error detection; it relies on the function <code>get_host_info.pro</code> to identify the underlying operating system and retrieve the computer name, and then sets the paths to the <span class="smallcaps">AGP</span>, input data, output products, and outcomes of the post-processing files to predefined fixed values. It does not generate exception conditions, however it will <code>STOP</code> the processing and return control to the <code>IDL</code> processor if the computer name is unrecognized.</p></li>
 <li><p><strong>Syntax:</strong> <code>root_dirs = set_root_dirs()</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Returned value type:</strong> <code>STRING</code> array.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If the hostname of the current computer is recognized by this function, this function returns a string array <code>[&#8217;path0&#8217;, &#8217;path1&#8217;, &#8217;path2&#8217;, &#8217;path3&#8217;]</code>, where <code>&#8217;path0&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> AGP files, <code>&#8217;path1&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> input data files, <code>&#8217;path2&#8217;</code> points to the root directory for <span class="smallcaps">MISR-HR</span> output product files, and <code>&#8217;path3&#8217;</code> points to the root directory for the outcomes of the post-processing of those products.</p></li>
-<li><p>If the hostname of the current computer is not recognized by this function, this function returns an array of 4 strings, each containing <code>&#8217;Unrecognized computer&#8217;</code>.</p></li>
+<li><p>If the name of the current computer is recognized, this function returns a 4-element string array <code>[&#8217;path0&#8217;, &#8217;path1&#8217;, &#8217;path2&#8217;, &#8217;path3&#8217;]</code>, where <code>&#8217;path0&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> <span class="smallcaps">AGP</span> files, <code>&#8217;path1&#8217;</code> points to the root directory for <span class="smallcaps">MISR</span> input data files, <code>&#8217;path2&#8217;</code> points to the root directory for <span class="smallcaps">MISR-HR</span> output product files, and <code>&#8217;path3&#8217;</code> points to the root directory for the outcomes of the post-processing of those products.</p></li>
+<li><p>If the name of the current computer is not recognized, this function stops the processing and returns control to <code>IDL</code>.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong> None.</p></li>
-<li><p><strong>Dependencies:</strong> None.</p></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>get_host_info.pro</code></p></li>
+</ul></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> The <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> Version 1.4.5 requires these directory addresses to be absolute addresses, i.e., from the root directory: Do not use the Linux shortcut &#160; to designate the home directory as part of those addresses.</p></li>
+<li><p><strong>Note 1:</strong> This function currently recognizes the computers named <code>MicMac</code>, <code>MicMac2</code>, <code>pc18</code>, and <code>5CG7213978</code>; other computers can be added by inserting more options in the OS-specific <code>CASE</code> statements.</p></li>
+<li><p><strong>Note 2:</strong> This setup assumes that the subdirectory structures below those root directories conform to a preset standard, and allows other programs and functions in this system to read from and write to folders in those predefined locations.</p></li>
+<li><p><strong>Note 3:</strong> If routines from the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> (Version 1.4.5) may be used, please note that these require directory addresses to be absolute addresses, i.e., from the computer root directory: Do not use the Linux shortcut <span>~</span> to designate the home directory as part of those addresses.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; root_dirs = set_root_dirs()
 IDL&gt; FOR i = 0, 3 DO PRINT, &#39;root_dirs[&#39; + strstr(i) + $
    &#39;] = &#39; + root_dirs[i]
-root_dirs[0] = ~/MISR_HR/Input/AGP/
+root_dirs[0] = /Users/michel/MISR_HR/Input/AGP/
 root_dirs[1] = /Volumes/MISR_Data*/
-root_dirs[2] = /Volumes/MISRHR_Products/
-root_dirs[3] = /Volumes/MISRHR_Outcomes/</code></pre></li>
+root_dirs[2] = /Volumes/MISR-HR/
+root_dirs[3] = /Users/michel/MISR_HR/Outcomes/</code></pre></li>
 <li><p><strong>References:</strong> None.</p></li>
 <li><p><strong>Versioning:</strong></p>
 <ul>
@@ -1189,6 +1199,8 @@ root_dirs[3] = /Volumes/MISRHR_Outcomes/</code></pre></li>
 <li><p>2018&#8211;04&#8211;08: Version 1.2 &#8212; Add an array element to point to AGP files, update addresses for pc18 to allow for multiple input and output disks, and rename the function to <code>set_root_dirs.pro</code>.</p></li>
 <li><p>2018&#8211;05&#8211;12: Version 1.3 &#8212; Update the documentation to note that the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> requires absolute directory adresses.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+<li><p>2018&#8211;07&#8211;02: Version 1.6 &#8212; Revamp the logic to correctly detect and initialize computers running under the Microsoft Windows operating system.</p></li>
+<li><p>2018&#8211;07&#8211;05: Version 1.7 &#8212; Update this routine to rely on the function <code>get_host_info.pro</code>.</p></li>
 </ul></li>
 </ul>
 <h2>str2block</h2>
