@@ -1,19 +1,19 @@
-PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
-   ;  PURPOSE: This program ranks the set of available MISR-HR RPV product
-   ;  files for the specified MISR PATH and BLOCK in increasing order of
-   ;  cloudiness and saves the results in an output file.
+   ;  PURPOSE: This function ranks the set of available MISR-HR RPV
+   ;  product files for the specified MISR PATH and BLOCK in increasing
+   ;  order of cloudiness and saves the results in an output file.
    ;
-   ;  ALGORITHM: This program relies on the function clear_misrhr_dates to
-   ;  rank the time series of available MISR-HR RPV product files in
+   ;  ALGORITHM: This function relies on the function clear_misrhr_dates
+   ;  to rank the time series of available MISR-HR RPV product files in
    ;  decreasing order of file size (larger files correspond to clearer
    ;  scenes) and to generate approximate seasonal statistics of
    ;  cloudiness for the selected MISR PATH and BLOCK. The results are
    ;  saved in a file in the standard location.
    ;
-   ;  SYNTAX: clear_dates, misr_path, misr_block, $
-   ;  DEBUG = debug, EXCPT_COND = excpt_cond
+   ;  SYNTAX: rc = clear_dates(misr_path, misr_block, $
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -38,7 +38,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      parameter excpt_cond is set to a null string, if the optional
    ;      input keyword parameter DEBUG was set and if the optional output
    ;      keyword parameter EXCPT_COND was provided in the call. This
-   ;      program saves a file named
+   ;      function saves a file named
    ;      clear_Pxxx_Bzzz_[comp_name]_[creation_date].txt in the
    ;      subdirectory
    ;      root_dirs[3] + ’/Pxxx_Bzzz’, where root_dirs[3] is defined by
@@ -48,7 +48,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      keyword parameter excpt_cond contains a message about the
    ;      exception condition encountered, if the optional input keyword
    ;      parameter DEBUG is set and if the optional output keyword
-   ;      parameter EXCPT_COND is provided. This program prints an error
+   ;      parameter EXCPT_COND is provided. This function prints an error
    ;      message on the console and no output file is saved.
    ;
    ;  EXCEPTION CONDITIONS:
@@ -92,17 +92,17 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: This program is a wrapper for the function
+   ;  *   NOTE 1: This function is a wrapper for the function
    ;      clear_misrhr_dates.
    ;
-   ;  *   NOTE 2: This program does not rely on any standard MISR cloud
+   ;  *   NOTE 2: This function does not rely on any standard MISR cloud
    ;      product, and can only report on the approximate cloud cover in
    ;      the selected BLOCK after the L1B2 files have been processed by
    ;      the MISR-HR system.
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> clear_dates, 169, 111, /DEBUG, EXCPT_COND = excpt_cond
+   ;      IDL> rc = clear_dates(169, 111, /DEBUG, EXCPT_COND = excpt_cond)
    ;      Found 296 RPV files for P169 and B111 in directory
    ;      /Volumes/MISR-HR/P169/B111/RPV/
    ;      Output file containing the list of RPV product files
@@ -176,6 +176,9 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   2018–07–05: Version 1.6 — Update this routine to rely on the new
    ;      function get_host_info.pro and the updated version of the
    ;      function set_root_dirs.pro.
+   ;
+   ;  *   2018–08–05: Version 1.7 — Convert this routine from a program to
+   ;      a function and improve format and structure of output file.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -209,6 +212,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      Please send comments and suggestions to the author at
    ;      MMVerstraete@gmail.com.
    ;Sec-Cod
+
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
@@ -262,6 +266,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;  Get today's date:
    date = today(FMT = 'ymd')
+   date_time = today(FMT = 'NICE')
 
    ;  Generate the string version of the MISR Path number:
    rc = path2str(misr_path, misr_path_str, DEBUG = debug, $
@@ -299,8 +304,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       error_code = 220
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      RETURN, error_code
    ENDIF
 
    ;  Save the results in the output file:
@@ -318,25 +322,36 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       error_code = 400
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
-      PRINT, excpt_cond
-      RETURN
+      RETURN, error_code
    ENDIF
    IF (rc EQ -2) THEN FILE_MKDIR, o_dir
 
    ;  Output the results in that output file:
+   fmt1 = '(A30, A)'
+   fmt2 = '(A4, 3X, A9, 3X, A)'
+   fmt3 = '(I04, 3X, I9, 3X, A)'
+   fmt4 = '(A3, 3X, F8.2, A5)'
+
    OPENW, o_unit, o_spec, /GET_LUN
-   PRINTF, o_unit, 'Ranked list of RPV files for ' + misr_path_str + $
-   ' and ' + misr_block_str + ' in decreasing order of size.'
-   PRINTF, o_unit, 'Larger file sizes correspond to clearer scenes.'
+   PRINTF, o_unit, "File name: ", "'" + FILE_BASENAME(o_spec) + "'", $
+      FORMAT = fmt1
+   PRINTF, o_unit, "Folder name: ", "'" + FILE_DIRNAME(o_spec, $
+      /MARK_DIRECTORY) + "'", FORMAT = fmt1
+   PRINTF, o_unit, 'Generated by: ', rout_name, FORMAT = fmt1
+   PRINTF, o_unit, 'Generated on: ', comp_name, FORMAT = fmt1
+   PRINTF, o_unit, 'Saved on: ', date_time, FORMAT = fmt1
    PRINTF, o_unit
-   PRINTF, o_unit, 'Date of file creation: ' + today(FMT = 'NICE')
-   PRINTF, o_unit, 'Software used: clear_dates, with the following inputs:'
+
+   PRINTF, o_unit, 'Content: Ranked list of RPV files for ' + misr_path_str + $
+   ' and ' + misr_block_str + ', in decreasing order of size, for'
    PRINTF, o_unit, '   misr_path = ' + strstr(misr_path)
    PRINTF, o_unit, '   misr_block = ' + strstr(misr_block)
+   PRINTF, o_unit, 'Larger file sizes correspond to clearer scenes.'
    PRINTF, o_unit
+   PRINTF, o_unit, 'Rank', 'Size', 'Filename', FORMAT = fmt2
    FOR i = 0, cdates.NumFiles - 1 DO BEGIN
       PRINTF, o_unit, i, cdates.FileSizes[i], $
-         cdates.FileNames[i], FORMAT = '(I04, 3X, I9, 3X, A)'
+         cdates.FileNames[i], FORMAT = fmt3
    ENDFOR
    PRINTF, o_unit
 
@@ -347,7 +362,7 @@ PRO clear_dates, misr_path, misr_block, DEBUG = debug, EXCPT_COND = excpt_cond
       ' falling within the indicated month:'
    FOR i = 1, 12 DO BEGIN
       PRINTF, o_unit, monthname[i], cdates.SeasonStats[i], ' (MB)', $
-         FORMAT = '(A3, 3X, F8.2, A5)'
+         FORMAT = fmt4
    ENDFOR
    PRINTF, o_unit
    PRINTF, o_unit, 'Total size of all RPV files for ' + misr_path_str + $

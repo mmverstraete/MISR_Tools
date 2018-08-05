@@ -531,10 +531,10 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 </ul>
 <h2>clear_dates</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This program ranks the set of available <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> product files for the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span> in increasing order of cloudiness and saves the results in an output file.</p></li>
-<li><p><strong>Algorithm:</strong> This program relies on the function <code>clear_misrhr_dates</code> to rank the time series of available <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> product files in decreasing order of file size (larger files correspond to clearer scenes) and to generate approximate seasonal statistics of cloudiness for the selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span>. The results are saved in a file in the standard location.</p></li>
-<li><p><strong>Syntax:</strong> <code>clear_dates, misr_path, misr_block, $</code><br />
-<code>DEBUG = debug, EXCPT_COND = excpt_cond</code></p></li>
+<li><p><strong>Purpose:</strong> This function ranks the set of available <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> product files for the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span> in increasing order of cloudiness and saves the results in an output file.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies on the function <code>clear_misrhr_dates</code> to rank the time series of available <span class="smallcaps">MISR-HR</span> <span class="smallcaps">RPV</span> product files in decreasing order of file size (larger files correspond to clearer scenes) and to generate approximate seasonal statistics of cloudiness for the selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> and <span class="smallcaps">Block</span>. The results are saved in a file in the standard location.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = clear_dates(misr_path, misr_block, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong></p>
 <ul>
 <li><p><code>misr_path {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
@@ -548,10 +548,10 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 <li><p><strong>Returned value type:</strong> N/A.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This program saves a file named<br />
+<li><p>If no exception condition has been detected, the keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. This function saves a file named<br />
 <code>clear_Pxxx_Bzzz_[comp_name]_[creation_date].txt</code> in the subdirectory<br />
 <code>root_dirs[3] + &#8217;/Pxxx_Bzzz&#8217;</code>, where <code>root_dirs[3]</code> is defined by the function <code>set_root_dirs</code>.</p></li>
-<li><p>If an exception condition has been detected, the optional output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. This program prints an error message on the console and no output file is saved.</p></li>
+<li><p>If an exception condition has been detected, the optional output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. This function prints an error message on the console and no output file is saved.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -578,11 +578,11 @@ rc = 300, excpt_cond = &gt;Error 300 in CHK_MISRHR_TIP_FIELD:
 </ul></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> This program is a wrapper for the function <code>clear_misrhr_dates</code>.</p></li>
-<li><p><strong>Note 2:</strong> This program does not rely on any standard <span class="smallcaps">MISR</span> cloud product, and can only report on the approximate cloud cover in the selected <span class="smallcaps">Block</span> after the <span class="smallcaps">L1B2</span> files have been processed by the <span class="smallcaps">MISR-HR</span> system.</p></li>
+<li><p><strong>Note 1:</strong> This function is a wrapper for the function <code>clear_misrhr_dates</code>.</p></li>
+<li><p><strong>Note 2:</strong> This function does not rely on any standard <span class="smallcaps">MISR</span> cloud product, and can only report on the approximate cloud cover in the selected <span class="smallcaps">Block</span> after the <span class="smallcaps">L1B2</span> files have been processed by the <span class="smallcaps">MISR-HR</span> system.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
-<pre><code>IDL&gt; clear_dates, 169, 111, /DEBUG, EXCPT_COND = excpt_cond
+<pre><code>IDL&gt; rc = clear_dates(169, 111, /DEBUG, EXCPT_COND = excpt_cond)
 Found 296 RPV files for P169 and B111 in directory
 /Volumes/MISR-HR/P169/B111/RPV/
 Output file containing the list of RPV product files
@@ -641,6 +641,7 @@ Total size of all RPV files for P169 and B111: 10160.5 (MB).</code></pre></li>
 <li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2018&#8211;07&#8211;05: Version 1.6 &#8212; Update this routine to rely on the new function <code>get_host_info.pro</code> and the updated version of the function <code>set_root_dirs.pro</code>.</p></li>
+<li><p>2018&#8211;08&#8211;05: Version 1.7 &#8212; Convert this routine from a program to a function and improve format and structure of output file.</p></li>
 </ul></li>
 </ul>
 <h2>clear_misrhr_dates</h2>
