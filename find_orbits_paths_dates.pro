@@ -20,13 +20,15 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   misr_path_2 {INTEGER} [I] (Default value: None): The last MISR
    ;      PATH to be considered.
    ;
-   ;  *   date_1 {STRING} [I] (Default value: None): The first date to be
-   ;      considered, formatted as YYYY-MM-DD, where YYYY, MM and DD are
-   ;      the year, month and day numbers.
+   ;  *   date_1 {STRING} [I/O] (Default value: None): The first date to
+   ;      be considered, formatted as YYYY-MM-DD, where YYYY, MM and DD
+   ;      are the year, month and day numbers. Upon successful return,
+   ;      this date is formatted as YYYY-MM-DDT00:00:00Z.
    ;
-   ;  *   date_2 {STRING} [I] (Default value: None): The last date to be
+   ;  *   date_2 {STRING} [I/O] (Default value: None): The last date to be
    ;      considered, formatted as YYYY-MM-DD, where YYYY, MM and DD are
-   ;      the year, month and day numbers.
+   ;      the year, month and day numbers. Upon successful return, this
+   ;      date is formatted as YYYY-MM-DDT23:59:59Z.
    ;
    ;  *   misr_orbits {STRUCTURE} [O]: A structure containing the MISR
    ;      ORBITs belonging to each PATH within the range
@@ -100,7 +102,10 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      expected to be given in chronological order; however, if this is
    ;      not the case, the values of the two dates are interchanged.
    ;
-   ;  *   NOTE 4: This function assumes that the MISR input files are
+   ;  *   NOTE 4: Note the format change for the positional parameters
+   ;      date_1 and date_2, required by the MISR TOOLKIT.
+   ;
+   ;  *   NOTE 5: This function assumes that the MISR input files are
    ;      systematically available for full ORBITS, i.e., include all
    ;      available BLOCKS. It does not report on the eventual
    ;      availability of subsetted data files.
@@ -143,6 +148,8 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2018–08–21: Version 1.6 — Documentation update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

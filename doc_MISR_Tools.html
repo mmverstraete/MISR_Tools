@@ -721,8 +721,8 @@ IDL&gt; HELP, cdates
 <ul>
 <li><p><code>misr_path_1 {INTEGER} [I] (Default value: None):</code> The first <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> to be considered.</p></li>
 <li><p><code>misr_path_2 {INTEGER} [I] (Default value: None):</code> The last <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> to be considered.</p></li>
-<li><p><code>date_1 {STRING} [I] (Default value: None):</code> The first date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers.</p></li>
-<li><p><code>date_2 {STRING} [I] (Default value: None):</code> The last date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers.</p></li>
+<li><p><code>date_1 {STRING} [I/O] (Default value: None):</code> The first date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers. Upon successful return, this date is formatted as <code>YYYY-MM-DDT00:00:00Z</code>.</p></li>
+<li><p><code>date_2 {STRING} [I/O] (Default value: None):</code> The last date to be considered, formatted as <code>YYYY-MM-DD</code>, where <code>YYYY</code>, <code>MM</code> and <code>DD</code> are the year, month and day numbers. Upon successful return, this date is formatted as <code>YYYY-MM-DDT23:59:59Z</code>.</p></li>
 <li><p><code>misr_orbits {STRUCTURE} [O]:</code> A structure containing the <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span>s belonging to each <span class="smallcaps">Path</span> within the range <code>[misr_path_1, misr_path_2]</code> and acquired in the time period <code>[date_1, date_2]</code>.</p></li>
 </ul></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong></p>
@@ -755,7 +755,8 @@ IDL&gt; HELP, cdates
 <li><p><strong>Note 1:</strong> This function returns information on the <span class="smallcaps">Orbit</span>s that are theoretically available within the specified <span class="smallcaps">Path</span>s and between the given dates. Data for those <span class="smallcaps">Orbit</span>s may not be available at all if there was a technical problem on the platform, or may not be available locally if they have not been explicitly downloaded from the NASA Langley DAAC.</p></li>
 <li><p><strong>Note 2:</strong> The input argument <code>misr_path_1</code> is deemed smaller than <code>misr_path_2</code>; however, if this is not the case, the values of the two <span class="smallcaps">Paths</span> are interchanged.</p></li>
 <li><p><strong>Note 3:</strong> Similarly, the input arguments <code>date_1</code> and <code>date_2</code> are expected to be given in chronological order; however, if this is not the case, the values of the two dates are interchanged.</p></li>
-<li><p><strong>Note 4:</strong> This function assumes that the <span class="smallcaps">MISR</span> input files are systematically available for full <span class="smallcaps">Orbits</span>, i.e., include all available <span class="smallcaps">Blocks</span>. It does not report on the eventual availability of subsetted data files.</p></li>
+<li><p><strong>Note 4:</strong> Note the format change for the positional parameters <code>date_1</code> and <code>date_2</code>, required by the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span>.</p></li>
+<li><p><strong>Note 5:</strong> This function assumes that the <span class="smallcaps">MISR</span> input files are systematically available for full <span class="smallcaps">Orbits</span>, i.e., include all available <span class="smallcaps">Blocks</span>. It does not report on the eventual availability of subsetted data files.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; misr_path_1 = 168
@@ -789,6 +790,7 @@ IDL&gt; PRINT, misr_orbits
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+<li><p>2018&#8211;08&#8211;21: Version 1.6 &#8212; Documentation update.</p></li>
 </ul></li>
 </ul>
 <h2>orbit2date</h2>
