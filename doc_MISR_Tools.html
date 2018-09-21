@@ -795,9 +795,9 @@ IDL&gt; PRINT, misr_orbits
 </ul>
 <h2>orbit2date</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function returns the date of acquisition of the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span>.</p></li>
+<li><p><strong>Purpose:</strong> This function returns the date of acquisition of the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span>, either as a <code>STRING</code> or as a <code>REAL</code> number.</p></li>
 <li><p><strong>Algorithm:</strong> This function relies on <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> routine <code>MTK_ORBIT_TO_TIMERANGE</code> to determine and return the date on which the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> was acquired.</p></li>
-<li><p><strong>Syntax:</strong> <code>res = orbit2date(misr_orbit, $</code><br />
+<li><p><strong>Syntax:</strong> <code>res = orbit2date(misr_orbit, JULIAN = julian, $</code><br />
 <code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong></p>
 <ul>
@@ -805,13 +805,14 @@ IDL&gt; PRINT, misr_orbits
 </ul></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong></p>
 <ul>
+<li><p><code>JULIAN = julian {INT} [I] (Default value: 0):</code> Flag to request the output to be returned as a <code>REAL</code> number representing the Julian day number instead of a <code>STRING</code> containing the date.</p></li>
 <li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
 <li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
 </ul></li>
-<li><p><strong>Returned value type:</strong> <code>STRING</code>.</p></li>
+<li><p><strong>Returned value type:</strong> <code>STRING</code> <strong>OR</strong> <code>REAL</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns a <code>STRING</code> containing the date when the selected <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> was acquired, formatted as <code>YYYY-MM-DD</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call.</p></li>
+<li><p>If no exception condition has been detected and the optional keyword parameter <code>JULIAN</code> is not invoked, this function returns a <code>STRING</code> containing the date when the selected <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> was acquired, formatted as <code>YYYY-MM-DD</code>. If the optional keyword parameter <code>JULIAN</code> is invoked, this function returns the Julian day number corresponding to the date of acquisition of that <span class="smallcaps">Orbit</span>. In both cases, the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call.</p></li>
 <li><p>If an exception condition has been detected, this function returns a null <code>STRING</code>, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
@@ -831,15 +832,21 @@ IDL&gt; PRINT, misr_orbits
 <li><p><strong>Remarks:</strong></p>
 <ul>
 <li><p><strong>Note 1:</strong> Argument <code>misr_orbit</code> cannot be smaller than <code>995L</code> (the first <span class="smallcaps">Orbit</span> for which <span class="smallcaps">MISR</span> acquired data, on February 24, 2000) or larger than <code>112000L</code> (to be acquired on July 1, 2021).</p></li>
+<li><p><strong>Note 2:</strong> This function is unusual in that the value returned may be a <code>STRING</code> or a <code>REAL</code> number, depending on the use of the optional input keyword parameter <code>JULIAN</code>.</p></li>
+<li><p><strong>Note 3:</strong> If an exception condition is encountered within this function, it returns a null string (as opposed to an error code) and the nature of the exception is documented in the output keyword parameter <code>excpt_cond</code>.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; res = orbit2date(68050)
 IDL&gt; PRINT, res
 2012-10-03
 
+IDL&gt; res = orbit2date(68050, /JULIAN)
+IDL&gt; PRINT, res
+     2456204
+
 IDL&gt; res = orbit2date(200000, /DEBUG, EXCPT_COND = excpt_cond)
-IDL&gt; PRINT, &#39;res = &gt;&#39; + res + &#39;&lt; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
-res = &gt;&lt; and excpt_cond = &gt;Error 120 in ORBIT2DATE:
+IDL&gt; PRINT, &#39;res = &gt;&#39; + res + &#39;&lt;, excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+res = &gt;&lt;, excpt_cond = &gt;Error 120 in ORBIT2DATE:
 Error 300 in CHK_MISR_ORBIT:
 Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p><strong>References:</strong></p>
@@ -854,6 +861,7 @@ Invalid misr_orbit number: must be within [995L, 112000L].&lt;</code></pre></li>
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
+<li><p>2018&#8211;09&#8211;21: Version 1.6 &#8212; Add the optional input keyword parameter <code>JULIAN</code> to return the date as a <code>REAL</code> Julian day number instead of a <code>STRING</code> formatted as <code>YYYY-MM-DD</code>.</p></li>
 </ul></li>
 </ul>
 <h2>orbit2str</h2>

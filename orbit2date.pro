@@ -1,14 +1,15 @@
-FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
+   DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function returns the date of acquisition of the
-   ;  specified MISR ORBIT.
+   ;  specified MISR ORBIT, either as a STRING or as a REAL number.
    ;
    ;  ALGORITHM: This function relies on MISR TOOLKIT routine
    ;  MTK_ORBIT_TO_TIMERANGE to determine and return the date on which the
    ;  specified MISR ORBIT was acquired.
    ;
-   ;  SYNTAX: res = orbit2date(misr_orbit, $
+   ;  SYNTAX: res = orbit2date(misr_orbit, JULIAN = julian, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
@@ -17,6 +18,10 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   JULIAN = julian {INT} [I] (Default value: 0): Flag to request
+   ;      the output to be returned as a REAL number representing the
+   ;      Julian day number instead of a STRING containing the date.
+   ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
    ;
@@ -24,17 +29,20 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: STRING.
+   ;  RETURNED VALUE TYPE: STRING OR REAL.
    ;
    ;  OUTCOME:
    ;
-   ;  *   If no exception condition has been detected, this function
-   ;      returns a STRING containing the date when the selected MISR
-   ;      ORBIT was acquired, formatted as YYYY-MM-DD, and the output
-   ;      keyword parameter excpt_cond is set to a null string, if the
-   ;      optional input keyword parameter DEBUG was set and if the
-   ;      optional output keyword parameter EXCPT_COND was provided in the
-   ;      call.
+   ;  *   If no exception condition has been detected and the optional
+   ;      keyword parameter JULIAN is not invoked, this function returns a
+   ;      STRING containing the date when the selected MISR ORBIT was
+   ;      acquired, formatted as YYYY-MM-DD. If the optional keyword
+   ;      parameter JULIAN is invoked, this function returns the Julian
+   ;      day number corresponding to the date of acquisition of that
+   ;      ORBIT. In both cases, the output keyword parameter excpt_cond is
+   ;      set to a null string, if the optional input keyword parameter
+   ;      DEBUG was set and if the optional output keyword parameter
+   ;      EXCPT_COND was provided in the call.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a null STRING, and the output keyword parameter
@@ -68,15 +76,28 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
    ;      first ORBIT for which MISR acquired data, on February 24, 2000)
    ;      or larger than 112000L (to be acquired on July 1, 2021).
    ;
+   ;  *   NOTE 2: This function is unusual in that the value returned may
+   ;      be a STRING or a REAL number, depending on the use of the
+   ;      optional input keyword parameter JULIAN.
+   ;
+   ;  *   NOTE 3: If an exception condition is encountered within this
+   ;      function, it returns a null string (as opposed to an error code)
+   ;      and the nature of the exception is documented in the output
+   ;      keyword parameter excpt_cond.
+   ;
    ;  EXAMPLES:
    ;
    ;      IDL> res = orbit2date(68050)
    ;      IDL> PRINT, res
    ;      2012-10-03
    ;
+   ;      IDL> res = orbit2date(68050, /JULIAN)
+   ;      IDL> PRINT, res
+   ;           2456204
+   ;
    ;      IDL> res = orbit2date(200000, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'res = >' + res + '< and excpt_cond = >' + excpt_cond + '<'
-   ;      res = >< and excpt_cond = >Error 120 in ORBIT2DATE:
+   ;      IDL> PRINT, 'res = >' + res + '<, excpt_cond = >' + excpt_cond + '<'
+   ;      res = ><, excpt_cond = >Error 120 in ORBIT2DATE:
    ;      Error 300 in CHK_MISR_ORBIT:
    ;      Invalid misr_orbit number: must be within [995L, 112000L].<
    ;
@@ -101,6 +122,10 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2018–09–21: Version 1.6 — Add the optional input keyword
+   ;      parameter JULIAN to return the date as a REAL Julian day number
+   ;      instead of a STRING formatted as YYYY-MM-DD.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -139,11 +164,12 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the error code and the exception condition message:
    return_code = ''
    excpt_cond = ''
 
    ;  Set the default values of essential input keyword parameters:
+   IF (KEYWORD_SET(julian)) THEN julian = 1 ELSE julian = 0
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
 
    IF (debug) THEN BEGIN
@@ -165,7 +191,7 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
             rout_name + ': Input argument misr_band must be a scalar.'
-         RETURN, error_code
+         RETURN, return_code
       ENDIF
 
    ;  Return to the calling routine with an error message if the argument
@@ -190,6 +216,16 @@ FUNCTION orbit2date, misr_orbit, DEBUG = debug, EXCPT_COND = excpt_cond
 
    ;  Extract the date of the Orbit:
    date = STRMID(start_time, 0, 10)
+
+   ;  If the optional input keyword parameter JULIAN is set, compute the Julian
+   ;  day number:
+   IF (julian) THEN BEGIN
+      yr = FIX(STRMID(date, 0, 4))
+      mo = FIX(STRMID(date, 5, 2))
+      dy = FIX(STRMID(date, 8, 2))
+      jul_date = JULDAY(mo, dy, yr)
+      RETURN, jul_date
+   ENDIF
 
    RETURN, date
 
