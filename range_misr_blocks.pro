@@ -1,14 +1,19 @@
-FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION range_misr_blocks, $
+   l1b2_fspec, $
+   start_block, $
+   end_block, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function reports on the range of MISR BLOCKS
    ;  containing actual data (instead of fill data) in a L1B2 Global or
    ;  Local Mode file.
    ;
-   ;  ALGORITHM: This function checks the validity of the input arguments
-   ;  and returns the first and last MISR BLOCKS containing usable data in
-   ;  a L1B2 Global or Local Mode file.
+   ;  ALGORITHM: This function retrieves the first and last MISR BLOCKs
+   ;  containing useful data from the input positional parameter Global or
+   ;  Local Mode file l1b2_fspec, and sets the values of the output
+   ;  positional parameters start_block and end_block accordingly.
    ;
    ;  SYNTAX: rc = range_misr_blocks(l1b2_fspec, start_block, end_block, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
@@ -33,7 +38,7 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -61,10 +66,10 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  *   Error 110: Input positional parameter l1b2_fspec is not found or
    ;      not readable.
    ;
-   ;  *   Error 200: An exception condition occurred in routine
+   ;  *   Error 600: An exception condition occurred in routine
    ;      MTK_FILEATTR_GET while recovering start_block.
    ;
-   ;  *   Error 210: An exception condition occurred in routine
+   ;  *   Error 610: An exception condition occurred in routine
    ;      MTK_FILEATTR_GET while recovering end_block.
    ;
    ;  DEPENDENCIES:
@@ -101,10 +106,13 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -112,16 +120,17 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -129,22 +138,28 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    ;  Initialize the output positional parameter(s):
    start_block = 0
@@ -177,8 +192,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
 
    ;  Use he MISR Toolkit routine to identify the first and last Blocks:
    status = MTK_FILEATTR_GET(l1b2_fspec, 'Start_block', start_block)
-   IF ((debug) AND (status NE 0)) THEN BEGIN
-      error_code = 200
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 600
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $
          'recovering start_block in ' + l1b2_fspec
@@ -186,8 +201,8 @@ FUNCTION range_misr_blocks, l1b2_fspec, start_block, end_block, $
    ENDIF
 
    status = MTK_FILEATTR_GET(l1b2_fspec, 'End block', end_block)
-   IF ((debug) AND (status NE 0)) THEN BEGIN
-      error_code = 210
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 610
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $
          'recovering end_block in ' + l1b2_fspec

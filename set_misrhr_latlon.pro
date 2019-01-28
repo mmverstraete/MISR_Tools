@@ -1,26 +1,34 @@
-FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION set_misrhr_latlon, $
+   misr_path, $
+   misr_block, $
+   latitudes, $
+   longitudes, $
+   OUT_FOLDER = out_folder, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function calculates, returns and saves the
    ;  geographical location (latitude and longitude) of each pixel in a
    ;  MISR-HR product for the specified MISR PATH and BLOCK numbers. The
    ;  results are saved in a plain ASCII file as well as in a SAVE file,
-   ;  and both are written in the appropriate standard output directory
-   ;  under root_dirs[3] defined by the function set_root_dirs.pro.
+   ;  and both are written in the default folder defined by the function
+   ;  set_roots_vers.pro or in the output directory specified by the
+   ;  optional input keyword parameter OUT_FOLDER.
    ;
    ;  ALGORITHM: This function relies on the MISR TOOLKIT function
    ;  MTK_BLS_TO_LATLON to compute the latitude and longitude of every
    ;  pixel in the specified PATH and BLOCK.
    ;
-   ;  SYNTAX: rc = set_misrhr_latlon(misr_path, misr_block, latitudes, $
-   ;  longitudes, DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: rc = set_misrhr_latlon(misr_path, misr_block,$
+   ;  latitudes, longitudes, OUT_FOLDER = out_folder,$
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_path {INTEGER} [I]: The selected MISR PATH number.
+   ;  *   misr_path {INT} [I]: The selected MISR PATH number.
    ;
-   ;  *   misr_block {INTEGER} [I]: The selected MISR BLOCK number.
+   ;  *   misr_block {INT} [I]: The selected MISR BLOCK number.
    ;
    ;  *   latitudes {DOUBLE array} [O]: The array of pixel latitudes,
    ;      dimensioned
@@ -32,6 +40,9 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   OUT_FOLDER = out_folder {STRING} [I] (Default value: Set by ’set_roots_vers.pro’):
+   ;      The directory address of the folder containing the output files.
+   ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
    ;
@@ -39,7 +50,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -70,13 +81,16 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;  *   Error 120: Positional parameter misr_block is invalid.
    ;
-   ;  *   Error 210: An exception condition occurred in function
+   ;  *   Error 200: An exception condition occurred in function
    ;      path2str.pro.
    ;
-   ;  *   Error 220: An exception condition occurred in function
+   ;  *   Error 210: An exception condition occurred in function
    ;      block2str.pro.
    ;
-   ;  *   Error 400: An exception condition occurred in function
+   ;  *   Error 500: The default or designated output folder exists but is
+   ;      unwritable.
+   ;
+   ;  *   Error 510: An exception condition occurred in function
    ;      is_writable.pro.
    ;
    ;  DEPENDENCIES:
@@ -138,10 +152,13 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;
    ;  *   2018–07–03: Version 1.6 — Documenttion update.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -149,16 +166,17 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -166,22 +184,28 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    ;  Set the spatial resolution, number of lines and number of samples in
    ;  MISR-HR products:
@@ -232,7 +256,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    rc = path2str(misr_path, misr_path_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rc NE 0)) THEN BEGIN
-      error_code = 210
+      error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
       RETURN, error_code
@@ -241,11 +265,12 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    rc = block2str(misr_block, misr_block_str, $
       DEBUG = debug, EXCPT_COND = excpt_cond)
    IF ((debug) AND (rc NE 0)) THEN BEGIN
-      error_code = 220
+      error_code = 210
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': ' + excpt_cond
       RETURN, error_code
    ENDIF
+   pb = misr_path_str + '_' + misr_block_str
 
    ;  Get the current date:
    date = today(FMT = 'ymd')
@@ -256,27 +281,37 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    ;  Get the MISR Toolkit version:
    toolkit = MTK_VERSION()
 
-   ;  Define the standard directory in which to save the file containing the
+   ;  Set the output directory in which to save the file containing the
    ;  latitudes and longitudes of the MISR-HR pixels:
-   pb = misr_path_str + '_' + misr_block_str
-   latlon_path = root_dirs[3] + pb + PATH_SEP()
+   IF (~KEYWORD_SET(out_folder)) THEN $
+      out_folder = root_dirs[3] + pb + PATH_SEP()
 
    ;  Return to the calling routine with an error message if the output
-   ;  directory 'latlon_path' is not writable:
-   rc = is_writable(latlon_path, DEBUG = debug, EXCPT_COND = excpt_cond)
-   IF ((debug) AND ((rc EQ 0) OR (rc EQ -1))) THEN BEGIN
-      error_code = 400
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': ' + excpt_cond
-      RETURN, error_code
-   ENDIF
-
-   ;  Create the folder 'latlon_path' if it does not exist:
-   IF (rc EQ -2) THEN FILE_MKDIR, latlon_path
+   ;  directory 'out_folder' is not writable:
+   rc = is_writable(out_folder, DEBUG = debug, EXCPT_COND = excpt_cond)
+   CASE rc OF
+      0: BEGIN
+            error_code = 500
+            excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+               rout_name + ': The output folder ' + out_folder + $
+               ' exists but is unwritable.'
+            RETURN, error_code
+         END
+      -1: BEGIN
+            error_code = 510
+            excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+               rout_name + ': ' + excpt_cond
+            RETURN, error_code
+         END
+      -2: BEGIN
+            FILE_MKDIR, out_folder
+         END
+      ELSE: BREAK
+   ENDCASE
 
    ;  Generate the specification of the lat-lon file:
    latlon_fname = 'lat-lon_' + pb + '_' + toolkit + '_' + date
-   latlon_fspec = latlon_path + latlon_fname + '.txt'
+   latlon_fspec = out_folder + latlon_fname + '.txt'
 
    ;  Open this file:
    fmt1 = '(A6, 2X, A6, 2X, A15, 2X, A15)'
@@ -304,7 +339,7 @@ FUNCTION set_misrhr_latlon, misr_path, misr_block, latitudes, longitudes, $
    CLOSE, latlon_unit
 
    ;  Save the latitudes and longitudes for easy subsequent retrieval:
-   latlon_fspec = latlon_path + latlon_fname + '.sav'
+   latlon_fspec = out_folder + latlon_fname + '.sav'
    SAVE, n_lines, n_samples, latitudes, longitudes, FILENAME = latlon_fspec
 
    RETURN, return_code

@@ -1,14 +1,18 @@
-FUNCTION str2path, misr_path_str, misr_path, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION str2path, $
+   misr_path_str, $
+   misr_path, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function converts a valid STRING representation of a
-   ;  MISR PATH into its INT equivalent; it performs the converse
-   ;  operation of function path2str.
+   ;  MISR PATH, with or without the P header, into its INT equivalent; it
+   ;  performs the converse operation of function path2str.
    ;
-   ;  ALGORITHM: This function checks the validity of the positional
-   ;  parameter misr_path_str, provided as an STRING value and converts
-   ;  the numerical component of the argument into an INT.
+   ;  ALGORITHM: This function checks the validity of the input positional
+   ;  parameter
+   ;  misr_path_str, provided as an STRING value, removes the P header if
+   ;  it is present, and converts remaining string to an INT integer.
    ;
    ;  SYNTAX: rc = str2path(misr_path_str, misr_path, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
@@ -16,7 +20,7 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
    ;  *   misr_path_str {STRING} [I]: The selected STRING representation
-   ;      of the MISR PATH.
+   ;      of the MISR PATH, with or without the P header.
    ;
    ;  *   misr_path {INT} [O]: The required MISR PATH number.
    ;
@@ -29,7 +33,7 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -54,11 +58,8 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  *   Error 110: Input positional parameter misr_path_str is not of
    ;      type STRING.
    ;
-   ;  *   Error 120: Input positional parameter misr_path_str does not
-   ;      start with the expected character P.
-   ;
-   ;  *   Error 130: The numerical value of input argument misr_path_str
-   ;      is invalid.
+   ;  *   Error 120: The numerical value of input positional parameter
+   ;      misr_path_str is invalid.
    ;
    ;  DEPENDENCIES:
    ;
@@ -72,11 +73,11 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The input argument misr_path_str is expected to be
-   ;      formatted as Pxxx where xxx is the numeric value of the MISR
-   ;      PATH, but a lower case p and the presence of blank spaces before
-   ;      or after this initial character, or after the number xxx, is
-   ;      tolerated. See the example below.
+   ;  *   NOTE 1: The input positional parameter misr_path_str is expected
+   ;      to be formatted as Pxxx where xxx is the numeric value of the
+   ;      MISR PATH, but a lower case p and the presence of blank spaces
+   ;      before or after this initial character, or after the number xxx,
+   ;      is tolerated. See the example below.
    ;
    ;  EXAMPLES:
    ;
@@ -99,10 +100,13 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -110,16 +114,17 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -127,22 +132,28 @@ FUNCTION str2path, misr_path_str, misr_path, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    ;  Initialize the output positional parameter(s):
    misr_path = 0
@@ -160,12 +171,12 @@ FUNCTION str2path, misr_path_str, misr_path, $
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if this function is
-   ;  called with an invalid misr_path_str:
+   ;  Return to the calling routine with an error message if the input positional parameter
+   ;  misr_path_str is not of type string:
       IF (is_string(misr_path_str) NE 1) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_path_str is not a string.'
+            ': Input positional parameter misr_path_str is not a string.'
          RETURN, error_code
       ENDIF
    ENDIF
@@ -173,27 +184,19 @@ FUNCTION str2path, misr_path_str, misr_path, $
    misr_path_str = strstr(misr_path_str, DEBUG = debug, $
       EXCPT_COND = excpt_cond)
 
-   IF (debug) THEN BEGIN
+   ;  Remove the 'O' header if it is present:
+   fc = first_char(misr_path_str)
+   IF ((fc EQ 'p') OR (fc EQ 'P')) THEN $
+      misr_path_str = STRMID(misr_path_str, 1)
 
-      IF (STRUPCASE(first_char(misr_path_str)) NE 'P') THEN BEGIN
-         error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_path_str is not starting with P.'
-         misr_path = 0
-         RETURN, error_code
-      ENDIF
-   ENDIF
-
-   misr_path = FIX(strstr(STRMID(misr_path_str, 1), $
-      DEBUG = debug, EXCPT_COND = excpt_cond))
+   misr_path = FIX(strstr(misr_path_str))
 
    IF (debug) THEN BEGIN
-
       IF (chk_misr_path(misr_path, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         error_code = 130
+         error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Numerical value of input argument misr_path_str is invalid.'
+            ': Numerical value of input positional parameter misr_path_str is invalid.'
          misr_path = 0
          RETURN, error_code
       ENDIF

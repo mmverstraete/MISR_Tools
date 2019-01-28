@@ -1,5 +1,11 @@
-FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
-   date_1, date_2, misr_orbits, DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION find_orbits_paths_dates, $
+   misr_path_1, $
+   misr_path_2, $
+   date_1, $
+   date_2, $
+   misr_orbits, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function creates a list of the MISR ORBITs belonging
@@ -14,11 +20,11 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_path_1 {INTEGER} [I] (Default value: None): The first MISR
-   ;      PATH to be considered.
+   ;  *   misr_path_1 {INT} [I] (Default value: None): The first MISR PATH
+   ;      to be considered.
    ;
-   ;  *   misr_path_2 {INTEGER} [I] (Default value: None): The last MISR
-   ;      PATH to be considered.
+   ;  *   misr_path_2 {INT} [I] (Default value: None): The last MISR PATH
+   ;      to be considered.
    ;
    ;  *   date_1 {STRING} [I/O] (Default value: None): The first date to
    ;      be considered, formatted as YYYY-MM-DD, where YYYY, MM and DD
@@ -44,7 +50,7 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -92,7 +98,9 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      the given dates. Data for those ORBITs may not be available at
    ;      all if there was a technical problem on the platform, or may not
    ;      be available locally if they have not been explicitly downloaded
-   ;      from the NASA Langley DAAC.
+   ;      from the NASA Langley DAAC. Similarly, this function does not
+   ;      report on the eventual availability of partially available
+   ;      ORBITs or of subsetted data files.
    ;
    ;  *   NOTE 2: The input argument misr_path_1 is deemed smaller than
    ;      misr_path_2; however, if this is not the case, the values of the
@@ -102,13 +110,10 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      expected to be given in chronological order; however, if this is
    ;      not the case, the values of the two dates are interchanged.
    ;
-   ;  *   NOTE 4: Note the format change for the positional parameters
-   ;      date_1 and date_2, required by the MISR TOOLKIT.
-   ;
-   ;  *   NOTE 5: This function assumes that the MISR input files are
-   ;      systematically available for full ORBITS, i.e., include all
-   ;      available BLOCKS. It does not report on the eventual
-   ;      availability of subsetted data files.
+   ;  *   NOTE 4: The positional parameters date_1 and date_2 are both
+   ;      expected to be provided as STRINGs formatted as YYYY-MM-DD on
+   ;      input, and are reformatted as YYYY-MM-DDT00:00:00Z on output, as
+   ;      required by the MISR TOOLKIT.
    ;
    ;  EXAMPLES:
    ;
@@ -150,10 +155,13 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;
    ;  *   2018–08–21: Version 1.6 — Documentation update.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -161,16 +169,17 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -178,22 +187,28 @@ FUNCTION find_orbits_paths_dates, misr_path_1, misr_path_2, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    ;  Initialize the output positional parameter(s):
    misr_orbits = {}

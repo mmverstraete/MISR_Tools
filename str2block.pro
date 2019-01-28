@@ -1,15 +1,18 @@
-FUNCTION str2block, misr_block_str, misr_block, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION str2block, $
+   misr_block_str, $
+   misr_block, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function converts a valid STRING representation of a
-   ;  MISR BLOCK into its INT equivalent; it performs the converse
-   ;  operation of function block2str.
+   ;  MISR BLOCK, with or without the B header, into its INT equivalent;
+   ;  it performs the converse operation of function block2str.
    ;
-   ;  ALGORITHM: This function checks the validity of the positional
+   ;  ALGORITHM: This function checks the validity of the input positional
    ;  parameter
-   ;  misr_block_str, provided as a STRING value, and converts the
-   ;  numerical component of the argument into an INT.
+   ;  misr_block_str, provided as a STRING value, removes the B header if
+   ;  it is present, and converts the remaining string to an INT integer.
    ;
    ;  SYNTAX: rc = str2block(misr_block_str, misr_block, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
@@ -17,7 +20,7 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
    ;  *   misr_block_str {STRING} [I]: The selected STRING representation
-   ;      of the MISR BLOCK.
+   ;      of the MISR BLOCK, with or without the B header.
    ;
    ;  *   misr_block {INT} [O]: The required MISR BLOCK number.
    ;
@@ -30,7 +33,7 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -56,11 +59,8 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  *   Error 110: Input positional parameter misr_block_str is not of
    ;      type STRING.
    ;
-   ;  *   Error 120: Input positional parameter misr_block_str does not
-   ;      start with the expected character P.
-   ;
-   ;  *   Error 130: The numerical value of input argument misr_block_str
-   ;      is invalid.
+   ;  *   Error 120: The numerical value of input positional parameter
+   ;      misr_block_str is invalid.
    ;
    ;  DEPENDENCIES:
    ;
@@ -74,11 +74,11 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The input argument misr_block_str is expected to be
-   ;      formatted as Bzzz where zzz is the numeric value of the MISR
-   ;      BLOCK, but a lower case b and the presence of blank spaces
-   ;      before or after this initial character, or after the number zzz,
-   ;      is tolerated. See the example below.
+   ;  *   NOTE 1: The input positional parameter misr_block_str is
+   ;      expected to be formatted as either zzz or Bzzz where zzz is the
+   ;      numeric value of the MISR BLOCK, but a lower case b and the
+   ;      presence of blank spaces before or after this initial character,
+   ;      or after the number zzz, is tolerated. See the example below.
    ;
    ;  EXAMPLES:
    ;
@@ -101,10 +101,13 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -112,16 +115,17 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -129,24 +133,30 @@ FUNCTION str2block, misr_block_str, misr_block, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
+
+   ;  Set the default values of flags and essential output keyword parameters:
+   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
    excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
-   IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
-
-   ;  Initialize the output positional parameters to invalid values:
+   ;  Initialize the output positional parameter(s):
    misr_block = 0
 
    IF (debug) THEN BEGIN
@@ -162,12 +172,12 @@ FUNCTION str2block, misr_block_str, misr_block, $
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if the input argument
-   ;  misr_block_str is not of type string:
+   ;  Return to the calling routine with an error message if the input
+   ;  positional parameter misr_block_str is not of type string:
       IF (is_string(misr_block_str) NE 1) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_block_str is not a string.'
+            ': Input positional parameter misr_block_str is not a string.'
          RETURN, error_code
       ENDIF
    ENDIF
@@ -175,28 +185,20 @@ FUNCTION str2block, misr_block_str, misr_block, $
    misr_block_str = strstr(misr_block_str, DEBUG = debug, $
       EXCPT_COND = excpt_cond)
 
-   IF (debug) THEN BEGIN
+   ;  Remove the 'B' header if it is present:
+   fc = first_char(misr_block_str)
+   IF ((fc EQ 'b') OR (fc EQ 'B')) THEN $
+      misr_block_str = STRMID(misr_block_str, 1)
 
-      IF (STRUPCASE(first_char(misr_block_str)) NE 'B') THEN BEGIN
-         error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Input argument misr_block_str is not starting with B.'
-         misr_block = 0
-         RETURN, error_code
-      ENDIF
-   ENDIF
-
-   misr_block = FIX(strstr(STRMID(misr_block_str, 1), $
-      DEBUG = debug, EXCPT_COND = excpt_cond))
+   misr_block = FIX(strstr(misr_block_str))
 
    IF (debug) THEN BEGIN
-
       IF (chk_misr_block(misr_block, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
-         error_code = 130
+         error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Numerical value of input argument misr_block_str is invalid.'
+            ': Numerical value of input positional parameter ' + $
+            'misr_block_str is invalid.'
          misr_block = 0
          RETURN, error_code
       ENDIF

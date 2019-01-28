@@ -1,16 +1,21 @@
-FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION orbit2date, $
+   misr_orbit, $
+   DATAPOOL = datapool, $
+   JULIAN = julian, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function returns the date of acquisition of the
-   ;  specified MISR ORBIT, either as a STRING or as a REAL number.
+   ;  specified MISR ORBIT, either as a STRING or as a LONG Julian day
+   ;  number.
    ;
    ;  ALGORITHM: This function relies on MISR TOOLKIT routine
-   ;  MTK_ORBIT_TO_TIMERANGE to determine and return the date on which the
-   ;  specified MISR ORBIT was acquired.
+   ;  MTK_ORBIT_TO_TIMERANGE to determine the date on which the specified
+   ;  MISR ORBIT was acquired.
    ;
-   ;  SYNTAX: res = orbit2date(misr_orbit, JULIAN = julian, $
-   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;  SYNTAX: res = orbit2date(misr_orbit, DATAPOOL = datapool, $
+   ;  JULIAN = julian, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -18,9 +23,15 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
+   ;  *   DATAPOOL = datapool {STRING} [I] ()Default value: 0): Flag to
+   ;      request (1) or decline (0) returning the output as a STRING
+   ;      formatted as yyy.mm.dd instead of the default STRING formatted
+   ;      as yyyy-mm-dd.
+   ;
    ;  *   JULIAN = julian {INT} [I] (Default value: 0): Flag to request
-   ;      the output to be returned as a REAL number representing the
-   ;      Julian day number instead of a STRING containing the date.
+   ;      (1) or decline (0) returning the output as a LONG number
+   ;      representing the Julian day number instead of the default STRING
+   ;      formatted as yyyy-mm-dd.
    ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
@@ -29,7 +40,7 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: STRING OR REAL.
+   ;  RETURNED VALUE TYPE: STRING OR LONG.
    ;
    ;  OUTCOME:
    ;
@@ -39,10 +50,10 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;      acquired, formatted as YYYY-MM-DD. If the optional keyword
    ;      parameter JULIAN is invoked, this function returns the Julian
    ;      day number corresponding to the date of acquisition of that
-   ;      ORBIT. In both cases, the output keyword parameter excpt_cond is
-   ;      set to a null string, if the optional input keyword parameter
-   ;      DEBUG was set and if the optional output keyword parameter
-   ;      EXCPT_COND was provided in the call.
+   ;      ORBIT as a LONG integer. In both cases, the output keyword
+   ;      parameter excpt_cond is set to a null string, if the optional
+   ;      input keyword parameter DEBUG was set and if the optional output
+   ;      keyword parameter EXCPT_COND was provided in the call.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a null STRING, and the output keyword parameter
@@ -68,22 +79,24 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;
    ;  *   chk_misr_orbit.pro
    ;
+   ;  *   is_scalar.pro
+   ;
+   ;  *   strcat.pro
+   ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
    ;  *   NOTE 1: Argument misr_orbit cannot be smaller than 995L (the
    ;      first ORBIT for which MISR acquired data, on February 24, 2000)
-   ;      or larger than 112000L (to be acquired on July 1, 2021).
+   ;      or larger than 200,000L (to be acquired on July 25, 2037).
    ;
    ;  *   NOTE 2: This function is unusual in that the value returned may
-   ;      be a STRING or a REAL number, depending on the use of the
-   ;      optional input keyword parameter JULIAN.
+   ;      be a STRING or a LONG integer number, depending on the setting
+   ;      of the optional input keyword parameter JULIAN.
    ;
-   ;  *   NOTE 3: If an exception condition is encountered within this
-   ;      function, it returns a null string (as opposed to an error code)
-   ;      and the nature of the exception is documented in the output
-   ;      keyword parameter excpt_cond.
+   ;  *   NOTE 3: If the optional input key word parameters DATAPOOL and
+   ;      JULIAN are both set, the former overrides the latter.
    ;
    ;  EXAMPLES:
    ;
@@ -126,10 +139,17 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;  *   2018–09–21: Version 1.6 — Add the optional input keyword
    ;      parameter JULIAN to return the date as a REAL Julian day number
    ;      instead of a STRING formatted as YYYY-MM-DD.
+   ;
+   ;  *   2018–12-12: Version 1.7 — Add the optional input keyword
+   ;      parameter DATAPOOL to return the date as a STRING formatted as
+   ;      YYYY.MM.DD instead of YYYY-MM-DD.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -137,16 +157,17 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -154,23 +175,30 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the error code and the exception condition message:
+   ;  Initialize the error code:
    return_code = ''
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
+   IF (KEYWORD_SET(datapool)) THEN datapool = 1 ELSE datapool = 0
    IF (KEYWORD_SET(julian)) THEN julian = 1 ELSE julian = 0
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    IF (debug) THEN BEGIN
 
@@ -186,7 +214,7 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
       ENDIF
 
    ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misr_band' is not a scalar:
+   ;  parameter 'misr_orbit' is not a scalar:
       IF (is_scalar(misr_orbit) NE 1) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
@@ -217,14 +245,20 @@ FUNCTION orbit2date, misr_orbit, JULIAN = julian, $
    ;  Extract the date of the Orbit:
    date = STRMID(start_time, 0, 10)
 
-   ;  If the optional input keyword parameter JULIAN is set, compute the Julian
-   ;  day number:
-   IF (julian) THEN BEGIN
-      yr = FIX(STRMID(date, 0, 4))
-      mo = FIX(STRMID(date, 5, 2))
-      dy = FIX(STRMID(date, 8, 2))
-      jul_date = JULDAY(mo, dy, yr)
-      RETURN, jul_date
+   ;  If either of the optional input keyword parameters DATAPOOL or JULIAN is
+   ;  set, extract the elements of date and reformat the result as needed:
+   IF (datapool OR julian) THEN BEGIN
+      yr = STRMID(date, 0, 4)
+      mo = STRMID(date, 5, 2)
+      dy = STRMID(date, 8, 2)
+      IF (datapool) THEN BEGIN
+         date = strcat([yr, mo, dy], '.')
+         RETURN, date
+      ENDIF
+      IF (julian) THEN BEGIN
+         jul_date = JULDAY(FIX(mo), FIX(dy), FIX(yr))
+         RETURN, jul_date
+      ENDIF
    ENDIF
 
    RETURN, date
