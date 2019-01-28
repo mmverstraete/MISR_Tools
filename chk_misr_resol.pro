@@ -1,24 +1,21 @@
-FUNCTION chk_misrhr_rpv_field, $
-   misrhr_rpv_field, $
+FUNCTION chk_misr_resol, $
+   misr_resol, $
    DEBUG = debug, $
    EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the input positional
-   ;  parameter
-   ;  misrhr_rpv_field.
+   ;  parameter misr_resol.
    ;
    ;  ALGORITHM: This function indicates whether the value of the input
-   ;  positional parameter misrhr_rpv_field is one of
-   ;  [’Rho’, ’k’, ’Theta’, ’Rhoc’, ’Cost’, ’Sigmas_Rho’, ’Sigmas_k’, ’Sigmas_Theta’].
+   ;  positional parameter misr_resol is either 275 or 1100.
    ;
-   ;  SYNTAX: rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   ;  SYNTAX: rc = chk_misr_resol(misr_resol, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misrhr_rpv_field {STRING} [I/O]: The selected MISR-HR RPV field
-   ;      name.
+   ;  *   misr_resol {INT} [I]: The selected MISR spatial resolution.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -37,79 +34,74 @@ FUNCTION chk_misrhr_rpv_field, $
    ;      returns 0, and the output keyword parameter excpt_cond is set to
    ;      a null string, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided in the call. Upon exiting this function, the I/O
-   ;      positional parameter misrhr_rpv_field is a valid and properly
-   ;      capitalized RPV product name.
+   ;      provided in the call. The input positional parameter misr_resol
+   ;      is valid.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns a non-zero error code, and the output keyword parameter
-   ;      excpt_cond contains a message about the exception condition
-   ;      encountered, if the optional input keyword parameter DEBUG is
-   ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The input positional parameter misrhr_rpv_field is
-   ;      invalid.
+   ;      returns [a non-zero error code, or some non-sandard returned
+   ;      value], and the output keyword parameter excpt_cond contains a
+   ;      message about the exception condition encountered, if the
+   ;      optional input keyword parameter DEBUG is set and if the
+   ;      optional output keyword parameter EXCPT_COND is provided. The
+   ;      input positional parameter misr_resol is invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
    ;  *   Error 100: One or more positional parameter(s) are missing.
    ;
-   ;  *   Error 110: Input positional parameter misrhr_rpv_field is not of
-   ;      type STRING.
+   ;  *   Error 110: Input positional parameter misr_resol is not of type
+   ;      numeric.
    ;
-   ;  *   Error 120: Input positional parameter misrhr_rpv_field is not a
+   ;  *   Error 120: Input positional parameter misr_resol is not a
    ;      scalar.
    ;
-   ;  *   Error 200: The input positional parameter misrhr_rpv_field is
-   ;      invalid.
+   ;  *   Error 200: Input positional parameter misr_resol is invalid:
+   ;      must be either 275 or 1100.
    ;
    ;  DEPENDENCIES:
    ;
-   ;  *   is_scalar.pro
+   ;  *   is_numeric.pro
    ;
-   ;  *   is_string.pro
+   ;  *   is_scalar.pro
    ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
    ;  *   NOTE 1: Since the purpose of this function is to check the
-   ;      validity of the input positional parameter misrhr_rpv_field, all
-   ;      tests are performed irrespective of the setting of the input
-   ;      keyword parameter DEBUG. The keywords DEBUG and EXCPT_COND are
-   ;      included for consistency, and to allow reporting of the
-   ;      exception condition if one is encountered.
+   ;      validity of the input positional parameter misr_resol, all tests
+   ;      are performed irrespective of the setting of the input keyword
+   ;      parameter DEBUG. The keywords DEBUG and EXCPT_COND are included
+   ;      for consistency, and to allow reporting of the exception
+   ;      condition if one is encountered.
    ;
-   ;  *   NOTE 2: The input positional parameter misrhr_rpv_field is
-   ;      properly capitalized on output.
+   ;  *   NOTE 2: The input positional parameter misr_resol is recast as
+   ;      type INT on output.
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> misrhr_rpv_field = 'k'
-   ;      IDL> rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
+   ;      IDL> rc = chk_misr_resol(275, $
+   ;         /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', $
+   ;         excpt_cond = >' + excpt_cond + '<'
+   ;      rc = 0, excpt_cond = ><
+   ;
+   ;      IDL> rc = chk_misr_resol(0, $
    ;         /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'rc = ' + strstr(rc) + $
    ;         ', excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 0, excpt_cond = ><
-   ;
-   ;      IDL> misrhr_rpv_field = 'FAPAR'
-   ;      IDL> rc = chk_misrhr_rpv_field(misrhr_rpv_field, $
-   ;         /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + 4
-   ;         ', excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 200, excpt_cond = >Error 200 in CHK_MISRHR_RPV_FIELD:
-   ;         Invalid misrhr_rpv_field name.<
+   ;      rc = 200, excpt_cond = >Error 200 in CHK_MISR_resol:
+   ;         Invalid misr_resol number: must be either 275 or 1100.<
    ;
    ;  REFERENCES: None.
    ;
    ;  VERSIONING:
    ;
-   ;  *   2018–01–20: Version 0.9 — Initial release.
+   ;  *   2017–11–15: Version 0.9 — Initial release.
    ;
-   ;  *   2018–02–20: Version 1.0 — Initial public release.
+   ;  *   2017–11–30: Version 1.0 — Initial public release.
    ;
-   ;  *   2018–05–28: Version 1.1 — Add logic to properly capitalize the
-   ;      input positional parameter misrhr_rpv_field, recognize 3
-   ;      different Sigmas types, and documentation update.
+   ;  *   2018–01–16: Version 1.1 — Implement optional debugging.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;
@@ -169,61 +161,47 @@ FUNCTION chk_misrhr_rpv_field, $
 
    ;  Implement all tests: See Note 1 above.
 
-   ;  Return to the calling routine with an error message if this function is
-   ;  called with the wrong number of required positional parameters:
+   ;  Return to the calling routine with an error message if one or more
+   ;  positional parameters are missing:
    n_reqs = 1
    IF (N_PARAMS() NE n_reqs) THEN BEGIN
       error_code = 100
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Routine must be called with ' + strstr(n_reqs) + $
-         ' positional parameter(s): misrhr_rpv_field.'
+         ' positional parameter(s): misr_resol.'
       RETURN, error_code
    ENDIF
 
    ;  Return to the calling routine with an error message if the input
-   ;  positional parameter 'misrhr_rpv_field' is not of string type:
-   IF (is_string(misrhr_rpv_field) NE 1) THEN BEGIN
+   ;  positional parameter 'misr_resol' is not of numeric type:
+   IF (is_numeric(misr_resol) NE 1) THEN BEGIN
       error_code = 110
-      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Input positional parameter misrhr_rpv_field must be of string type.'
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+         rout_name + ': Input positional parameter misr_resol must ' + $
+         'be of numeric type.'
       RETURN, error_code
    ENDIF
 
-   ;  Return to the calling routine with an error message if the input
-   ;  positional parameter 'misrhr_rpv_field' is not a scalar:
-   IF (is_scalar(misrhr_rpv_field) NE 1) THEN BEGIN
+   ;  Return to the calling routine with an error message if the positional
+   ;  parameter 'misr_resol' is not a scalar:
+   IF (is_scalar(misr_resol) NE 1) THEN BEGIN
       error_code = 120
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-         rout_name + ': Input positional parameter misrhr_rpv_field must ' + $
+         rout_name + ': Input positional parameter misr_resol must ' + $
          'be a scalar.'
       RETURN, error_code
    ENDIF
 
-   ;  Ensure the variable 'misrhr_rpv_field' does not include heading or
-   ;  trailing spaces:
-   misrhr_rpv_field = strstr(misrhr_rpv_field)
+   ;  Ensure the variable 'misr_resol' is of INT type:
+   misr_resol = FIX(misr_resol)
 
-   ;  Ensure the proper capitalization of the input positional parameter:
-   misrhr_rpv_field = misrhr_rpv_field.ToLower()
-   misrhr_rpv_field = misrhr_rpv_field.CapWords('_')
-   IF (misrhr_rpv_field EQ 'K') THEN misrhr_rpv_field = 'k'
-   IF (misrhr_rpv_field EQ 'Sigmas_K') THEN misrhr_rpv_field = 'Sigmas_k'
-
-   ;  Define the valid values of misrhr_rpv_field:
-   misrhr_rpv_fields = ['Rho', 'k', 'Theta', 'Rhoc', 'Cost', $
-      'Sigmas_Rho', 'Sigmas_k', 'Sigmas_Theta']
-
-   ;  Check that the input positional parameter misrhr_rpv_field is valid:
-   idx = WHERE(misrhr_rpv_field EQ misrhr_rpv_fields, count)
-
-   ;  Return to the calling routine with an error message if the positional
-   ;  parameter 'misrhr_rpv_field' is invalid:
-   IF (count NE 1) THEN BEGIN
+   ;  Return to the calling routine with an error message if the input
+   ;  positional parameter 'misr_resol' is invalid:
+   IF ((misr_resol NE 275) AND (misr_resol NE 1100)) THEN BEGIN
       error_code = 200
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ": Invalid misrhr_rpv_field name: must be one of ['Rho', " + $
-         "'k', 'Theta', 'Rhoc', 'Cost', 'Sigmas_Rho', 'Sigmas_k', " + $
-         "'Sigmas_Theta']."
+         ': Input positional parameter misr_resol is invalid: ' + $
+         ' must be either 275 or 1100.'
       RETURN, error_code
    ENDIF
 

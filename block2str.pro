@@ -1,25 +1,35 @@
-FUNCTION block2str, misr_block, misr_block_str, $
-   DEBUG = debug, EXCPT_COND = excpt_cond
+FUNCTION block2str, $
+   misr_block, $
+   misr_block_str, $
+   NOHEADER = noheader, $
+   DEBUG = debug, $
+   EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function converts a valid MISR BLOCK number into a
-   ;  properly formatted STRING.
+   ;  properly formatted STRING, with or without the B header.
    ;
-   ;  ALGORITHM: This function converts the positional parameter
+   ;  ALGORITHM: This function converts the input positional parameter
    ;  misr_block, provided as an INT value, into a zero-padded STRING
-   ;  formatted as Bzzz.
+   ;  formatted as Bzzz (by default), or as zzz if the optional input
+   ;  keyword parameter NOHEADER is set.
    ;
    ;  SYNTAX: rc = block2str(misr_block, misr_block_str, $
-   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;  NOHEADER = noheader, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_block {INTEGER} [I]: The selected MISR BLOCK number.
+   ;  *   misr_block {INT} [I]: The selected MISR BLOCK number.
    ;
-   ;  *   misr_block_str {STRING} [O]: The required STRING representation
-   ;      of the MISR BLOCK.
+   ;  *   misr_block_str {STRING} [O]: A STRING representation of the MISR
+   ;      BLOCK with or without the B header, depending on the input
+   ;      keyword parameter NOHEADER.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
+   ;
+   ;  *   NOHEADER = noheader{INT} [I] (Default value: 0): Flag to avoid
+   ;      (1) or add (0) the header B to the ouput positional parameter
+   ;      misr_block_str.
    ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
@@ -28,7 +38,7 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;      Description of the exception condition if one has been
    ;      encountered, or a null string otherwise.
    ;
-   ;  RETURNED VALUE TYPE: INTEGER.
+   ;  RETURNED VALUE TYPE: INT.
    ;
    ;  OUTCOME:
    ;
@@ -37,15 +47,16 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
    ;      provided in the call. The output positional parameter
-   ;      misr_block_str contains the string version of the BLOCK.
+   ;      misr_block_str contains the string version of the BLOCK, with or
+   ;      without the B header.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code, and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
    ;      encountered, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The output argument misr_block_str is set to a null
-   ;      STRING.
+   ;      provided. The output positional parameter misr_block_str is set
+   ;      to a null STRING.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -61,13 +72,13 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: A STRING value for the input positional argument
-   ;      misr_block is tolerated and results in a correct output
-   ;      positional argument misr_block_str if the input keyword
-   ;      parameter DEBUG is NOT set, but an error message is issued if
-   ;      this keyword is set, because this situation likely corresponds
-   ;      to an unintentional incorrect user call (see the last example
-   ;      below).
+   ;  *   NOTE 1: A STRING value containing only digits for the input
+   ;      positional argument misr_block is tolerated and results in
+   ;      correct output positional argument misr_block_str if the input
+   ;      keyword parameter DEBUG is NOT set, but an error message is
+   ;      issued if this keyword is set, because this situation likely
+   ;      corresponds to an unintentional incorrect user call (see the
+   ;      last example below).
    ;
    ;  EXAMPLES:
    ;
@@ -75,9 +86,17 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;      IDL> rc = block2str(misr_block, misr_block_str, $
    ;         /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc =        0 and excpt_cond = ><
+   ;      rc =        0 excpt_cond = ><
    ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str +'<'
    ;      misr_block_str = >B090<
+   ;
+   ;      IDL> misr_block = 89
+   ;      IDL> rc = block2str(misr_block, misr_block_str, $
+   ;         /NOHEADER, /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ', rc, ' excpt_cond = >' + excpt_cond + '<'
+   ;      rc =        0 excpt_cond = ><
+   ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str +'<'
+   ;      misr_block_str = >089<
    ;
    ;      IDL> misr_block = '88'
    ;      IDL> rc = block2str(misr_block, misr_block_str)
@@ -85,6 +104,16 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;      rc = 0
    ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str + '<'
    ;      misr_block_str = >B088<
+   ;
+   ;      IDL> misr_block = '87'
+   ;      IDL> rc = block2str(misr_block, misr_block_str, $
+   ;         /NOHEADER, /DEBUG, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'rc = ', rc, ' excpt_cond = >' + excpt_cond + '<'
+   ;      rc =      110 excpt_cond = >Error 110 in BLOCK2STR:
+   ;         Error 110 in CHK_MISR_BLOCK: Input positional parameter
+   ;         misr_block must be of numeric type.<
+   ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str +'<'
+   ;      misr_block_str = ><
    ;
    ;  REFERENCES: None.
    ;
@@ -99,10 +128,13 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;  *   2018–05–14: Version 1.2 — Minor update.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
+   ;
+   ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
+   ;      implement stricter coding standards and improve documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2018 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -110,16 +142,17 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;      restriction, including without limitation the rights to use,
    ;      copy, modify, merge, publish, distribute, sublicense, and/or
    ;      sell copies of the Software, and to permit persons to whom the
-   ;      Software is furnished to do so, subject to the following
+   ;      Software is furnished to do so, subject to the following three
    ;      conditions:
    ;
-   ;      The above copyright notice and this permission notice shall be
-   ;      included in all copies or substantial portions of the Software.
+   ;      1. The above copyright notice and this permission notice shall
+   ;      be included in its entirety in all copies or substantial
+   ;      portions of the Software.
    ;
-   ;      THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-   ;      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   ;      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   ;      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
+   ;      KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   ;      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   ;      AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
    ;      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
    ;      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    ;      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
@@ -127,22 +160,29 @@ FUNCTION block2str, misr_block, misr_block_str, $
    ;
    ;      See: https://opensource.org/licenses/MIT.
    ;
+   ;      3. The current version of this Software is freely available from
+   ;
+   ;      https://github.com/mmverstraete.
+   ;
    ;  *   Feedback
    ;
    ;      Please send comments and suggestions to the author at
-   ;      MMVerstraete@gmail.com.
+   ;      MMVerstraete@gmail.com
    ;Sec-Cod
+
+   COMPILE_OPT idl2, HIDDEN
 
    ;  Get the name of this routine:
    info = SCOPE_TRACEBACK(/STRUCTURE)
    rout_name = info[N_ELEMENTS(info) - 1].ROUTINE
 
-   ;  Initialize the default return code and the exception condition message:
+   ;  Initialize the default return code:
    return_code = 0
-   excpt_cond = ''
 
-   ;  Set the default values of essential input keyword parameters:
+   ;  Set the default values of flags and essential output keyword parameters:
+   IF (KEYWORD_SET(noheader)) THEN noheader = 1 ELSE noheader = 0
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
+   excpt_cond = ''
 
    ;  Initialize the output positional parameter(s):
    misr_block_str = ''
@@ -161,7 +201,7 @@ FUNCTION block2str, misr_block, misr_block_str, $
       ENDIF
 
    ;  Return to the calling routine with an error message if the input
-   ;  argument misr_block is invalid:
+   ;  positional parameter misr_block is invalid:
       rc = chk_misr_block(misr_block, DEBUG = debug, EXCPT_COND = excpt_cond)
       IF (rc NE 0) THEN BEGIN
          error_code = 110
@@ -171,8 +211,9 @@ FUNCTION block2str, misr_block, misr_block_str, $
       ENDIF
    ENDIF
 
-   ;  Generate the string version of the MISR Path:
-   misr_block_str = 'B' + STRTRIM(STRING(misr_block, FORMAT = '(I03)'), 2)
+   ;  Generate the string version of the MISR Block:
+   mb = STRTRIM(STRING(misr_block, FORMAT = '(I03)'), 2)
+   IF (noheader) THEN misr_block_str = mb ELSE misr_block_str = 'B' + mb
 
    RETURN, return_code
 
