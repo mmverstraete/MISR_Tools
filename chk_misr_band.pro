@@ -121,6 +121,8 @@ FUNCTION chk_misr_band, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–06: Version 2.01 — Minor coding update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -212,7 +214,7 @@ FUNCTION chk_misr_band, $
 
    ;  Ensure the proper capitalization of the input positional parameter
    ;  'misr_band':
-   misr_band = STRUPCASE(misr_band)
+   misr_band = STRUPCASE(strstr(misr_band))
    IF (misr_band NE 'NIR') THEN BEGIN
       res = set_cap(STRLOWCASE(misr_band), $
          DEBUG = debug, EXCPT_COND = excpt_cond)

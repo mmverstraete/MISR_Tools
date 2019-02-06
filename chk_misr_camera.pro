@@ -118,6 +118,8 @@ FUNCTION chk_misr_camera, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–06: Version 2.01 — Minor coding update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -209,7 +211,7 @@ FUNCTION chk_misr_camera, $
 
    ;  Ensure the proper capitalization of the input positional parameter
    ;  'misr_camera':
-   misr_camera = STRUPCASE(misr_camera)
+   misr_camera = STRUPCASE(strstr(misr_camera))
 
    ;  Check that the input positional parameter misr_camera is valid:
    idx = WHERE(misr_camera EQ misr_cameras, count)
