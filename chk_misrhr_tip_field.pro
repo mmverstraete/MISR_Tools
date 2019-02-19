@@ -113,6 +113,9 @@ FUNCTION chk_misrhr_tip_field, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–19: Version 2.01 — Add ABS_VIS, ABS_NIR, TRN_VIS and
+   ;      TRN_NIR in the official list of TIP products.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -214,6 +217,10 @@ FUNCTION chk_misrhr_tip_field, $
       'cost': misrhr_tip_field = 'Cost'
       'bhr_vis': misrhr_tip_field = 'BHR_VIS'
       'bhr_nir': misrhr_tip_field = 'BHR_NIR'
+      'abs_vis': misrhr_tip_field = 'ABS_VIS'
+      'abs_nir': misrhr_tip_field = 'ABS_NIR'
+      'trn_vis': misrhr_tip_field = 'TRN_VIS'
+      'trn_nir': misrhr_tip_field = 'TRN_NIR'
       'stddevparams': misrhr_tip_field = 'StdDevParams'
       'obscovarfluxes': misrhr_tip_field = 'ObsCovarFluxes'
       'priorbhr_spectral': misrhr_tip_field = 'PriorBHR_Spectral'
