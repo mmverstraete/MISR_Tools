@@ -5,7 +5,8 @@ FUNCTION chk_misr_camera, $
 
    ;Sec-Doc
    ;  PURPOSE: This function checks the validity of the input positional
-   ;  parameter misr_camera.
+   ;  parameter
+   ;  misr_camera.
    ;
    ;  ALGORITHM: This function indicates whether the value of the input
    ;  positional parameter misr_camera is one of
@@ -119,7 +120,8 @@ FUNCTION chk_misr_camera, $
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
    ;
-   ;  *   2019–02–06: Version 2.01 — Minor coding update.
+   ;  *   2019–02–24: Version 2.01 — Minor coding and documentation
+   ;      update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

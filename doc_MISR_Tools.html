@@ -226,7 +226,8 @@ rc = 200, excpt_cond = &gt;Error 200 in CHK_MISR_BLOCK:
 </ul>
 <h2>chk_misr_camera</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function checks the validity of the input positional parameter <code>misr_camera</code>.</p></li>
+<li><p><strong>Purpose:</strong> This function checks the validity of the input positional parameter<br />
+<code>misr_camera</code>.</p></li>
 <li><p><strong>Algorithm:</strong> This function indicates whether the value of the input positional parameter <code>misr_camera</code> is one of <code>[&#8217;DF&#8217;, &#8217;CF&#8217;, &#8217;BF&#8217;, &#8217;AF&#8217;, &#8217;AN&#8217;, &#8217;AA&#8217;, &#8217;BA&#8217;, &#8217;CA&#8217;, &#8217;DA&#8217;]</code>.</p></li>
 <li><p><strong>Syntax:</strong> <code>rc = chk_misr_camera(misr_camera, $</code><br />
 <code>DEBUG = debug, EXCPT_COND = excp_cond)</code></p></li>
@@ -292,7 +293,7 @@ misr_camera = XY</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
-<li><p>2019&#8211;02&#8211;06: Version 2.01 &#8212; Minor coding update.</p></li>
+<li><p>2019&#8211;02&#8211;24: Version 2.01 &#8212; Minor coding and documentation update.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_mode</h2>
@@ -338,7 +339,7 @@ misr_camera = XY</code></pre></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; misr_mode = &#39; gm &#39;
 IDL&gt; rc = chk_misr_mode(misr_mode, /DEBUG, EXCPT_COND = excpt_cond)
-IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
+IDL&gt; PRINT, &#39;rc = &#39; + strstr(rc) + &#39;, excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
 rc = 0 and excpt_cond = &gt;&lt;
 IDL&gt; PRINT, &#39;misr_mode = &gt;&#39; + misr_mode + &#39;&lt;&#39;
 misr_mode = &gt;GM&lt;</code></pre></li>
@@ -349,6 +350,7 @@ misr_mode = &gt;GM&lt;</code></pre></li>
 <li><p>2018&#8211;05&#8211;10: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;02&#8211;24: Version 2.01 &#8212; Documentation update.</p></li>
 </ul></li>
 </ul>
 <h2>chk_misr_orbit</h2>
@@ -1018,15 +1020,15 @@ end_block = 162</code></pre></li>
 </ul>
 <h2>set_misr_specs</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function returns a structure containing standard information on the <span class="smallcaps">MISR</span> instrument specifications, such as the number, names and angles of the 9 cameras; the number, names and positions of the 4 spectral bands; and the sequence of 36 data channels.</p></li>
-<li><p><strong>Algorithm:</strong> This function requires no input; it returns a structure containing various specifications of the MISR instrument, as described below.</p></li>
+<li><p><strong>Purpose:</strong> This function returns a structure containing standard metadata on the <span class="smallcaps">MISR</span> instrument, such as the number, names and angles of the 9 cameras; the number, names and positions of the 4 spectral bands; and the standard sequence of 36 data channels (from camera DF to camera DA, and from the Blue band to the NIR band within each camera).</p></li>
+<li><p><strong>Algorithm:</strong> This function requires no input; it returns a structure containing metadata on the MISR instrument, as described below.</p></li>
 <li><p><strong>Syntax:</strong> <code>misr_specs = set_misr_specs()</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong> None.</p></li>
 <li><p><strong>Returned value type:</strong> <code>STRUCTURE</code>.</p></li>
 <li><p><strong>Outcome:</strong> This function accepts no positional or keyword parameters and returns a structure containing the following elements:</p>
 <ul>
-<li><p><code>Title = &#8217;MISR Instrument Specifications&#8217;</code>.</p></li>
+<li><p><code>Title = &#8217;MISR Instrument Metadata&#8217;</code>.</p></li>
 <li><p><code>NModes = 2</code>.</p></li>
 <li><p><code>ModeNames = [&#8217;GM&#8217;, &#8217;LM&#8217;]</code>.</p></li>
 <li><p><code>NCameras = 9</code>.</p></li>
@@ -1038,6 +1040,7 @@ end_block = 162</code></pre></li>
 <li><p><code>BandIDs = [0, 1, 2, 3]</code>.</p></li>
 <li><p><code>BandPositions = [446.4, 557.5, 671.7, 866.4]</code>.</p></li>
 <li><p><code>NChannels = 36</code>.</p></li>
+<li><p><code>ChannelOrder = [0, 1, 2, ..., 33, 34, 35]</code>.</p></li>
 <li><p><code>ChannelNames = [&#8217;DF_Blue&#8217;, &#8217;DF_Green&#8217;, &#8217;DF_Red&#8217;, ..., &#8217;DA_Green&#8217;, &#8217;DA_Red&#8217;, &#8217;DA_NIR&#8217;]</code>.</p></li>
 <li><p><code>NL1B2Grids = 6</code>.</p></li>
 <li><p><code>L1B2GridNames = [&#8217;BlueBand&#8217;, &#8217;GreenBand&#8217;, &#8217;RedBand&#8217;, &#8217;NIRBand&#8217;, &#8217;BRF Conversion Factors&#8217;, &#8217;GeometricParameters&#8217;]</code></p></li>
@@ -1046,7 +1049,7 @@ end_block = 162</code></pre></li>
 <li><p><strong>Dependencies:</strong> None.</p></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at 1 (for DF), not at 0, while the spectral band IDs are numeric values starting at 0 (for Blue).</p></li>
+<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at <code>1</code> (for <code>DF</code>), not at <code>0</code>, while the spectral band IDs and the ordered sequence of data channels are numeric arrays starting at <code>0</code> (for <code>Blue</code> and for <code>DF_Blue</code>, respectively).</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; HELP, res
@@ -1083,6 +1086,7 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p>2018&#8211;05&#8211;29: Version 1.2 &#8212; Add <span class="smallcaps">MISR</span> <span class="smallcaps">BandIDs</span> information.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;02&#8211;24: Version 2.01 &#8212; Add the <code>ChannelOrder</code> array to the output structure <code>misr_specs</code>, and update the documentation.</p></li>
 </ul></li>
 </ul>
 <h2>set_misrhr_latlon</h2>
@@ -1103,7 +1107,8 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 </ul></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong></p>
 <ul>
-<li><p><code>OUT_FOLDER = out_folder {STRING} [I] (Default value: Set by &#8217;set_roots_vers.pro&#8217;):</code> The directory address of the folder containing the output files.</p></li>
+<li><p><code>OUT_FOLDER = out_folder {STRING} [I] (Default value:</code> Set by function<br />
+<code>set_roots_vers.pro):</code> The directory address of the folder containing the output file(s).</p></li>
 <li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
 <li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
 </ul></li>
@@ -1162,7 +1167,8 @@ IDL&gt; PRINT, sContents.N_VAR, &#39;   &#39;, sObj-&gt;Names()
 <li><p>2017&#8211;11&#8211;30: Version 1.0 &#8212; Initial public release.</p></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;04&#8211;17: Version 1.2 &#8212; Documentation update and bug fix: set and add the current date to the output filenames.</p></li>
-<li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of <code>is_writable.pro</code>.</p></li>
+<li><p>2018&#8211;05&#8211;14: Version 1.3 &#8212; Update this function to use the revised version of<br />
+<code>is_writable.pro</code>.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2018&#8211;07&#8211;03: Version 1.6 &#8212; Documenttion update.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
@@ -1248,7 +1254,8 @@ root_dirs[3] = /Users/michel/MISR_HR/Outcomes/</code></pre></li>
 <li><p>2018&#8211;05&#8211;12: Version 1.3 &#8212; Update the documentation to note that the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> requires absolute directory adresses.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2018&#8211;07&#8211;02: Version 1.6 &#8212; Revamp the logic to correctly detect and initialize computers running under the Microsoft Windows operating system.</p></li>
-<li><p>2018&#8211;07&#8211;05: Version 1.7 &#8212; Update this routine to rely on the function <code>get_host_info.pro</code>.</p></li>
+<li><p>2018&#8211;07&#8211;05: Version 1.7 &#8212; Update this routine to rely on the function<br />
+<code>get_host_info.pro</code>.</p></li>
 <li><p>2018&#8211;11&#8211;26: Version 1.8 &#8212; Remove code to stop processing if the computer is unrecognized.</p></li>
 <li><p>2019&#8211;01&#8211;07: Version 1.9 &#8212; Upgrade the function to set default version identifiers as well as default paths, now provided as output positional parameters, change the directory address <code>root_dirs[0]</code>, and rename it <code>set_roots_vers.pro</code>.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>

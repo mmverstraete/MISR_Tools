@@ -82,7 +82,7 @@ FUNCTION chk_misr_mode, $
    ;
    ;      IDL> misr_mode = ' gm '
    ;      IDL> rc = chk_misr_mode(misr_mode, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ' and excpt_cond = >' + excpt_cond + '<'
+   ;      IDL> PRINT, 'rc = ' + strstr(rc) + ', excpt_cond = >' + excpt_cond + '<'
    ;      rc = 0 and excpt_cond = ><
    ;      IDL> PRINT, 'misr_mode = >' + misr_mode + '<'
    ;      misr_mode = >GM<
@@ -99,6 +99,8 @@ FUNCTION chk_misr_mode, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–24: Version 2.01 — Documentation update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

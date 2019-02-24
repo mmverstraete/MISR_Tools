@@ -40,8 +40,10 @@ FUNCTION set_misrhr_latlon, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   OUT_FOLDER = out_folder {STRING} [I] (Default value: Set by ’set_roots_vers.pro’):
-   ;      The directory address of the folder containing the output files.
+   ;  *   OUT_FOLDER = out_folder {STRING} [I] (Default value: Set by
+   ;      function
+   ;      set_roots_vers.pro): The directory address of the folder
+   ;      containing the output file(s).
    ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
@@ -147,7 +149,8 @@ FUNCTION set_misrhr_latlon, $
    ;      and add the current date to the output filenames.
    ;
    ;  *   2018–05–14: Version 1.3 — Update this function to use the
-   ;      revised version of is_writable.pro.
+   ;      revised version of
+   ;      is_writable.pro.
    ;
    ;  *   2018–06–01: Version 1.5 — Implement new coding standards.
    ;

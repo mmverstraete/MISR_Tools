@@ -2,14 +2,14 @@ FUNCTION set_misr_specs
 
    ;Sec-Doc
    ;  PURPOSE: This function returns a structure containing standard
-   ;  information on the MISR instrument specifications, such as the
-   ;  number, names and angles of the 9 cameras; the number, names and
-   ;  positions of the 4 spectral bands; and the sequence of 36 data
-   ;  channels.
+   ;  metadata on the MISR instrument, such as the number, names and
+   ;  angles of the 9 cameras; the number, names and positions of the 4
+   ;  spectral bands; and the standard sequence of 36 data channels (from
+   ;  camera DF to camera DA, and from the Blue band to the NIR band
+   ;  within each camera).
    ;
    ;  ALGORITHM: This function requires no input; it returns a structure
-   ;  containing various specifications of the MISR instrument, as
-   ;  described below.
+   ;  containing metadata on the MISR instrument, as described below.
    ;
    ;  SYNTAX: misr_specs = set_misr_specs()
    ;
@@ -22,7 +22,7 @@ FUNCTION set_misr_specs
    ;  OUTCOME: This function accepts no positional or keyword parameters
    ;  and returns a structure containing the following elements:
    ;
-   ;  *   Title = ’MISR Instrument Specifications’.
+   ;  *   Title = ’MISR Instrument Metadata’.
    ;
    ;  *   NModes = 2.
    ;
@@ -46,6 +46,8 @@ FUNCTION set_misr_specs
    ;
    ;  *   NChannels = 36.
    ;
+   ;  *   ChannelOrder = [0, 1, 2, ..., 33, 34, 35].
+   ;
    ;  *   ChannelNames = [’DF_Blue’, ’DF_Green’, ’DF_Red’, ..., ’DA_Green’, ’DA_Red’, ’DA_NIR’].
    ;
    ;  *   NL1B2Grids = 6.
@@ -59,8 +61,9 @@ FUNCTION set_misr_specs
    ;  REMARKS:
    ;
    ;  *   NOTE 1: The camera IDs are numeric values starting at 1 (for
-   ;      DF), not at 0, while the spectral band IDs are numeric values
-   ;      starting at 0 (for Blue).
+   ;      DF), not at 0, while the spectral band IDs and the ordered
+   ;      sequence of data channels are numeric arrays starting at 0 (for
+   ;      Blue and for DF_Blue, respectively).
    ;
    ;  EXAMPLES:
    ;
@@ -108,6 +111,9 @@ FUNCTION set_misr_specs
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–24: Version 2.01 — Add the ChannelOrder array to the
+   ;      output structure misr_specs, and update the documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -167,10 +173,12 @@ FUNCTION set_misr_specs
 
    ;  Information about the data channels:
    nchannels = 36
+   channelorder = INTARR(nchannels)
    channelnames = STRARR(nchannels)
    k = 0
    FOR i = 0, ncameras - 1 DO BEGIN
       FOR j = 0, nbands - 1 DO BEGIN
+         channelorder[k] = k
          channelnames[k] = cameranames[i] + '_' + bandnames[j]
          k = k + 1
       ENDFOR
@@ -193,6 +201,7 @@ FUNCTION set_misr_specs
    misr_specs = CREATE_STRUCT(misr_specs, 'BandIDs', bandids)
    misr_specs = CREATE_STRUCT(misr_specs, 'BandPositions', bandpositions)
    misr_specs = CREATE_STRUCT(misr_specs, 'NChannels', nchannels)
+   misr_specs = CREATE_STRUCT(misr_specs, 'ChannelOrder', channelorder)
    misr_specs = CREATE_STRUCT(misr_specs, 'ChannelNames', channelnames)
    misr_specs = CREATE_STRUCT(misr_specs, 'NL1B2Grids', nl1b2grids)
    misr_specs = CREATE_STRUCT(misr_specs, 'L1B2GridNames', l1b2gridnames)

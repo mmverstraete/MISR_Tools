@@ -179,7 +179,8 @@ FUNCTION set_roots_vers, $
    ;      operating system.
    ;
    ;  *   2018–07–05: Version 1.7 — Update this routine to rely on the
-   ;      function get_host_info.pro.
+   ;      function
+   ;      get_host_info.pro.
    ;
    ;  *   2018–11–26: Version 1.8 — Remove code to stop processing if the
    ;      computer is unrecognized.
