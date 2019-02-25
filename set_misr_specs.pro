@@ -60,10 +60,10 @@ FUNCTION set_misr_specs
    ;
    ;  REMARKS:
    ;
-   ;  *   NOTE 1: The camera IDs are numeric values starting at 1 (for
-   ;      DF), not at 0, while the spectral band IDs and the ordered
-   ;      sequence of data channels are numeric arrays starting at 0 (for
-   ;      Blue and for DF_Blue, respectively).
+   ;  *   NOTE 1: In the MISR-HR context, numeric indices referring to
+   ;      Camera, Band and Data Channel arrays are all 0-based, although
+   ;      Cameras are sometimes numbered from 1 to 9 in the standard MISR
+   ;      context.
    ;
    ;  EXAMPLES:
    ;
@@ -114,6 +114,9 @@ FUNCTION set_misr_specs
    ;
    ;  *   2019–02–24: Version 2.01 — Add the ChannelOrder array to the
    ;      output structure misr_specs, and update the documentation.
+   ;
+   ;  *   2019–02–25: Version 2.02 — Reset the MISR camera indices to
+   ;      range from 0 to 8 instead of 1 to 9.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -162,7 +165,7 @@ FUNCTION set_misr_specs
    ;  Information about the camera geometry:
    ncameras = 9
    cameranames = ['DF', 'CF', 'BF', 'AF', 'AN', 'AA', 'BA', 'CA', 'DA']
-   cameraids = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+   cameraids = [0, 1, 2, 3, 4, 5, 6, 7, 8]
    cameraangles = [70.3, 60.2, 45.7, 26.2, 0.1, 26.2, 45.7, 60.2, 70.6]
 
    ;  Information about the spectral bands:
