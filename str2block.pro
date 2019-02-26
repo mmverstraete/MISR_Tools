@@ -104,6 +104,8 @@ FUNCTION str2block, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -188,9 +190,9 @@ FUNCTION str2block, $
    ;  Remove the 'B' header if it is present:
    fc = first_char(misr_block_str)
    IF ((fc EQ 'b') OR (fc EQ 'B')) THEN $
-      misr_block_str = STRMID(misr_block_str, 1)
+      misr_block_s = STRMID(misr_block_str, 1)
 
-   misr_block = FIX(strstr(misr_block_str))
+   misr_block = FIX(strstr(misr_block_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_block(misr_block, DEBUG = debug, $

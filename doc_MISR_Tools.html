@@ -1049,7 +1049,7 @@ end_block = 162</code></pre></li>
 <li><p><strong>Dependencies:</strong> None.</p></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> The camera IDs are numeric values starting at <code>1</code> (for <code>DF</code>), not at <code>0</code>, while the spectral band IDs and the ordered sequence of data channels are numeric arrays starting at <code>0</code> (for <code>Blue</code> and for <code>DF_Blue</code>, respectively).</p></li>
+<li><p><strong>Note 1:</strong> In the <span class="smallcaps">MISR-HR</span> context, numeric indices referring to Camera, Band and Data Channel arrays are all <code>0</code>-based, although Cameras are sometimes numbered from <code>1</code> to <code>9</code> in the standard <span class="smallcaps">MISR</span> context.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; HELP, res
@@ -1087,6 +1087,7 @@ IDL&gt; PRINT, res.BANDPOSITIONS
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 <li><p>2019&#8211;02&#8211;24: Version 2.01 &#8212; Add the <code>ChannelOrder</code> array to the output structure <code>misr_specs</code>, and update the documentation.</p></li>
+<li><p>2019&#8211;02&#8211;25: Version 2.02 &#8212; Reset the <span class="smallcaps">MISR</span> camera indices to range from 0 to 8 instead of 1 to 9.</p></li>
 </ul></li>
 </ul>
 <h2>set_misrhr_latlon</h2>
@@ -1317,6 +1318,7 @@ misr_block =      111</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;02&#8211;25: Version 2.01 &#8212; Bug fix: Preserve input argument.</p></li>
 </ul></li>
 </ul>
 <h2>str2orbit</h2>
@@ -1376,6 +1378,7 @@ misr_orbit =        68050</code></pre></li>
 <li><p>2018&#8211;04&#8211;24: Version 1.2 &#8212; Improve debugging diagnostic.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;02&#8211;25: Version 2.01 &#8212; Bug fix: Preserve input argument.</p></li>
 </ul></li>
 </ul>
 <h2>str2path</h2>
@@ -1434,6 +1437,7 @@ misr_path =      170</code></pre></li>
 <li><p>2018&#8211;01&#8211;16: Version 1.1 &#8212; Implement optional debugging.</p></li>
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;02&#8211;25: Version 2.01 &#8212; Bug fix: Preserve input argument.</p></li>
 </ul></li>
 </ul>
 </body>

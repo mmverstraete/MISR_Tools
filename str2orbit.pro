@@ -107,6 +107,8 @@ FUNCTION str2orbit, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -191,9 +193,9 @@ FUNCTION str2orbit, $
    ;  Remove the 'O' header if it is present:
    fc = first_char(misr_orbit_str)
    IF ((fc EQ 'o') OR (fc EQ 'O')) THEN $
-      misr_orbit_str = STRMID(misr_orbit_str, 1)
+      misr_orbit_s = STRMID(misr_orbit_str, 1)
 
-   misr_orbit = LONG(strstr(misr_orbit_str))
+   misr_orbit = LONG(strstr(misr_orbit_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_orbit(misr_orbit, DEBUG = debug, $

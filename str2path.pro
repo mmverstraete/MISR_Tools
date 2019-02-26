@@ -103,6 +103,8 @@ FUNCTION str2path, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -160,8 +162,8 @@ FUNCTION str2path, $
 
    IF (debug) THEN BEGIN
 
-   ;  Return to the calling routine with an error message if this function is
-   ;  called with the wrong number of required positional parameters:
+   ;  Return to the calling routine with an error message if one or more
+   ;  positional parameters are missing:
       n_reqs = 2
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
@@ -171,8 +173,8 @@ FUNCTION str2path, $
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if the input positional parameter
-   ;  misr_path_str is not of type string:
+   ;  Return to the calling routine with an error message if the input
+   ;  positional parameter misr_path_str is not of type string:
       IF (is_string(misr_path_str) NE 1) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
@@ -184,12 +186,12 @@ FUNCTION str2path, $
    misr_path_str = strstr(misr_path_str, DEBUG = debug, $
       EXCPT_COND = excpt_cond)
 
-   ;  Remove the 'O' header if it is present:
+   ;  Remove the 'P' header if it is present:
    fc = first_char(misr_path_str)
    IF ((fc EQ 'p') OR (fc EQ 'P')) THEN $
-      misr_path_str = STRMID(misr_path_str, 1)
+      misr_path_s = STRMID(misr_path_str, 1)
 
-   misr_path = FIX(strstr(misr_path_str))
+   misr_path = FIX(strstr(misr_path_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_path(misr_path, DEBUG = debug, $
