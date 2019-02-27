@@ -38,12 +38,11 @@ FUNCTION chk_misr_resol, $
    ;      is valid.
    ;
    ;  *   If an exception condition has been detected, this function
-   ;      returns [a non-zero error code, or some non-sandard returned
-   ;      value], and the output keyword parameter excpt_cond contains a
-   ;      message about the exception condition encountered, if the
-   ;      optional input keyword parameter DEBUG is set and if the
-   ;      optional output keyword parameter EXCPT_COND is provided. The
-   ;      input positional parameter misr_resol is invalid.
+   ;      returns a non-zero error code, and the output keyword parameter
+   ;      excpt_cond contains a message about the exception condition
+   ;      encountered, if the optional input keyword parameter DEBUG is
+   ;      set and if the optional output keyword parameter EXCPT_COND is
+   ;      provided. The input positional parameter misr_resol is invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -107,6 +106,8 @@ FUNCTION chk_misr_resol, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–02–28: Version 2.01 — Documentation update.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
