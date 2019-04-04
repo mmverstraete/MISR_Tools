@@ -161,6 +161,10 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   2019–04–04: Version 2.01 — Bug fix: Use the new function
    ;      chk_ymddate.pro instead of the old function chk_date_ymd.pro.
+   ;
+   ;  *   2019–04–04: Version 2.02 — Update the output structure to report
+   ;      on the number of ORBITS found in each PATH, and to include the
+   ;      list of ORBITS as an array rather than individual items.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -307,11 +311,12 @@ FUNCTION find_orbits_paths_dates, $
    FOR mp = misr_path_1, misr_path_2 DO BEGIN
       status = MTK_PATH_TIMERANGE_TO_ORBITLIST(mp, date_1, date_2, $
          n_orbits, orbits_list)
-      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + strstr(mp), mp)
-      FOR i = 0, n_orbits - 1 DO BEGIN
-         misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + strstr(mp) + $
-            '_orbit_' + strstr(i), orbits_list[i])
-      ENDFOR
+      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
+         strstr(mp - misr_path_1), mp)
+      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
+         strstr(mp - misr_path_1) + '_norbits', n_orbits)
+      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
+         strstr(mp - misr_path_1) + '_orbits', orbits_list)
    ENDFOR
 
    RETURN, return_code
