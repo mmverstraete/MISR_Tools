@@ -85,7 +85,7 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  DEPENDENCIES:
    ;
-   ;  *   chk_date_ymd.pro
+   ;  *   chk_ymddate.pro
    ;
    ;  *   chk_misr_path.pro
    ;
@@ -158,6 +158,9 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–04–04: Version 2.01 — Bug fix: Use the new function
+   ;      chk_ymddate.pro instead of the old function chk_date_ymd.pro.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -254,9 +257,9 @@ FUNCTION find_orbits_paths_dates, $
    ENDIF
 
    ;  Define the numeric output date elements of the two string input dates:
-   rc1 = chk_date_ymd(date_1, year_1, month_1, day_1, $
+   rc1 = chk_ymddate(date_1, year_1, month_1, day_1, $
       DEBUG = debug, EXCPT_COND = excpt_cond1)
-   rc2 = chk_date_ymd(date_2, year_2, month_2, day_2, $
+   rc2 = chk_ymddate(date_2, year_2, month_2, day_2, $
       DEBUG = debug, EXCPT_COND = excpt_cond2)
 
    IF (debug) THEN BEGIN

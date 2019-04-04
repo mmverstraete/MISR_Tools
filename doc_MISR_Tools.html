@@ -707,7 +707,7 @@ rc = 200, excpt_cond = &gt;Error 200 in CHK_MISRHR_TIP_FIELD:
 </ul></li>
 <li><p><strong>Dependencies:</strong></p>
 <ul>
-<li><p><code>chk_date_ymd.pro</code></p></li>
+<li><p><code>chk_ymddate.pro</code></p></li>
 <li><p><code>chk_misr_path.pro</code></p></li>
 <li><p><code>strstr.pro</code></p></li>
 </ul></li>
@@ -752,6 +752,7 @@ IDL&gt; PRINT, misr_orbits
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2018&#8211;08&#8211;21: Version 1.6 &#8212; Documentation update.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+<li><p>2019&#8211;04&#8211;04: Version 2.01 &#8212; Bug fix: Use the new function <code>chk_ymddate.pro</code> instead of the old function <code>chk_date_ymd.pro</code>.</p></li>
 </ul></li>
 </ul>
 <h2>fn2mpocbv</h2>
@@ -841,6 +842,51 @@ misrhr_version_id = &gt;&lt;</code></pre></li>
 <li><p>2018&#8211;07&#8211;13: Version 1.6 &#8212; Modify the code to ensure that the output variable <code>misr_camera</code> is a scalar string and update the documentation.</p></li>
 <li><p>2019&#8211;02&#8211;26: Version 1.7 &#8212; Generalize the applicability of this function by extracting the <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span>, <span class="smallcaps">Path</span>, <span class="smallcaps">Orbit</span>, <span class="smallcaps">Camera</span>, <span class="smallcaps">Block</span> and <span class="smallcaps">Version</span> identifiers on the basis of string patterns rather than relying on <span class="smallcaps">MISR</span> Toolkit, change its name from <code>fn2mpocv_l1b2.pro</code> to<code>fn2mpocbv.pro</code> and move this function to the <span class="smallcaps">MISR_Tools</span> repository.</p></li>
 <li><p>2019&#8211;03&#8211;01: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+</ul></li>
+</ul>
+<h2>is_frompath</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function checks that the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> does belong to the specified <span class="smallcaps">Path</span>.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies of the <span class="smallcaps">MISR</span> Toolkit to determine the correct <span class="smallcaps">Path</span> associated with the given <span class="smallcaps">Orbit</span>, and returns <code>1</code> if the input positional parameters are consistent, or <code>0</code> otherwise.</p></li>
+<li><p><strong>Syntax:</strong> <code>res = is_frompath(misr_path, misr_orbit, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
+<li><p><code>misr_orbit {LONG} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INT</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>1</code> if the input positional parameter <code>misr_orbit</code> does belong to the specified <code>misr_path</code>, and <code>0</code> otherwise, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided in the call.</p></li>
+<li><p>If an exception condition has been detected, this function returns <code>-1</code>, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: The input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: The input positional parameter <code>misr_orbit</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>[Insert the command and its outcome]</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2019&#8211;03&#8211;17: Version 1.0 &#8212; Initial release.</p></li>
+<li><p>2019&#8211;03&#8211;20: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 </ul></li>
 </ul>
 <h2>orbit2date</h2>
