@@ -890,6 +890,81 @@ misrhr_version_id = &gt;&lt;</code></pre></li>
 <li><p>2019&#8211;03&#8211;20: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 </ul></li>
 </ul>
+<h2>nearest_pixel</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function computes the latitude and longitude of the center of the <span class="smallcaps">MISR</span> or <span class="smallcaps">MISR-HR</span> pixel closest to the latitude and longitude of a site of interest, within the specified <code>misr_path</code>.</p></li>
+<li><p><strong>Algorithm:</strong> This function (1) relies on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> functions to convert the latitude and longitude of a site of interest, provided as the input positional parameters <code>lat_sit</code> and <code>lon_sit</code> (in decimal degrees) into fractional line and sample coordinates of a <span class="smallcaps">MISR</span> pixel (resolution of 1100) or of a <span class="smallcaps">MISR-HR</span> pixel (resolution of 275), (2) rounds these off, and (3) relies again on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> functions to compute the latitude and longitude of the center of that pixel. It also reports the distance (on a horizontal plane) between the site of interest and the center of this closest pixel, using the haversine formula and a mean Earth radius of 6,371 km.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = nearest_pixel(misr_path, lat_sit, lon_sit, $</code><br />
+<code>resolution, lat_pix, lon_pix, distance, $</code><br />
+<code>VERBOSE = verbose, DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
+<li><p><code>lat_sit {DOUBLE} [I]:</code> The latitude of the site of interest, in decimal degrees.</p></li>
+<li><p><code>lon_sit {DOUBLE} [I]:</code> The longitude of the site of interest, in decimal degrees.</p></li>
+<li><p><code>resolution {INT} [I]:</code> The spatial resolution of the remote sensing data product: either 1100 (for the Global Mode non-red spectral channels of the off-nadir <span class="smallcaps">MISR</span> cameras) or 275 (for the Global Mode red spectral channels of the off-nadir <span class="smallcaps">MISR</span> cameras, or the 4 spectral bands of the nadir camera, or for any data channel in Local Mode, or for any <span class="smallcaps">MISR-HR</span> data product).</p></li>
+<li><p><code>misr_block {INTEGER} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> number in which the site of interest resides.</p></li>
+<li><p><code>lat_pix {DOUBLE} [O]:</code> The latitude of the center of the pixel closest to the site of interest, in decimal degrees, within the range <code>[-90.0, 90.0]</code>.</p></li>
+<li><p><code>lon_pix {DOUBLE} [O]:</code> The longitude of the center of the pixel closest to the site of interest, in decimal degrees, within the range <code>[-180.0, 180.0]</code>.</p></li>
+<li><p><code>distance {DOUBLE} [O]:</code> The distance between the site of interest and the center of the closest pixel.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>VERBOSE = verbose {INT} [I] (Default value: 0):</code> Flag to enable (&gt; 0) or skip (0) reporting progress on the console: 1 only reports exiting the routine; 2 reports entering and exiting the routine, as well as key milestones; 3 reports entering and exiting the routine, and provides detailed information on the intermediary results.</p></li>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INT</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided in the call. The coordinates of the center of the closest pixel, as well as the distance between that location and the site of interest are provided in output positional parameters.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The coordinates of the center of the closest pixel, as well as the distance between that location and the site of interest may be undefined, incomplete or incorrect.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: The input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: The input positional parameter <code>lat_sit</code> is is not of type <code>FLOAT</code> or <code>DOUBLE</code>.</p></li>
+<li><p>Error 122: The input positional parameter <code>lat_sit</code> is invalid.</p></li>
+<li><p>Error 130: The input positional parameter <code>lon_sit</code> is is not of type <code>FLOAT</code> or <code>DOUBLE</code>.</p></li>
+<li><p>Error 132: The input positional parameter <code>lon_sit</code> is invalid.</p></li>
+<li><p>Error 140: The input positional parameter <code>resolution</code> is is not of type <code>INT</code>.</p></li>
+<li><p>Error 142: The input positional parameter <code>resolution</code> is is invalid.</p></li>
+<li><p>Error 200: An exception condition occurred in function <code>haversine.pro</code>.</p></li>
+<li><p>Error 600: An exception condition occurred in the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> routine<br />
+<code>MTK_LATLON_TO_BLS</code>.</p></li>
+<li><p>Error 610: An exception condition occurred in the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> routine<br />
+<code>MTK_BLS_TO_LATLON</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>haversine.pro</code></p></li>
+<li><p><code>is_double.pro</code></p></li>
+<li><p><code>is_float.pro</code></p></li>
+<li><p><code>is_integer.pro</code></p></li>
+<li><p><code>is_numeric.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path = 168
+IDL&gt; lat_sit = -27.34439555
+IDL&gt; lon_sit = 30.13553714
+IDL&gt; lat_sit = -27.34439555D
+IDL&gt; lon_sit = 30.13553714D
+IDL&gt; resolution = 275
+IDL&gt; rc = nearest_pixel(misr_path, lat_sit, lon_sit, resolution, misr_block, lat_pix, lon_pix, distance)
+IDL&gt; PRINT, &#39;distance = &#39; + strstr(distance)
+distance = 132.22869</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2019&#8211;04&#8211;06: Version 1.0 &#8212; Initial release.</p></li>
+<li><p>2019&#8211;04&#8211;06: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+</ul></li>
+</ul>
 <h2>orbit2date</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function returns the date of acquisition of the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span>, either as a <code>STRING</code> or as a <code>LONG</code> Julian day number.</p></li>
