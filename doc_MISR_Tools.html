@@ -1171,6 +1171,73 @@ misr_path_str = &gt;P123&lt;</code></pre></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 </ul></li>
 </ul>
+<h2>pixel_corners</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function computes the geographical coordinates (latitude and longitude) of each of the 4 corners of an individual <span class="smallcaps">MISR</span> or <span class="smallcaps">MISR-HR</span> pixel.</p></li>
+<li><p><strong>Algorithm:</strong> This function relies on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> to compute these coordinates.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = pixel_corners(misr_path, misr_resolution, $</code><br />
+<code>misr_block, misr_line, misr_sample, corners, $</code><br />
+<code>VERBOSE = verbose, DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INT} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
+<li><p><code>misr_resolution {INT} [I]:</code> The selected <span class="smallcaps">MISR</span> or <span class="smallcaps">MISR-HR</span> spatial resolution: either 275 or 1100 m.</p></li>
+<li><p><code>misr_block {INT} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> number.</p></li>
+<li><p><code>misr_line {INT} [I]:</code> The selected <span class="smallcaps">MISR</span> line number within the <span class="smallcaps">Block</span>.</p></li>
+<li><p><code>misr_sample {INT} [I]:</code> The selected <span class="smallcaps">MISR</span> sample number within the line.</p></li>
+<li><p><code>corners {STRUCTURE} [O]:</code> The structure containing the latitude and longitude coordinates of the 4 corners of the specified pixel.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>VERBOSE = verbose {INT} [I] (Default value: 0):</code> Flag to enable (&gt; 0) or skip (0) reporting progress on the console: 1 only reports exiting the routine; 2 reports entering and exiting the routine, as well as key milestones; 3 reports entering and exiting the routine, and provides detailed information on the intermediary results.</p></li>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INT</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided in the call. The output structure <code>corners</code> contains the desured results.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output structure <code>corners</code> may be undefined, incomplete or incorrect.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: The input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: The input positional parameter <code>misr_resolution</code> must be either 275 or 1100.</p></li>
+<li><p>Error 130: The input positional parameter <code>misr_block</code> is invalid.</p></li>
+<li><p>Error 150: The input positional parameter <code>misr_sample</code> is invalid.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path = 168
+IDL&gt; misr_resolution = 1100
+IDL&gt; misr_block = 112
+IDL&gt; misr_line = 100
+IDL&gt; misr_sample = 240
+IDL&gt; debug = 1
+IDL&gt; rc = pixel_corners(misr_path, misr_resolution, misr_block, $
+   misr_line, misr_sample, corners, VERBOSE = verbose, $
+   DEBUG = debug, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;The NW corner is at lat = &#39;, corners.nwc_lat, $
+   &#39; and lon = &#39;, corners.nwc_lon
+The NW corner is at lat = -27.317877 and lon = 31.189198
+IDL&gt; PRINT, &#39;The SE corner is at lat = &#39;, corners.sec_lat, $
+   &#39; and lon = &#39;, corners.sec_lon
+The SE corner is at lat = -27.328760 and lon = 31.199127</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2019&#8211;04&#8211;07: Version 1.0 &#8212; Initial release.</p></li>
+<li><p>2019&#8211;04&#8211;08: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
+</ul></li>
+</ul>
 <h2>range_misr_blocks</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function reports on the range of <span class="smallcaps">MISR</span> <span class="smallcaps">Blocks</span> containing actual data (instead of fill data) in a <span class="smallcaps">L1B2</span> Global or Local Mode file.</p></li>
