@@ -89,6 +89,26 @@ FUNCTION pixel_corners, $
    ;  *   Error 150: The input positional parameter misr_sample is
    ;      invalid.
    ;
+   ;  *   Error 600: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_BLS_TO_LATLON while computing the coordinates of the
+   ;      nort-west corner.
+   ;
+   ;  *   Error 610: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_BLS_TO_LATLON while computing the coordinates of the
+   ;      nort-east corner.
+   ;
+   ;  *   Error 620: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_BLS_TO_LATLON while computing the coordinates of the
+   ;      south-west corner.
+   ;
+   ;  *   Error 630: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_BLS_TO_LATLON while computing the coordinates of the
+   ;      south-east corner.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   MISR Toolkit
@@ -127,6 +147,9 @@ FUNCTION pixel_corners, $
    ;
    ;  *   2019–04–08: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–05–04: Version 2.01 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -267,6 +290,13 @@ FUNCTION pixel_corners, $
    nwc_sample = FLOAT(misr_sample) - 0.5
    status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
       nwc_line, nwc_sample, nwc_lat, nwc_lon)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 600
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_BLS_TO_LATLON: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
    corners = CREATE_STRUCT(corners, 'nwc_lat', nwc_lat)
    corners = CREATE_STRUCT(corners, 'nwc_lon', nwc_lon)
 
@@ -275,6 +305,13 @@ FUNCTION pixel_corners, $
    nec_sample = FLOAT(misr_sample) + 0.5
    status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
       nec_line, nec_sample, nec_lat, nec_lon)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 610
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_BLS_TO_LATLON: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
    corners = CREATE_STRUCT(corners, 'nec_lat', nec_lat)
    corners = CREATE_STRUCT(corners, 'nec_lon', nec_lon)
 
@@ -283,6 +320,13 @@ FUNCTION pixel_corners, $
    swc_sample = FLOAT(misr_sample) - 0.5
    status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
       swc_line, swc_sample, swc_lat, swc_lon)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 620
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_BLS_TO_LATLON: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
    corners = CREATE_STRUCT(corners, 'swc_lat', swc_lat)
    corners = CREATE_STRUCT(corners, 'swc_lon', swc_lon)
 
@@ -291,6 +335,13 @@ FUNCTION pixel_corners, $
    sec_sample = FLOAT(misr_sample) + 0.5
    status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
       sec_line, sec_sample, sec_lat, sec_lon)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 630
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_BLS_TO_LATLON: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
    corners = CREATE_STRUCT(corners, 'sec_lat', sec_lat)
    corners = CREATE_STRUCT(corners, 'sec_lon', sec_lon)
 

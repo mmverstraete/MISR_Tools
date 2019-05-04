@@ -70,7 +70,7 @@ FUNCTION orbit2date, $
    ;
    ;  *   Error 120: Positional parameter misr_orbit is invalid.
    ;
-   ;  *   Error 200: An exception condition was encountered in MTK routine
+   ;  *   Error 600: An exception condition was encountered in MTK routine
    ;      MTK_ORBIT_TO_TIMERANGE.
    ;
    ;  DEPENDENCIES:
@@ -146,6 +146,9 @@ FUNCTION orbit2date, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–05–04: Version 2.01 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -235,11 +238,12 @@ FUNCTION orbit2date, $
 
    ;  Get the date and time information using the MISR Toolkit:
    status = MTK_ORBIT_TO_TIMERANGE(misr_orbit, start_time, end_time)
-   IF ((debug) AND (status NE 0)) THEN BEGIN
-      error_code = 200
-      excpt_cond = 'Error ' + strstr(error_code) + ' in MISR Toolkit ' + $
-         'MTK_ORBIT_TO_TIMERANGE: status = ' + strstr(status)
-      RETURN, return_code
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 600
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_ORBIT_TO_TIMERANGE: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
    ENDIF
 
    ;  Extract the date of the Orbit:

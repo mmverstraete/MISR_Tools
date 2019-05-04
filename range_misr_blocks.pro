@@ -66,10 +66,12 @@ FUNCTION range_misr_blocks, $
    ;  *   Error 110: Input positional parameter l1b2_fspec is not found or
    ;      not readable.
    ;
-   ;  *   Error 600: An exception condition occurred in routine
+   ;  *   Error 600: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
    ;      MTK_FILEATTR_GET while recovering start_block.
    ;
-   ;  *   Error 610: An exception condition occurred in routine
+   ;  *   Error 610: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
    ;      MTK_FILEATTR_GET while recovering end_block.
    ;
    ;  DEPENDENCIES:
@@ -109,6 +111,9 @@ FUNCTION range_misr_blocks, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–05–04: Version 2.01 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -195,8 +200,8 @@ FUNCTION range_misr_blocks, $
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 600
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $
-         'recovering start_block in ' + l1b2_fspec
+         ': Error message from MTK_FILEATTR_GET: ' + $
+         MTK_ERROR_MESSAGE(status)
       RETURN, error_code
    ENDIF
 
@@ -204,8 +209,8 @@ FUNCTION range_misr_blocks, $
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 610
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Error encountered in Mtk routine MTK_FILEATTR_GET while ' + $
-         'recovering end_block in ' + l1b2_fspec
+         ': Error message from MTK_FILEATTR_GET: ' + $
+         MTK_ERROR_MESSAGE(status)
       RETURN, error_code
    ENDIF
 

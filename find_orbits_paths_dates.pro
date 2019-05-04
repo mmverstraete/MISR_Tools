@@ -83,6 +83,10 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   Error 140: Positional parameter date_2 is invalid.
    ;
+   ;  *   Error 600: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_PATH_TIMERANGE_TO_ORBITLIST.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   chk_ymddate.pro
@@ -165,6 +169,9 @@ FUNCTION find_orbits_paths_dates, $
    ;  *   2019–04–04: Version 2.02 — Update the output structure to report
    ;      on the number of ORBITS found in each PATH, and to include the
    ;      list of ORBITS as an array rather than individual items.
+   ;
+   ;  *   2019–05–04: Version 2.03 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -311,6 +318,13 @@ FUNCTION find_orbits_paths_dates, $
    FOR mp = misr_path_1, misr_path_2 DO BEGIN
       status = MTK_PATH_TIMERANGE_TO_ORBITLIST(mp, date_1, date_2, $
          n_orbits, orbits_list)
+      IF (debug AND (status NE 0)) THEN BEGIN
+         error_code = 600
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+            ': Error message from MTK_SETREGION_BY_PATH_BLOCKRANGE: ' + $
+            MTK_ERROR_MESSAGE(status)
+         RETURN, error_code
+      ENDIF
       misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
          strstr(mp - misr_path_1), mp)
       misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $

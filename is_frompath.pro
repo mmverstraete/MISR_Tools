@@ -56,6 +56,10 @@ FUNCTION is_frompath, $
    ;
    ;  *   Error 120: The input positional parameter misr_orbit is invalid.
    ;
+   ;  *   Error 600: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_ORBIT_TO_PATH.
+   ;
    ;  DEPENDENCIES:
    ;
    ;  *   MISR Toolkit
@@ -80,6 +84,9 @@ FUNCTION is_frompath, $
    ;
    ;  *   2019–03–20: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–05–04: Version 2.01 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -168,6 +175,13 @@ FUNCTION is_frompath, $
 
    ;  Retrieve the MISR Path number for the input Orbit number:
    status = MTK_ORBIT_TO_PATH(misr_orbit, true_path)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 600
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_ORBIT_TO_PATH: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
 
    ;  Assess whether the input psrsmeters are consistent:
    IF (misr_path EQ true_path) THEN RETURN, 1 ELSE RETURN, 0

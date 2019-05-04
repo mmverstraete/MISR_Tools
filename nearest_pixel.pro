@@ -4,6 +4,8 @@ FUNCTION nearest_pixel, $
    lon_sit, $
    resolution, $
    misr_block, $
+   misr_line, $
+   misr_sample, $
    lat_pix, $
    lon_pix, $
    distance, $
@@ -28,7 +30,8 @@ FUNCTION nearest_pixel, $
    ;  haversine formula and a mean Earth radius of 6,371 km.
    ;
    ;  SYNTAX: rc = nearest_pixel(misr_path, lat_sit, lon_sit, $
-   ;  resolution, lat_pix, lon_pix, distance, $
+   ;  resolution, misr_block, misr_line, misr_sample, $
+   ;  lat_pix, lon_pix, distance, $
    ;  VERBOSE = verbose, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
@@ -50,6 +53,12 @@ FUNCTION nearest_pixel, $
    ;
    ;  *   misr_block {INTEGER} [O]: The MISR BLOCK number in which the
    ;      site of interest resides.
+   ;
+   ;  *   misr_line {INTEGER} [O]: The line number of the pixel in the
+   ;      BLOCK.
+   ;
+   ;  *   misr_sample {INTEGER} [O]: The sample number of the pixel in the
+   ;      line.
    ;
    ;  *   lat_pix {DOUBLE} [O]: The latitude of the center of the pixel
    ;      closest to the site of interest, in decimal degrees, within the
@@ -173,6 +182,12 @@ FUNCTION nearest_pixel, $
    ;
    ;  *   2019–04–06: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–04–12: Version 2.01 — Add the misr_line and misr_sample
+   ;      output positional parameters.
+   ;
+   ;  *   2019–05–04: Version 2.02 — Update the code to report the
+   ;      specific error message of MTK routines.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -236,13 +251,14 @@ FUNCTION nearest_pixel, $
 
    ;  Return to the calling routine with an error message if one or more
    ;  positional parameters are missing:
-      n_reqs = 8
+      n_reqs = 10
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
             ' positional parameter(s): misr_path, lat_sit, lon_sit, ' + $
-            'resolution, misr_block, lat_pix, lon_pix, distance.'
+            'resolution, misr_block, misr_line, misr_sample, lat_pix, ' + $
+            'lon_pix, distance.'
          RETURN, error_code
       ENDIF
 
@@ -331,7 +347,8 @@ FUNCTION nearest_pixel, $
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 600
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Status from MTK_LATLON_TO_BLS = ' + strstr(status)
+         ': Error message from MTK_LATLON_TO_BLS: ' + $
+         MTK_ERROR_MESSAGE(status)
       RETURN, error_code
    ENDIF
 
@@ -346,7 +363,8 @@ FUNCTION nearest_pixel, $
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 610
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-         ': Status from MTK_BLS_TO_LATLON = ' + strstr(status)
+         ': Error message from MTK_BLS_TO_LATLON: ' + $
+         MTK_ERROR_MESSAGE(status)
       RETURN, error_code
    ENDIF
 

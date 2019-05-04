@@ -192,6 +192,8 @@ FUNCTION set_roots_vers, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–04–11: Version 2.01 — Add pointers to computer rhapsody.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -291,7 +293,7 @@ FUNCTION set_roots_vers, $
 
    ;  Add other Linux computers here:
    ;     (comp_name EQ 'newname'): BEGIN
-   ;        root_dirs[0] = 'Folder containing generic input data'
+   ;        root_dirs[0] = 'Folder containing MISR AGP data'
    ;        root_dirs[1] = 'Folder containing MISR data'
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
@@ -323,9 +325,16 @@ FUNCTION set_roots_vers, $
             root_dirs[3] = '/Volumes/Output2/'
          END
 
+         (comp_name EQ 'rhapsody'): BEGIN
+            root_dirs[0] = '/Users/lhunt/Dropbox/MISR_Data/'
+            root_dirs[1] = '/Users/lhunt/Dropbox/MISR_Data/'
+            root_dirs[2] = '/Users/lhunt/Dropbox/MISR-HR/Products/'
+            root_dirs[3] = '/Users/lhunt/Dropbox/MISR-HR/Outcomes/'
+         END
+
    ;  Add another Mac computer here:
    ;     (comp_name EQ 'newname'): BEGIN
-   ;        root_dirs[0] = 'Folder containing generic input data'
+   ;        root_dirs[0] = 'Folder containing MISR AGP data'
    ;        root_dirs[1] = 'Folder containing MISR data'
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
@@ -345,7 +354,7 @@ FUNCTION set_roots_vers, $
 
    ;  Add other Microsoft Windows computer here:
    ;     (comp_name EQ 'newname'): BEGIN
-   ;        root_dirs[0] = 'Folder containing generic input data'
+   ;        root_dirs[0] = 'Folder containing MISR AGP data'
    ;        root_dirs[1] = 'Folder containing MISR data'
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
