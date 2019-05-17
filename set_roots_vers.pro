@@ -194,6 +194,9 @@ FUNCTION set_roots_vers, $
    ;      implement stricter coding standards and improve documentation.
    ;
    ;  *   2019–04–11: Version 2.01 — Add pointers to computer rhapsody.
+   ;
+   ;  *   2019–05–08: Version 2.02 — Update the defaults version number of
+   ;      MISR-HR products to V2.00-0.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -274,7 +277,7 @@ FUNCTION set_roots_vers, $
    versions[5] = 'F04_0025'   ;  L1B2 GRP RCCM
    versions[6] = 'F13_0023'   ;  L2 Aerosol
    versions[7] = 'F08_0023'   ;  L2 Land
-   versions[8] = 'V1.05-1'    ;  MISR-HR products
+   versions[8] = 'V2.00-0'    ;  MISR-HR products
 
    ;  Identify the current operating system and computer name:
    rc = get_host_info(os_name, comp_name, DEBUG = debug, $

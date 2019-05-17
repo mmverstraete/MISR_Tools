@@ -78,8 +78,6 @@ FUNCTION range_misr_blocks, $
    ;
    ;  *   MISR Toolkit
    ;
-   ;  *   is_readable.pro
-   ;
    ;  *   strstr.pro
    ;
    ;  REMARKS: None.
@@ -114,6 +112,8 @@ FUNCTION range_misr_blocks, $
    ;
    ;  *   2019–05–04: Version 2.01 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–05–17: Version 2.02 — Code simplification (FILE_TEST).
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -183,14 +183,14 @@ FUNCTION range_misr_blocks, $
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if l1b2_fspec does
-   ;  not points to a readable L1B2 file:
-      IF (is_readable(l1b2_fspec, DEBUG = debug, $
-         EXCPT_COND = excpt_cond) NE 1) THEN BEGIN
+   ;  Return to the calling routine with an error message if the input
+   ;  file 'l1b2_fspec' does not exist or is unreadable:
+      res = FILE_TEST(file_spec, /READ, /REGULAR)
+      IF (res EQ 0) THEN BEGIN
          error_code = 110
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': File specification ' + strstr(l1b2_fspec) + $
-            ' not found or unreadable.'
+         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
+            rout_name + ': The input file ' + file_spec + $
+            ' is not found, not a regular file or not readable.'
          RETURN, error_code
       ENDIF
    ENDIF
