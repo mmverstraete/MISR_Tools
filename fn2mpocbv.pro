@@ -110,6 +110,8 @@ FUNCTION fn2mpocbv, $
    ;
    ;  *   is_string.pro
    ;
+   ;  *   last_char.pro
+   ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
@@ -123,6 +125,11 @@ FUNCTION fn2mpocbv, $
    ;      multiple instances of these string patterns, the last one
    ;      encountered, when scanning filespec from left to right, sets the
    ;      definitive value of the output parameter.
+   ;
+   ;  *   NOTE 3: This function does not check the existence or the
+   ;      readability of the presumed input positional parameter filespec,
+   ;      so that file does not need to be accessible or even match an
+   ;      actual file: See the last example below.
    ;
    ;  EXAMPLES:
    ;
@@ -144,6 +151,23 @@ FUNCTION fn2mpocbv, $
    ;      misr_block_id = ><
    ;      IDL> PRINT, 'misr_version_id = >' + misr_version_id + '<'
    ;      misr_version_id = >F03_0024<
+   ;      IDL> PRINT, 'misrhr_version_id = >' + misrhr_version_id + '<'
+   ;      misrhr_version_id = ><
+   ;
+   ;      IDL> filespec = 'File_P190-O068050.B110-GM_test.AF'
+   ;      IDL> rc = fn2mpocbv(filespec, misr_mode_id, misr_path_id, misr_orbit_id, misr_camera_id, misr_block_id, misr_version_id, misrhr_version_id)
+   ;      IDL> PRINT, 'misr_mode_id = >' + misr_mode_id + '<'
+   ;      misr_mode_id = >GM<
+   ;      IDL> PRINT, 'misr_path_id = >' + misr_path_id + '<'
+   ;      misr_path_id = >P190<
+   ;      IDL> PRINT, 'misr_orbit_id = >' + misr_orbit_id + '<'
+   ;      misr_orbit_id = >O068050<
+   ;      IDL> PRINT, 'misr_camera_id = >' + misr_camera_id + '<'
+   ;      misr_camera_id = >AF<
+   ;      IDL> PRINT, 'misr_block_id = >' + misr_block_id + '<'
+   ;      misr_block_id = >B110<
+   ;      IDL> PRINT, 'misr_version_id = >' + misr_version_id + '<'
+   ;      misr_version_id = ><
    ;      IDL> PRINT, 'misrhr_version_id = >' + misrhr_version_id + '<'
    ;      misrhr_version_id = ><
    ;
@@ -176,6 +200,11 @@ FUNCTION fn2mpocbv, $
    ;
    ;  *   2019–03–01: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

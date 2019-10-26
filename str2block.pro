@@ -59,7 +59,7 @@ FUNCTION str2block, $
    ;  *   Error 110: Input positional parameter misr_block_str is not of
    ;      type STRING.
    ;
-   ;  *   Error 120: The numerical value of input positional parameter
+   ;  *   Error 200: The numerical value of input positional parameter
    ;      misr_block_str is invalid.
    ;
    ;  DEPENDENCIES:
@@ -75,10 +75,12 @@ FUNCTION str2block, $
    ;  REMARKS:
    ;
    ;  *   NOTE 1: The input positional parameter misr_block_str is
-   ;      expected to be formatted as either zzz or Bzzz where zzz is the
-   ;      numeric value of the MISR BLOCK, but a lower case b and the
-   ;      presence of blank spaces before or after this initial character,
-   ;      or after the number zzz, is tolerated. See the example below.
+   ;      expected to be a STRING formatted as Bzzz or bzzz or zzz, where
+   ;      zzz is the numeric value of the MISR BLOCK.
+   ;
+   ;  *   NOTE 2: The presence of blank spaces before or after the
+   ;      character B, or after the number zzz, is tolerated. See the
+   ;      example below.
    ;
    ;  EXAMPLES:
    ;
@@ -106,6 +108,11 @@ FUNCTION str2block, $
    ;      implement stricter coding standards and improve documentation.
    ;
    ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -189,15 +196,18 @@ FUNCTION str2block, $
 
    ;  Remove the 'B' header if it is present:
    fc = first_char(misr_block_str)
-   IF ((fc EQ 'b') OR (fc EQ 'B')) THEN $
+   IF ((fc EQ 'b') OR (fc EQ 'B')) THEN BEGIN
       misr_block_s = STRMID(misr_block_str, 1)
+   ENDIF ELSE BEGIN
+      misr_block_s = misr_block_str
+   ENDELSE
 
    misr_block = FIX(strstr(misr_block_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_block(misr_block, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         error_code = 120
+         error_code = 200
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Numerical value of input positional parameter ' + $
             'misr_block_str is invalid.'

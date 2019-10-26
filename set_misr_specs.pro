@@ -4,8 +4,11 @@ FUNCTION set_misr_specs
    ;  PURPOSE: This function returns a structure containing standard
    ;  metadata on the MISR instrument, such as the number, names and
    ;  angles of the 9 cameras; the number, names and positions of the 4
-   ;  spectral bands; and the standard sequence of 36 data channels (from
-   ;  camera DF to camera DA, and from the Blue band to the NIR band
+   ;  spectral bands; the size of GM data buffers (512 samples by 128
+   ;  lines, except 2048 samples by 512 lines for all 4 data channels of
+   ;  the nadir pointing camera or the red spectral band on the other 8
+   ;  off-nadir cameras); and the standard sequence of 36 data channels
+   ;  (from camera DF to camera DA, and from the Blue band to the NIR band
    ;  within each camera).
    ;
    ;  ALGORITHM: This function requires no input; it returns a structure
@@ -50,6 +53,10 @@ FUNCTION set_misr_specs
    ;
    ;  *   ChannelNames = [’DF_Blue’, ’DF_Green’, ’DF_Red’, ..., ’DA_Green’, ’DA_Red’, ’DA_NIR’].
    ;
+   ;  *   GMChannelLines = 128 or 512.
+   ;
+   ;  *   GMChannelSamples = 512 or 2048.
+   ;
    ;  *   NL1B2Grids = 6.
    ;
    ;  *   L1B2GridNames = [’BlueBand’, ’GreenBand’, ’RedBand’, ’NIRBand’, ’BRF Conversion Factors’, ’GeometricParameters’]
@@ -67,25 +74,30 @@ FUNCTION set_misr_specs
    ;
    ;  EXAMPLES:
    ;
-   ;      IDL> HELP, res
-   ;      ** Structure <1ba68608>, 12 tags, length=1000, data length=974, refs=1:
-   ;         TITLE           STRING    'MISR Instrument Specifications'
-   ;         NCAMERAS        INT              9
-   ;         CAMERANAMES     STRING    Array[9]
-   ;         CAMERAIDS       INT       Array[9]
-   ;         CAMERAANGLES    FLOAT     Array[9]
-   ;         NBANDS          INT              4
-   ;         BANDNAMES       STRING    Array[4]
-   ;         BANDIDS         INT       Array[4]
-   ;         BANDPOSITIONS   FLOAT     Array[4]
-   ;         NCHANNELS       INT             36
-   ;         CHANNELNAMES    STRING    Array[36]
-   ;         NL1B2GRIDS      INT              6
-   ;         L1B2GRIDNAMES   STRING    Array[6]
-   ;      IDL> res = set_misr_specs()
-   ;      IDL> PRINT, res.CAMERANAMES
+   ;      IDL> misr_specs = set_misr_specs()
+   ;      IDL> HELP, misr_specs
+   ;      ** Structure <9acc3608>, 18 tags, length=1288, data length=1268, refs=1:
+   ;      TITLE             STRING    'MISR Instrument Specifications'
+   ;      NMODES            LONG                 2
+   ;      MODENAMES         STRING    Array[2]
+   ;      NCAMERAS          LONG                 9
+   ;      CAMERANAMES       STRING    Array[9]
+   ;      CAMERAIDS         LONG      Array[9]
+   ;      CAMERAANGLES      FLOAT     Array[9]
+   ;      NBANDS            LONG                 4
+   ;      BANDNAMES         STRING    Array[4]
+   ;      BANDIDS           LONG      Array[4]
+   ;      BANDPOSITIONS     FLOAT     Array[4]
+   ;      NCHANNELS         LONG                36
+   ;      CHANNELORDER      INT       Array[36]
+   ;      CHANNELNAMES      STRING    Array[36]
+   ;      GMCHANNELLINES    INT       Array[36]
+   ;      GMCHANNELSAMPLES  INT       Array[36]
+   ;      NL1B2GRIDS        LONG                 6
+   ;      L1B2GRIDNAMES     STRING    Array[6]
+   ;      IDL> PRINT, misr_specs.CAMERANAMES
    ;      DF CF BF AF AN AA BA CA DA
-   ;      IDL> PRINT, res.BANDPOSITIONS
+   ;      IDL> PRINT, misr_specs.BANDPOSITIONS
    ;            446.400      557.500      671.700      866.400
    ;
    ;  REFERENCES:
@@ -117,6 +129,16 @@ FUNCTION set_misr_specs
    ;
    ;  *   2019–02–25: Version 2.02 — Reset the MISR camera indices to
    ;      range from 0 to 8 instead of 1 to 9.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
+   ;
+   ;  *   2019–09–15: Version 2.1.1 — Change the definition of the output
+   ;      structure element ChannelOrder from a 1-D array of 36 elements
+   ;      to a 2-D array dimensioned [9, 4]; add the GMChannelLines and
+   ;      GMChannelSamples items to the output structure. gmchannelsamples
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -174,15 +196,24 @@ FUNCTION set_misr_specs
    bandids = [0, 1, 2, 3]
    bandpositions = [446.4, 557.5, 671.7, 866.4]
 
-   ;  Information about the data channels:
+   ;  Information about the data channels and the standard size (number of
+   ;  lines and samples per line) of GM data buffers:
    nchannels = 36
-   channelorder = INTARR(nchannels)
+   channelorder = INTARR(ncameras, nbands)
    channelnames = STRARR(nchannels)
+   gmchannellines = INTARR(ncameras, nbands)
+   gmchannelsamples = INTARR(ncameras, nbands)
    k = 0
    FOR i = 0, ncameras - 1 DO BEGIN
       FOR j = 0, nbands - 1 DO BEGIN
-         channelorder[k] = k
+         channelorder[i, j] = k
          channelnames[k] = cameranames[i] + '_' + bandnames[j]
+         gmchannellines[i, j] = 128
+         gmchannelsamples[i, j] = 512
+         IF ((i EQ 4) OR (j EQ 2)) THEN BEGIN
+            gmchannellines[i, j] = 512
+            gmchannelsamples[i, j] = 2048
+         ENDIF
          k = k + 1
       ENDFOR
    ENDFOR
@@ -206,6 +237,8 @@ FUNCTION set_misr_specs
    misr_specs = CREATE_STRUCT(misr_specs, 'NChannels', nchannels)
    misr_specs = CREATE_STRUCT(misr_specs, 'ChannelOrder', channelorder)
    misr_specs = CREATE_STRUCT(misr_specs, 'ChannelNames', channelnames)
+   misr_specs = CREATE_STRUCT(misr_specs, 'GMChannelLines', gmchannellines)
+   misr_specs = CREATE_STRUCT(misr_specs, 'GMChannelSamples', gmchannelsamples)
    misr_specs = CREATE_STRUCT(misr_specs, 'NL1B2Grids', nl1b2grids)
    misr_specs = CREATE_STRUCT(misr_specs, 'L1B2GridNames', l1b2gridnames)
 

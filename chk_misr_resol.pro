@@ -108,6 +108,11 @@ FUNCTION chk_misr_resol, $
    ;      implement stricter coding standards and improve documentation.
    ;
    ;  *   2019–02–28: Version 2.01 — Documentation update.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

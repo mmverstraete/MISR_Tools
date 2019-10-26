@@ -23,7 +23,7 @@ FUNCTION orbit2date, $
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   DATAPOOL = datapool {STRING} [I] ()Default value: 0): Flag to
+   ;  *   DATAPOOL = datapool {STRING} [I] (Default value: 0): Flag to
    ;      request (1) or decline (0) returning the output as a STRING
    ;      formatted as yyy.mm.dd instead of the default STRING formatted
    ;      as yyyy-mm-dd.
@@ -95,7 +95,7 @@ FUNCTION orbit2date, $
    ;      be a STRING or a LONG integer number, depending on the setting
    ;      of the optional input keyword parameter JULIAN.
    ;
-   ;  *   NOTE 3: If the optional input key word parameters DATAPOOL and
+   ;  *   NOTE 3: If the optional input keyword parameters DATAPOOL and
    ;      JULIAN are both set, the former overrides the latter.
    ;
    ;  EXAMPLES:
@@ -149,6 +149,11 @@ FUNCTION orbit2date, $
    ;
    ;  *   2019–05–04: Version 2.01 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

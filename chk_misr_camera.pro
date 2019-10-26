@@ -95,13 +95,9 @@ FUNCTION chk_misr_camera, $
    ;      misr_camera = AA
    ;
    ;      IDL> misr_camera = 'xy'
-   ;      IDL> rc = chk_misr_camera(misr_camera, $
-   ;         /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ' + strstr(rc) + $
-   ;         ', excpt_cond = >' + excpt_cond + '<'
-   ;      rc = 200, excpt_cond = >Error 200 in CHK_MISR_CAMERA:
-   ;      Invalid misr_camera name: must be one of
-   ;      ['DF', 'CF', 'BF', 'AF', 'AN', 'AA', 'BA', 'CA', 'DA'].<
+   ;      IDL> rc = chk_misr_camera(misr_camera)
+   ;      IDL> PRINT, 'rc = ' + strstr(rc)
+   ;      rc = 200
    ;      IDL> PRINT, 'misr_camera = ' + misr_camera
    ;      misr_camera = XY
    ;
@@ -122,6 +118,11 @@ FUNCTION chk_misr_camera, $
    ;
    ;  *   2019–02–24: Version 2.01 — Minor coding and documentation
    ;      update.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

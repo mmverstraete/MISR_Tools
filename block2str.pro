@@ -85,16 +85,16 @@ FUNCTION block2str, $
    ;      IDL> misr_block = 90
    ;      IDL> rc = block2str(misr_block, misr_block_str, $
    ;         /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc =        0 excpt_cond = ><
+   ;      IDL> PRINT, 'rc = ', rc, ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc =            0, excpt_cond = ><
    ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str +'<'
    ;      misr_block_str = >B090<
    ;
    ;      IDL> misr_block = 89
    ;      IDL> rc = block2str(misr_block, misr_block_str, $
    ;         /NOHEADER, /DEBUG, EXCPT_COND = excpt_cond)
-   ;      IDL> PRINT, 'rc = ', rc, ' excpt_cond = >' + excpt_cond + '<'
-   ;      rc =        0 excpt_cond = ><
+   ;      IDL> PRINT, 'rc = ', rc, ', excpt_cond = >' + excpt_cond + '<'
+   ;      rc =            0, excpt_cond = ><
    ;      IDL> PRINT, 'misr_block_str = >' + misr_block_str +'<'
    ;      misr_block_str = >089<
    ;
@@ -131,6 +131,11 @@ FUNCTION block2str, $
    ;
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

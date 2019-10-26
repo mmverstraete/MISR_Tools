@@ -74,7 +74,18 @@ FUNCTION is_frompath, $
    ;
    ;  EXAMPLES:
    ;
-   ;      [Insert the command and its outcome]
+   ;      IDL> misr_path = 168
+   ;      IDL> misr_orbit = 68050L
+   ;      IDL> debug = 1
+   ;      IDL> res = is_frompath(misr_path, misr_orbit, $
+   ;         DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'res = ', res
+   ;      res =            1
+   ;      IDL> misr_orbit = 68051L
+   ;      IDL> res = is_frompath(misr_path, misr_orbit, $
+   ;         DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'res = ', res
+   ;      res =            0
    ;
    ;  REFERENCES: None.
    ;
@@ -87,6 +98,15 @@ FUNCTION is_frompath, $
    ;
    ;  *   2019–05–04: Version 2.01 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–06–11: Version 2.02 — Update the code to return an error
+   ;      code -1 if an exception condition is encountered in the MISR
+   ;      TOOLKIT function MTK_ORBIT_TO_PATH.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -180,7 +200,7 @@ FUNCTION is_frompath, $
       excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
          ': Error message from MTK_ORBIT_TO_PATH: ' + $
          MTK_ERROR_MESSAGE(status)
-      RETURN, error_code
+      RETURN, return_code
    ENDIF
 
    ;  Assess whether the input psrsmeters are consistent:

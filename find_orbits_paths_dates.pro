@@ -8,9 +8,9 @@ FUNCTION find_orbits_paths_dates, $
    EXCPT_COND = excpt_cond
 
    ;Sec-Doc
-   ;  PURPOSE: This function creates a list of the MISR ORBITs belonging
-   ;  to the MISR PATHs in the range misr_path_1 to misr_path_2 and
-   ;  between the dates date_1 and date_2.
+   ;  PURPOSE: This function returns a structure containing the MISR
+   ;  ORBITs belonging to the MISR PATHs in the range misr_path_1 to
+   ;  misr_path_2 and between the dates date_1 and date_2.
    ;
    ;  ALGORITHM: This function relies on the MISR TOOLKIT function
    ;  MTK_PATH_TIMERANGE_TO_ORBITLIST to deliver the required information.
@@ -172,6 +172,11 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   2019–05–04: Version 2.03 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;

@@ -58,7 +58,7 @@ FUNCTION str2path, $
    ;  *   Error 110: Input positional parameter misr_path_str is not of
    ;      type STRING.
    ;
-   ;  *   Error 120: The numerical value of input positional parameter
+   ;  *   Error 200: The numerical value of input positional parameter
    ;      misr_path_str is invalid.
    ;
    ;  DEPENDENCIES:
@@ -74,10 +74,12 @@ FUNCTION str2path, $
    ;  REMARKS:
    ;
    ;  *   NOTE 1: The input positional parameter misr_path_str is expected
-   ;      to be formatted as Pxxx where xxx is the numeric value of the
-   ;      MISR PATH, but a lower case p and the presence of blank spaces
-   ;      before or after this initial character, or after the number xxx,
-   ;      is tolerated. See the example below.
+   ;      to be a STRING formatted as Pxxx or pxxx or xxx, where xxx is
+   ;      the numeric value of the MISR PATH.
+   ;
+   ;  *   NOTE 2: The presence of blank spaces before or after the
+   ;      character P, or after the number xxx, is tolerated. See the
+   ;      example below.
    ;
    ;  EXAMPLES:
    ;
@@ -105,6 +107,11 @@ FUNCTION str2path, $
    ;      implement stricter coding standards and improve documentation.
    ;
    ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -188,15 +195,18 @@ FUNCTION str2path, $
 
    ;  Remove the 'P' header if it is present:
    fc = first_char(misr_path_str)
-   IF ((fc EQ 'p') OR (fc EQ 'P')) THEN $
+   IF ((fc EQ 'p') OR (fc EQ 'P')) THEN BEGIN
       misr_path_s = STRMID(misr_path_str, 1)
+   ENDIF ELSE BEGIN
+      misr_path_s = misr_path_str
+   ENDELSE
 
    misr_path = FIX(strstr(misr_path_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_path(misr_path, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         error_code = 120
+         error_code = 200
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Numerical value of input positional parameter misr_path_str is invalid.'
          misr_path = 0

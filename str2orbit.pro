@@ -59,7 +59,7 @@ FUNCTION str2orbit, $
    ;  *   Error 110: Input positional parameter misr_orbit_str is not of
    ;      type STRING.
    ;
-   ;  *   Error 120: The numerical value of input positional parameter
+   ;  *   Error 200: The numerical value of input positional parameter
    ;      misr_orbit_str is invalid.
    ;
    ;  DEPENDENCIES:
@@ -75,10 +75,11 @@ FUNCTION str2orbit, $
    ;  REMARKS:
    ;
    ;  *   NOTE 1: The input positional parameter misr_orbit_str is
-   ;      expected to be formatted as either yyyyyy or Oyyyyyy where
-   ;      yyyyyy is the numeric value of the MISR ORBIT, but a lower case
-   ;      o and the presence of blank spaces before or after this initial
-   ;      character, or after the number yyyyyy, is tolerated. See the
+   ;      expected to be a STRING formatted as Oyyyyyy or oyyyyyy or
+   ;      yyyyyy, where yyyyyy is the numeric value of the MISR ORBIT.
+   ;
+   ;  *   NOTE 2: The presence of blank spaces before or after the
+   ;      character O, or after the number yyyyyy, is tolerated. See the
    ;      example below.
    ;
    ;  EXAMPLES:
@@ -109,6 +110,11 @@ FUNCTION str2orbit, $
    ;      implement stricter coding standards and improve documentation.
    ;
    ;  *   2019–02–25: Version 2.01 — Bug fix: Preserve input argument.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -192,15 +198,18 @@ FUNCTION str2orbit, $
 
    ;  Remove the 'O' header if it is present:
    fc = first_char(misr_orbit_str)
-   IF ((fc EQ 'o') OR (fc EQ 'O')) THEN $
+   IF ((fc EQ 'o') OR (fc EQ 'O')) THEN BEGIN
       misr_orbit_s = STRMID(misr_orbit_str, 1)
+   ENDIF ELSE BEGIN
+      misr_orbit_s = misr_orbit_str
+   ENDELSE
 
    misr_orbit = LONG(strstr(misr_orbit_s))
 
    IF (debug) THEN BEGIN
       IF (chk_misr_orbit(misr_orbit, DEBUG = debug, $
          EXCPT_COND = excpt_cond) NE 0) THEN BEGIN
-         error_code = 120
+         error_code = 200
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Numerical value of input positional parameter ' + $
             'misr_orbit_str is invalid.'

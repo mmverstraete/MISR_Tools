@@ -114,6 +114,11 @@ FUNCTION range_misr_blocks, $
    ;      specific error message of MTK routines.
    ;
    ;  *   2019–05–17: Version 2.02 — Code simplification (FILE_TEST).
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -185,11 +190,11 @@ FUNCTION range_misr_blocks, $
 
    ;  Return to the calling routine with an error message if the input
    ;  file 'l1b2_fspec' does not exist or is unreadable:
-      res = FILE_TEST(file_spec, /READ, /REGULAR)
+      res = FILE_TEST(l1b2_fspec, /READ, /REGULAR)
       IF (res EQ 0) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + $
-            rout_name + ': The input file ' + file_spec + $
+            rout_name + ': The input file ' + l1b2_fspec + $
             ' is not found, not a regular file or not readable.'
          RETURN, error_code
       ENDIF

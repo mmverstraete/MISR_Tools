@@ -1,11 +1,10 @@
 FUNCTION pixel_corners, $
    misr_path, $
-   misr_resolution, $
+   misr_resol, $
    misr_block, $
    misr_line, $
    misr_sample, $
    corners, $
-   VERBOSE = verbose, $
    DEBUG = debug, $
    EXCPT_COND = excpt_cond
 
@@ -17,15 +16,15 @@ FUNCTION pixel_corners, $
    ;  ALGORITHM: This function relies on the MISR TOOLKIT to compute these
    ;  coordinates.
    ;
-   ;  SYNTAX: rc = pixel_corners(misr_path, misr_resolution, $
+   ;  SYNTAX: rc = pixel_corners(misr_path, misr_resol, $
    ;  misr_block, misr_line, misr_sample, corners, $
-   ;  VERBOSE = verbose, DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
    ;  *   misr_path {INT} [I]: The selected MISR PATH number.
    ;
-   ;  *   misr_resolution {INT} [I]: The selected MISR or MISR-HR spatial
+   ;  *   misr_resol {INT} [I]: The selected MISR or MISR-HR spatial
    ;      resolution: either 275 or 1100 m.
    ;
    ;  *   misr_block {INT} [I]: The selected MISR BLOCK number.
@@ -41,13 +40,6 @@ FUNCTION pixel_corners, $
    ;      pixel.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
-   ;
-   ;  *   VERBOSE = verbose {INT} [I] (Default value: 0): Flag to enable
-   ;      (> 0) or skip (0) reporting progress on the console: 1 only
-   ;      reports exiting the routine; 2 reports entering and exiting the
-   ;      routine, as well as key milestones; 3 reports entering and
-   ;      exiting the routine, and provides detailed information on the
-   ;      intermediary results.
    ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
@@ -81,8 +73,8 @@ FUNCTION pixel_corners, $
    ;
    ;  *   Error 110: The input positional parameter misr_path is invalid.
    ;
-   ;  *   Error 120: The input positional parameter misr_resolution must
-   ;      be either 275 or 1100.
+   ;  *   Error 120: The input positional parameter misr_resol must be
+   ;      either 275 or 1100.
    ;
    ;  *   Error 130: The input positional parameter misr_block is invalid.
    ;
@@ -117,6 +109,8 @@ FUNCTION pixel_corners, $
    ;
    ;  *   chk_misr_path.pro
    ;
+   ;  *   chk_misr_resol.pro
+   ;
    ;  *   strstr.pro
    ;
    ;  REMARKS: None.
@@ -124,13 +118,13 @@ FUNCTION pixel_corners, $
    ;  EXAMPLES:
    ;
    ;      IDL> misr_path = 168
-   ;      IDL> misr_resolution = 1100
+   ;      IDL> misr_resol = 1100
    ;      IDL> misr_block = 112
    ;      IDL> misr_line = 100
    ;      IDL> misr_sample = 240
    ;      IDL> debug = 1
-   ;      IDL> rc = pixel_corners(misr_path, misr_resolution, misr_block, $
-   ;         misr_line, misr_sample, corners, VERBOSE = verbose, $
+   ;      IDL> rc = pixel_corners(misr_path, misr_resol, misr_block, $
+   ;         misr_line, misr_sample, corners, $
    ;         DEBUG = debug, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'The NW corner is at lat = ', corners.nwc_lat, $
    ;         ' and lon = ', corners.nwc_lon
@@ -150,6 +144,11 @@ FUNCTION pixel_corners, $
    ;
    ;  *   2019–05–04: Version 2.01 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -199,15 +198,8 @@ FUNCTION pixel_corners, $
    return_code = 0
 
    ;  Set the default values of flags and essential output keyword parameters:
-   IF (KEYWORD_SET(verbose)) THEN BEGIN
-      IF (is_numeric(verbose)) THEN verbose = FIX(verbose) ELSE verbose = 0
-      IF (verbose LT 0) THEN verbose = 0
-      IF (verbose GT 3) THEN verbose = 3
-   ENDIF ELSE verbose = 0
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
    excpt_cond = ''
-
-   IF (verbose GT 1) THEN PRINT, 'Entering ' + rout_name + '.'
 
    IF (debug) THEN BEGIN
 
@@ -218,7 +210,7 @@ FUNCTION pixel_corners, $
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameter(s): misr_path, misr_resolution, ' + $
+            ' positional parameter(s): misr_path, misr_resol, ' + $
             'misr_block, misr_line, misr_sample, corners.'
          RETURN, error_code
       ENDIF
@@ -234,11 +226,12 @@ FUNCTION pixel_corners, $
       ENDIF
 
    ;  Return to the calling routine with an error message if the input
-   ;  positional parameter 'misr_resolution' is invalid:
-      IF ((misr_resolution NE 275) AND (misr_resolution NE 1100)) THEN BEGIN
+   ;  positional parameter 'misr_resol' is invalid:
+      rc = chk_misr_resol(misr_resol, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
          error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': The input positional parameter misr_resolution must be ' + $
+            ': The input positional parameter misr_resol must be ' + $
             'either 275 or 1100.'
          RETURN, error_code
       ENDIF
@@ -255,27 +248,27 @@ FUNCTION pixel_corners, $
 
    ;  Return to the calling routine with an error message if the input
    ;  positional parameter 'misr_line' is invalid or inconsistent with the
-   ;  input positional parameter 'misr_resolution':
+   ;  input positional parameter 'misr_resol':
       IF ((misr_line LT 0) OR $
-         ((misr_resolution EQ 275) AND (misr_line GT 512)) OR $
-         ((misr_resolution EQ 1100) AND (misr_line GT 128))) THEN BEGIN
+         ((misr_resol EQ 275) AND (misr_line GT 512)) OR $
+         ((misr_resol EQ 1100) AND (misr_line GT 128))) THEN BEGIN
          error_code = 140
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': The input positional parameter misr_line is invalid or ' + $
-            'inconsistent with the specified misr_resolution.'
+            'inconsistent with the specified misr_resol.'
          RETURN, error_code
       ENDIF
 
    ;  Return to the calling routine with an error message if the input
    ;  positional parameter 'misr_sample' is invalid or inconsistent with the
-   ;  input positional parameter 'misr_resolution':
+   ;  input positional parameter 'misr_resol':
       IF ((misr_sample LT 0) OR $
-         ((misr_resolution EQ 275) AND (misr_sample GT 2048)) OR $
-         ((misr_resolution EQ 1100) AND (misr_sample GT 512))) THEN BEGIN
+         ((misr_resol EQ 275) AND (misr_sample GT 2048)) OR $
+         ((misr_resol EQ 1100) AND (misr_sample GT 512))) THEN BEGIN
          error_code = 150
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': The input positional parameter misr_sample is invalid or ' + $
-            'inconsistent with the specified misr_resolution.'
+            'inconsistent with the specified misr_resol.'
          RETURN, error_code
       ENDIF
    ENDIF
@@ -288,7 +281,7 @@ FUNCTION pixel_corners, $
    ;  Compute the latitude and longitude coordinates of the nort-west corner:
    nwc_line = FLOAT(misr_line) - 0.5
    nwc_sample = FLOAT(misr_sample) - 0.5
-   status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
+   status = MTK_BLS_TO_LATLON(misr_path, misr_resol, misr_block, $
       nwc_line, nwc_sample, nwc_lat, nwc_lon)
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 600
@@ -303,7 +296,7 @@ FUNCTION pixel_corners, $
    ;  Compute the latitude and longitude coordinates of the nort-east corner:
    nec_line = FLOAT(misr_line) - 0.5
    nec_sample = FLOAT(misr_sample) + 0.5
-   status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
+   status = MTK_BLS_TO_LATLON(misr_path, misr_resol, misr_block, $
       nec_line, nec_sample, nec_lat, nec_lon)
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 610
@@ -318,7 +311,7 @@ FUNCTION pixel_corners, $
    ;  Compute the latitude and longitude coordinates of the south-west corner:
    swc_line = FLOAT(misr_line) + 0.5
    swc_sample = FLOAT(misr_sample) - 0.5
-   status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
+   status = MTK_BLS_TO_LATLON(misr_path, misr_resol, misr_block, $
       swc_line, swc_sample, swc_lat, swc_lon)
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 620
@@ -333,7 +326,7 @@ FUNCTION pixel_corners, $
    ;  Compute the latitude and longitude coordinates of the south-east corner:
    sec_line = FLOAT(misr_line) + 0.5
    sec_sample = FLOAT(misr_sample) + 0.5
-   status = MTK_BLS_TO_LATLON(misr_path, misr_resolution, misr_block, $
+   status = MTK_BLS_TO_LATLON(misr_path, misr_resol, misr_block, $
       sec_line, sec_sample, sec_lat, sec_lon)
    IF (debug AND (status NE 0)) THEN BEGIN
       error_code = 630
@@ -345,6 +338,6 @@ FUNCTION pixel_corners, $
    corners = CREATE_STRUCT(corners, 'sec_lat', sec_lat)
    corners = CREATE_STRUCT(corners, 'sec_lon', sec_lon)
 
-   RETURN, 0
+   RETURN, return_code
 
 end

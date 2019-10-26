@@ -9,7 +9,6 @@ FUNCTION nearest_pixel, $
    lat_pix, $
    lon_pix, $
    distance, $
-   VERBOSE = verbose, $
    DEBUG = debug, $
    EXCPT_COND = excpt_cond
 
@@ -32,7 +31,7 @@ FUNCTION nearest_pixel, $
    ;  SYNTAX: rc = nearest_pixel(misr_path, lat_sit, lon_sit, $
    ;  resolution, misr_block, misr_line, misr_sample, $
    ;  lat_pix, lon_pix, distance, $
-   ;  VERBOSE = verbose, DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -72,13 +71,6 @@ FUNCTION nearest_pixel, $
    ;      and the center of the closest pixel.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
-   ;
-   ;  *   VERBOSE = verbose {INT} [I] (Default value: 0): Flag to enable
-   ;      (> 0) or skip (0) reporting progress on the console: 1 only
-   ;      reports exiting the routine; 2 reports entering and exiting the
-   ;      routine, as well as key milestones; 3 reports entering and
-   ;      exiting the routine, and provides detailed information on the
-   ;      intermediary results.
    ;
    ;  *   DEBUG = debug {INT} [I] (Default value: 0): Flag to activate (1)
    ;      or skip (0) debugging tests.
@@ -170,7 +162,8 @@ FUNCTION nearest_pixel, $
    ;      IDL> lat_sit = -27.34439555D
    ;      IDL> lon_sit = 30.13553714D
    ;      IDL> resolution = 275
-   ;      IDL> rc = nearest_pixel(misr_path, lat_sit, lon_sit, resolution, misr_block, lat_pix, lon_pix, distance)
+   ;      IDL> rc = nearest_pixel(misr_path, lat_sit, lon_sit, resolution, $
+   ;         misr_block, lat_pix, lon_pix, distance)
    ;      IDL> PRINT, 'distance = ' + strstr(distance)
    ;      distance = 132.22869
    ;
@@ -188,6 +181,11 @@ FUNCTION nearest_pixel, $
    ;
    ;  *   2019–05–04: Version 2.02 — Update the code to report the
    ;      specific error message of MTK routines.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -237,15 +235,8 @@ FUNCTION nearest_pixel, $
    return_code = 0
 
    ;  Set the default values of flags and essential output keyword parameters:
-   IF (KEYWORD_SET(verbose)) THEN BEGIN
-      IF (is_numeric(verbose)) THEN verbose = FIX(verbose) ELSE verbose = 0
-      IF (verbose LT 0) THEN verbose = 0
-      IF (verbose GT 3) THEN verbose = 3
-   ENDIF ELSE verbose = 0
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
    excpt_cond = ''
-
-   IF (verbose GT 1) THEN PRINT, 'Entering ' + rout_name + '.'
 
    IF (debug) THEN BEGIN
 
@@ -381,8 +372,6 @@ FUNCTION nearest_pixel, $
          ': ' + excpt_cond
       RETURN, error_code
    ENDIF
-
-   IF (verbose GT 0) THEN PRINT, 'Exiting ' + rout_name + '.'
 
    RETURN, return_code
 

@@ -197,6 +197,11 @@ FUNCTION set_roots_vers, $
    ;
    ;  *   2019–05–08: Version 2.02 — Update the defaults version number of
    ;      MISR-HR products to V2.00-0.
+   ;
+   ;  *   2019–08–20: Version 2.1.0 — Adopt revised coding and
+   ;      documentation standards (in particular regarding the assignment
+   ;      of numeric return codes), and switch to 3-parts version
+   ;      identifiers.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -273,8 +278,8 @@ FUNCTION set_roots_vers, $
    versions[1] = 'F03_0024'   ;  Browse
    versions[2] = 'F03_0024'   ;  L1B2 GRP Terrain projected GM
    versions[3] = 'F03_0024'   ;  L1B2 GRP Terrain projected LM
-   versions[4] = 'F03_0013'   ;  GEOP
-   versions[5] = 'F04_0025'   ;  L1B2 GRP RCCM
+   versions[4] = 'F03_0013'   ;  Geometric Parameter
+   versions[5] = 'F04_0025'   ;  RCCM
    versions[6] = 'F13_0023'   ;  L2 Aerosol
    versions[7] = 'F08_0023'   ;  L2 Land
    versions[8] = 'V2.00-0'    ;  MISR-HR products
