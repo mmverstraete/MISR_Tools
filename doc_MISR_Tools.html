@@ -635,31 +635,26 @@ IDL&gt; PRINT, misr_orbits
 </ul>
 <h2>fn2mpocbv</h2>
 <ul>
-<li><p><strong>Purpose:</strong> This function extracts metadata on the <span class="smallcaps">MISR</span> or <span class="smallcaps">MISR-HR</span> <span class="smallcaps">Mode</span>, <span class="smallcaps">Path</span>, <span class="smallcaps">Orbit</span>, <span class="smallcaps">Camera</span>, <span class="smallcaps">Block</span> and <span class="smallcaps">Version</span> identifiers from the file specification <span class="smallcaps">filespec</span>.</p></li>
-<li><p><strong>Algorithm:</strong> This function is designed to work with standard <span class="smallcaps">MISR</span> and <span class="smallcaps">MISR-HR</span> filenames, such as the <span class="smallcaps">L1B2</span> Radiance, RCCM, RPV or TIP products (but may work with other filenames, or even arbitrary text strings), as long as they include string patterns of the following types:</p>
-<ul>
-<li><p><code>&lt;mM&gt;</code>, where <code>m</code> is either <code>G</code> or <code>L</code>, designating the <code>misr_mode_id</code>,</p></li>
-<li><p><code>&lt;Pxxx&gt;</code>, where <code>xxx</code> is a 3-digit string, designating the <code>misr_path_id</code>,</p></li>
-<li><p><code>&lt;Oyyyyyy&gt;</code>, where <code>yyyyyy</code> is a 6-digit string, designating the <code>misr_orbit_id</code>,</p></li>
-<li><p><code>&lt;cc&gt;</code>, where <code>cc</code> is a 2-character string, designating the <code>misr_camera_id</code>,</p></li>
-<li><p><code>&lt;Bzzz&gt;</code>, where <code>zzz</code> is a 3-digit string, designating the <code>misr_block_id</code>,</p></li>
-<li><p><code>&lt;Fnn_nnnn&gt;</code>, where <code>nn</code> and <code>nnnn</code> are 2- and 4-digit strings, respectively, designating the <code>misr_version_id</code>,</p></li>
-<li><p><code>&lt;Vmm.mm-mm&gt;</code>, where <code>mm</code> are numeric strings, designating the <code>misrhr_version_id</code>,</p></li>
-</ul>
-<p>and where the symbols <code>&lt;</code> and <code>&gt;</code> stand for either the underscore (<code>_</code>), the dash (<code>-</code>) or the full stop (<code>.</code>) separator. If any one of these string patterns is missing in <span class="smallcaps">filespec</span>, the corresponding output identifer is set to a null string.</p></li>
-<li><p><strong>Syntax:</strong> <code>rc = fn2mpocbv(filespec, misr_mode_id, misr_path_id, $</code><br />
-<code>misr_orbit_id, misr_camera_id, misr_block_id, $</code><br />
-<code>misr_version_id, misrhr_version_id, $</code><br />
+<li><p><strong>Purpose:</strong> This function extracts metadata on the contents of a <span class="smallcaps">MISR</span> or <span class="smallcaps">MISR-HR</span> file, based on its specification <span class="smallcaps">filespec</span>.</p></li>
+<li><p><strong>Algorithm:</strong> This function first determines the category of the input positional parameters <code>filespec</code>, and then extracts the relevant metadata items for that file. Output positional parameters that are not relevant or not found in the file name are returned as empty strings.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, $</code><br />
+<code>misr_path_id, misr_orbit_id, misr_camera_id, $</code><br />
+<code>misr_block_id, misr_product_id, misr_version_id, $</code><br />
+<code>misrhr_product_id, misrhr_version_id, $</code><br />
 <code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
 <li><p><strong>Positional parameters [Input/Output]:</strong></p>
 <ul>
 <li><p><code>filespec {STRING} [I]:</code> An arbitrary character string, typically the filename of a <span class="smallcaps">MISR</span> data file or <span class="smallcaps">MISR-HR</span> product file.</p></li>
-<li><p><code>misr_mode_id {STRING} [O]:</code> The <span class="smallcaps">Mode</span> identifer.</p></li>
+<li><p><code>misr_cat_id {STRING} [O]:</code> The category of the file: {<span class="smallcaps">MISR</span> | <span class="smallcaps">MISR-HR</span> | <span class="smallcaps">Other</span>}.</p></li>
+<li><p><code>misr_mode_id {STRING} [O]:</code> The <span class="smallcaps">Mode</span> identifer: {<span class="smallcaps">GM</span> | <span class="smallcaps">LM</span>}.</p></li>
 <li><p><code>misr_path_id {INTEGER} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> identifer.</p></li>
 <li><p><code>misr_orbit_id {LONG} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> identifer.</p></li>
 <li><p><code>misr_camera_id {STRING} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Camera</span> identifer.</p></li>
 <li><p><code>misr_block_id {STRING} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> identifer.</p></li>
+<li><p><code>misr_product_id {STRING} [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Product</span>: {<span class="smallcaps">BR</span> | <span class="smallcaps">L1B2</span> | <span class="smallcaps">RCCM</span> | <span class="smallcaps">GMP</span> | <span class="smallcaps">L2AERO</span> | <span class="smallcaps">L2LAND</span>}.</p></li>
 <li><p><code>misr_version_id STRING [O]:</code> The <span class="smallcaps">MISR</span> <span class="smallcaps">Version</span> identifer.</p></li>
+<li><p><code>misrhr_product_id {STRING} [O]:</code> The <span class="smallcaps">MISR-HR</span> <span class="smallcaps">Product</span>: {<span class="smallcaps">L1B3</span> | <span class="smallcaps">BRF</span> | <span class="smallcaps">RPV</span> | <span class="smallcaps">TIP</span>}.</p></li>
+<li><p><code>misrhr_version_id STRING [O]:</code> The <span class="smallcaps">MISR-HR</span> <span class="smallcaps">Version</span> identifer.</p></li>
 </ul></li>
 <li><p><strong>Keyword parameters [Input/Output]:</strong></p>
 <ul>
@@ -669,9 +664,8 @@ IDL&gt; PRINT, misr_orbits
 <li><p><strong>Returned value type:</strong> <code>INT</code>.</p></li>
 <li><p><strong>Outcome:</strong></p>
 <ul>
-<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output arguments <code>misr_mode_id</code>, <code>misr_path_id</code>, <code>misr_orbit_id</code>,<br />
-<code>misr_camera_id</code>, <code>misr_block_id</code>, <code>misr_version_id</code> and <code>misrhr_version_id</code> contain the desired information.</p></li>
-<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output arguments <code>misr_mode_id</code>, <code>misr_path_id</code>, <code>misr_orbit_id</code>, <code>misr_camera_id</code>, <code>misr_block_id</code>, <code>misr_version_id</code> and <code>misrhr_version_id</code> may be undefined, incomplete or useless.</p></li>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> was set and if the optional output keyword parameter <code>EXCPT_COND</code> was provided in the call. The output positional parameters contain the desired information.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameters may be invalid.</p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong></p>
 <ul>
@@ -681,22 +675,23 @@ IDL&gt; PRINT, misr_orbits
 <li><p><strong>Dependencies:</strong></p>
 <ul>
 <li><p><code>is_string.pro</code></p></li>
-<li><p><code>last_char.pro</code></p></li>
 <li><p><code>strstr.pro</code></p></li>
 </ul></li>
 <li><p><strong>Remarks:</strong></p>
 <ul>
-<li><p><strong>Note 1:</strong> It is highly recommended to call this function with specific output positional parameter names such as <code>misr_mode_id</code>, <code>misr_path_id</code>, etc., to avoid interfering with values possibly already set in the calling routine.</p></li>
-<li><p><strong>Note 2:</strong> If the input positional parameter <code>filespec</code> contains multiple instances of these string patterns, the last one encountered, when scanning <code>filespec</code> from left to right, sets the definitive value of the output parameter.</p></li>
+<li><p><strong>Note 1:</strong> It is highly recommended to call this function with specific output positional parameter names such as <code>misr_mode_id</code>, <code>misr_path_id</code>, etc. (rather than <code>misr_mode</code>, <code>misr_path</code>, etc.), to avoid interfering with values possibly already set in the calling routine.</p></li>
+<li><p><strong>Note 2:</strong> If the input positional parameter <code>filespec</code> contains multiple instances of recognizable string patterns (which should not occur for proper file names), the first one encountered, when scanning <code>filespec</code> from left to right, sets the definitive value of the output parameter.</p></li>
 <li><p><strong>Note 3:</strong> This function does not check the existence or the readability of the presumed input positional parameter <code>filespec</code>, so that file does not need to be accessible or even match an actual file: See the last example below.</p></li>
+<li><p><strong>Note 4:</strong> Output positional parameters that are irrelevant for the specified <code>filespec</code> are assigned an empty string. For instance, the <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span> is undefined for <span class="smallcaps">MISR-HR</span> product files, and, conversely, the <code>misrhr_version_id</code> is undefined for <span class="smallcaps">MISR</span> data files.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
-<pre><code>IDL&gt; filespec = &#39;/Volumes/MISR_Data3&#8297;/P168&#8297;/L1_GM&#8297;/
-   MISR_AM1_GRP_TERRAIN_GM_P168_O005839_DA_F03_0024.hdf&#39;
-IDL&gt; rc = fn2mpocbv(filespec, misr_mode_id, $
-   misr_path_id, misr_orbit_id, misr_camera_id, $
-   misr_block_id, misr_version_id, misrhr_version_id, $
-   DEBUG = debug, EXCPT_COND = excpt_cond)
+<pre><code>IDL&gt; filespec = &#39;MISR_AM1_GRP_TERRAIN_GM_P168_O005839_DA_F03_0024.hdf&#39;
+IDL&gt; rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, misr_path_id, $
+IDL&gt;    misr_orbit_id, misr_camera_id, misr_block_id, misr_product_id, $
+IDL&gt;    misr_version_id, misrhr_product_id, misrhr_version_id, $
+IDL&gt;    DEBUG = debug, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;misr_cat_id = &#39; + misr_cat_id
+misr_cat_id = MISR
 IDL&gt; PRINT, &#39;misr_mode_id = &gt;&#39; + misr_mode_id + &#39;&lt;&#39;
 misr_mode_id = &gt;GM&lt;
 IDL&gt; PRINT, &#39;misr_path_id = &gt;&#39; + misr_path_id + &#39;&lt;&#39;
@@ -707,27 +702,40 @@ IDL&gt; PRINT, &#39;misr_camera_id = &gt;&#39; + misr_camera_id + &#39;&lt;&#39;
 misr_camera_id = &gt;DA&lt;
 IDL&gt; PRINT, &#39;misr_block_id = &gt;&#39; + misr_block_id + &#39;&lt;&#39;
 misr_block_id = &gt;&lt;
+IDL&gt; PRINT, &#39;misr_product_id = &gt;&#39; + misr_product_id + &#39;&lt;&#39;
+misr_product_id = &gt;L1B2&lt;
 IDL&gt; PRINT, &#39;misr_version_id = &gt;&#39; + misr_version_id + &#39;&lt;&#39;
 misr_version_id = &gt;F03_0024&lt;
+IDL&gt; PRINT, &#39;misrhr_product_id = &gt;&#39; + misrhr_product_id + &#39;&lt;&#39;
+misrhr_product_id = &gt;&lt;
 IDL&gt; PRINT, &#39;misrhr_version_id = &gt;&#39; + misrhr_version_id + &#39;&lt;&#39;
 misrhr_version_id = &gt;&lt;
 
-IDL&gt; filespec = &#39;File_P190-O068050.B110-GM_test.AF&#39;
-IDL&gt; rc = fn2mpocbv(filespec, misr_mode_id, misr_path_id, misr_orbit_id, misr_camera_id, misr_block_id, misr_version_id, misrhr_version_id)
+IDL&gt; filespec = &#39;MISR_HR_TIP_20180310_P168_O096942_B112_V2.00-0_GRN.hdf&#39;
+IDL&gt; rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, misr_path_id, $
+IDL&gt;    misr_orbit_id, misr_camera_id, misr_block_id, misr_product_id, $
+IDL&gt;    misr_version_id, misrhr_product_id, misrhr_version_id, $
+IDL&gt;    DEBUG = debug, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;misr_cat_id = &#39; + misr_cat_id
+misr_cat_id = MISR-HR
 IDL&gt; PRINT, &#39;misr_mode_id = &gt;&#39; + misr_mode_id + &#39;&lt;&#39;
-misr_mode_id = &gt;GM&lt;
+misr_mode_id = &gt;&lt;
 IDL&gt; PRINT, &#39;misr_path_id = &gt;&#39; + misr_path_id + &#39;&lt;&#39;
-misr_path_id = &gt;P190&lt;
+misr_path_id = &gt;P168&lt;
 IDL&gt; PRINT, &#39;misr_orbit_id = &gt;&#39; + misr_orbit_id + &#39;&lt;&#39;
-misr_orbit_id = &gt;O068050&lt;
+misr_orbit_id = &gt;O096942&lt;
 IDL&gt; PRINT, &#39;misr_camera_id = &gt;&#39; + misr_camera_id + &#39;&lt;&#39;
-misr_camera_id = &gt;AF&lt;
+misr_camera_id = &gt;&lt;
 IDL&gt; PRINT, &#39;misr_block_id = &gt;&#39; + misr_block_id + &#39;&lt;&#39;
-misr_block_id = &gt;B110&lt;
+misr_block_id = &gt;B112&lt;
+IDL&gt; PRINT, &#39;misr_product_id = &gt;&#39; + misr_product_id + &#39;&lt;&#39;
+misr_product_id = &gt;&lt;
 IDL&gt; PRINT, &#39;misr_version_id = &gt;&#39; + misr_version_id + &#39;&lt;&#39;
 misr_version_id = &gt;&lt;
+IDL&gt; PRINT, &#39;misrhr_product_id = &gt;&#39; + misrhr_product_id + &#39;&lt;&#39;
+misrhr_product_id = &gt;TIP&lt;
 IDL&gt; PRINT, &#39;misrhr_version_id = &gt;&#39; + misrhr_version_id + &#39;&lt;&#39;
-misrhr_version_id = &gt;&lt;</code></pre></li>
+misrhr_version_id = &gt;V2.00-0&lt;</code></pre></li>
 <li><p><strong>References:</strong> None.</p></li>
 <li><p><strong>Versioning:</strong></p>
 <ul>
@@ -740,6 +748,7 @@ misrhr_version_id = &gt;&lt;</code></pre></li>
 <li><p>2019&#8211;02&#8211;26: Version 1.7 &#8212; Generalize the applicability of this function by extracting the <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span>, <span class="smallcaps">Path</span>, <span class="smallcaps">Orbit</span>, <span class="smallcaps">Camera</span>, <span class="smallcaps">Block</span> and <span class="smallcaps">Version</span> identifiers on the basis of string patterns rather than relying on <span class="smallcaps">MISR</span> Toolkit, change its name from <code>fn2mpocv_l1b2.pro</code> to<code>fn2mpocbv.pro</code> and move this function to the <span class="smallcaps">MISR_Tools</span> repository.</p></li>
 <li><p>2019&#8211;03&#8211;01: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 <li><p>2019&#8211;08&#8211;20: Version 2.1.0 &#8212; Adopt revised coding and documentation standards (in particular regarding the assignment of numeric return codes), and switch to 3-parts version identifiers.</p></li>
+<li><p>2019&#8211;11&#8211;06: Version 2.2.0 &#8212; Major rewrite of the function to add the output positional parameters <code>misr_cat_id</code>, <code>misr_product_id</code> and <code>misrhr_product_id</code>, recognize more <span class="smallcaps">MISR</span> and <span class="smallcaps">MISR-HR</span> products, and update the documentation.</p></li>
 </ul></li>
 </ul>
 <h2>hr2lr</h2>

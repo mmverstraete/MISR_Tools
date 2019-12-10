@@ -1,54 +1,32 @@
 FUNCTION fn2mpocbv, $
    filespec, $
+   misr_cat_id, $
    misr_mode_id, $
    misr_path_id, $
    misr_orbit_id, $
    misr_camera_id, $
    misr_block_id, $
+   misr_product_id, $
    misr_version_id, $
+   misrhr_product_id, $
    misrhr_version_id, $
    DEBUG = debug, $
    EXCPT_COND = excpt_cond
 
    ;Sec-Doc
-   ;  PURPOSE: This function extracts metadata on the MISR or MISR-HR
-   ;  MODE, PATH, ORBIT, CAMERA, BLOCK and VERSION identifiers from the
-   ;  file specification FILESPEC.
+   ;  PURPOSE: This function extracts metadata on the contents of a MISR
+   ;  or MISR-HR file, based on its specification FILESPEC.
    ;
-   ;  ALGORITHM: This function is designed to work with standard MISR and
-   ;  MISR-HR filenames, such as the L1B2 Radiance, RCCM, RPV or TIP
-   ;  products (but may work with other filenames, or even arbitrary text
-   ;  strings), as long as they include string patterns of the following
-   ;  types:
+   ;  ALGORITHM: This function first determines the category of the input
+   ;  positional parameters filespec, and then extracts the relevant
+   ;  metadata items for that file. Output positional parameters that are
+   ;  not relevant or not found in the file name are returned as empty
+   ;  strings.
    ;
-   ;  *   <mM>, where m is either G or L, designating the misr_mode_id,
-   ;
-   ;  *   <Pxxx>, where xxx is a 3-digit string, designating the
-   ;      misr_path_id,
-   ;
-   ;  *   <Oyyyyyy>, where yyyyyy is a 6-digit string, designating the
-   ;      misr_orbit_id,
-   ;
-   ;  *   <cc>, where cc is a 2-character string, designating the
-   ;      misr_camera_id,
-   ;
-   ;  *   <Bzzz>, where zzz is a 3-digit string, designating the
-   ;      misr_block_id,
-   ;
-   ;  *   <Fnn_nnnn>, where nn and nnnn are 2- and 4-digit strings,
-   ;      respectively, designating the misr_version_id,
-   ;
-   ;  *   <Vmm.mm-mm>, where mm are numeric strings, designating the
-   ;      misrhr_version_id,
-   ;
-   ;  and where the symbols < and > stand for either the underscore (_),
-   ;  the dash (-) or the full stop (.) separator. If any one of these
-   ;  string patterns is missing in FILESPEC, the corresponding output
-   ;  identifer is set to a null string.
-   ;
-   ;  SYNTAX: rc = fn2mpocbv(filespec, misr_mode_id, misr_path_id, $
-   ;  misr_orbit_id, misr_camera_id, misr_block_id, $
-   ;  misr_version_id, misrhr_version_id, $
+   ;  SYNTAX: rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, $
+   ;  misr_path_id, misr_orbit_id, misr_camera_id, $
+   ;  misr_block_id, misr_product_id, misr_version_id, $
+   ;  misrhr_product_id, misrhr_version_id, $
    ;  DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
@@ -56,7 +34,10 @@ FUNCTION fn2mpocbv, $
    ;  *   filespec {STRING} [I]: An arbitrary character string, typically
    ;      the filename of a MISR data file or MISR-HR product file.
    ;
-   ;  *   misr_mode_id {STRING} [O]: The MODE identifer.
+   ;  *   misr_cat_id {STRING} [O]: The category of the file: {MISR |
+   ;      MISR-HR | OTHER}.
+   ;
+   ;  *   misr_mode_id {STRING} [O]: The MODE identifer: {GM | LM}.
    ;
    ;  *   misr_path_id {INTEGER} [O]: The MISR PATH identifer.
    ;
@@ -66,7 +47,15 @@ FUNCTION fn2mpocbv, $
    ;
    ;  *   misr_block_id {STRING} [O]: The MISR BLOCK identifer.
    ;
+   ;  *   misr_product_id {STRING} [O]: The MISR PRODUCT: {BR | L1B2 |
+   ;      RCCM | GMP | L2AERO | L2LAND}.
+   ;
    ;  *   misr_version_id STRING [O]: The MISR VERSION identifer.
+   ;
+   ;  *   misrhr_product_id {STRING} [O]: The MISR-HR PRODUCT: {L1B3 | BRF
+   ;      | RPV | TIP}.
+   ;
+   ;  *   misrhr_version_id STRING [O]: The MISR-HR VERSION identifer.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -85,19 +74,15 @@ FUNCTION fn2mpocbv, $
    ;      returns 0, and the output keyword parameter excpt_cond is set to
    ;      a null string, if the optional input keyword parameter DEBUG was
    ;      set and if the optional output keyword parameter EXCPT_COND was
-   ;      provided in the call. The output arguments misr_mode_id,
-   ;      misr_path_id, misr_orbit_id,
-   ;      misr_camera_id, misr_block_id, misr_version_id and
-   ;      misrhr_version_id contain the desired information.
+   ;      provided in the call. The output positional parameters contain
+   ;      the desired information.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code, and the output keyword parameter
    ;      excpt_cond contains a message about the exception condition
    ;      encountered, if the optional input keyword parameter DEBUG is
    ;      set and if the optional output keyword parameter EXCPT_COND is
-   ;      provided. The output arguments misr_mode_id, misr_path_id,
-   ;      misr_orbit_id, misr_camera_id, misr_block_id, misr_version_id
-   ;      and misrhr_version_id may be undefined, incomplete or useless.
+   ;      provided. The output positional parameters may be invalid.
    ;
    ;  EXCEPTION CONDITIONS:
    ;
@@ -110,35 +95,42 @@ FUNCTION fn2mpocbv, $
    ;
    ;  *   is_string.pro
    ;
-   ;  *   last_char.pro
-   ;
    ;  *   strstr.pro
    ;
    ;  REMARKS:
    ;
    ;  *   NOTE 1: It is highly recommended to call this function with
    ;      specific output positional parameter names such as misr_mode_id,
-   ;      misr_path_id, etc., to avoid interfering with values possibly
-   ;      already set in the calling routine.
+   ;      misr_path_id, etc. (rather than misr_mode, misr_path, etc.), to
+   ;      avoid interfering with values possibly already set in the
+   ;      calling routine.
    ;
    ;  *   NOTE 2: If the input positional parameter filespec contains
-   ;      multiple instances of these string patterns, the last one
-   ;      encountered, when scanning filespec from left to right, sets the
-   ;      definitive value of the output parameter.
+   ;      multiple instances of recognizable string patterns (which should
+   ;      not occur for proper file names), the first one encountered,
+   ;      when scanning filespec from left to right, sets the definitive
+   ;      value of the output parameter.
    ;
    ;  *   NOTE 3: This function does not check the existence or the
    ;      readability of the presumed input positional parameter filespec,
    ;      so that file does not need to be accessible or even match an
    ;      actual file: See the last example below.
    ;
+   ;  *   NOTE 4: Output positional parameters that are irrelevant for the
+   ;      specified filespec are assigned an empty string. For instance,
+   ;      the MISR MODE is undefined for MISR-HR product files, and,
+   ;      conversely, the misrhr_version_id is undefined for MISR data
+   ;      files.
+   ;
    ;  EXAMPLES:
    ;
-   ;      IDL> filespec = '/Volumes/MISR_Data3⁩/P168⁩/L1_GM⁩/
-   ;         MISR_AM1_GRP_TERRAIN_GM_P168_O005839_DA_F03_0024.hdf'
-   ;      IDL> rc = fn2mpocbv(filespec, misr_mode_id, $
-   ;         misr_path_id, misr_orbit_id, misr_camera_id, $
-   ;         misr_block_id, misr_version_id, misrhr_version_id, $
-   ;         DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> filespec = 'MISR_AM1_GRP_TERRAIN_GM_P168_O005839_DA_F03_0024.hdf'
+   ;      IDL> rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, misr_path_id, $
+   ;      IDL>    misr_orbit_id, misr_camera_id, misr_block_id, misr_product_id, $
+   ;      IDL>    misr_version_id, misrhr_product_id, misrhr_version_id, $
+   ;      IDL>    DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'misr_cat_id = ' + misr_cat_id
+   ;      misr_cat_id = MISR
    ;      IDL> PRINT, 'misr_mode_id = >' + misr_mode_id + '<'
    ;      misr_mode_id = >GM<
    ;      IDL> PRINT, 'misr_path_id = >' + misr_path_id + '<'
@@ -149,27 +141,40 @@ FUNCTION fn2mpocbv, $
    ;      misr_camera_id = >DA<
    ;      IDL> PRINT, 'misr_block_id = >' + misr_block_id + '<'
    ;      misr_block_id = ><
+   ;      IDL> PRINT, 'misr_product_id = >' + misr_product_id + '<'
+   ;      misr_product_id = >L1B2<
    ;      IDL> PRINT, 'misr_version_id = >' + misr_version_id + '<'
    ;      misr_version_id = >F03_0024<
+   ;      IDL> PRINT, 'misrhr_product_id = >' + misrhr_product_id + '<'
+   ;      misrhr_product_id = ><
    ;      IDL> PRINT, 'misrhr_version_id = >' + misrhr_version_id + '<'
    ;      misrhr_version_id = ><
    ;
-   ;      IDL> filespec = 'File_P190-O068050.B110-GM_test.AF'
-   ;      IDL> rc = fn2mpocbv(filespec, misr_mode_id, misr_path_id, misr_orbit_id, misr_camera_id, misr_block_id, misr_version_id, misrhr_version_id)
+   ;      IDL> filespec = 'MISR_HR_TIP_20180310_P168_O096942_B112_V2.00-0_GRN.hdf'
+   ;      IDL> rc = fn2mpocbv(filespec, misr_cat_id, misr_mode_id, misr_path_id, $
+   ;      IDL>    misr_orbit_id, misr_camera_id, misr_block_id, misr_product_id, $
+   ;      IDL>    misr_version_id, misrhr_product_id, misrhr_version_id, $
+   ;      IDL>    DEBUG = debug, EXCPT_COND = excpt_cond)
+   ;      IDL> PRINT, 'misr_cat_id = ' + misr_cat_id
+   ;      misr_cat_id = MISR-HR
    ;      IDL> PRINT, 'misr_mode_id = >' + misr_mode_id + '<'
-   ;      misr_mode_id = >GM<
+   ;      misr_mode_id = ><
    ;      IDL> PRINT, 'misr_path_id = >' + misr_path_id + '<'
-   ;      misr_path_id = >P190<
+   ;      misr_path_id = >P168<
    ;      IDL> PRINT, 'misr_orbit_id = >' + misr_orbit_id + '<'
-   ;      misr_orbit_id = >O068050<
+   ;      misr_orbit_id = >O096942<
    ;      IDL> PRINT, 'misr_camera_id = >' + misr_camera_id + '<'
-   ;      misr_camera_id = >AF<
+   ;      misr_camera_id = ><
    ;      IDL> PRINT, 'misr_block_id = >' + misr_block_id + '<'
-   ;      misr_block_id = >B110<
+   ;      misr_block_id = >B112<
+   ;      IDL> PRINT, 'misr_product_id = >' + misr_product_id + '<'
+   ;      misr_product_id = ><
    ;      IDL> PRINT, 'misr_version_id = >' + misr_version_id + '<'
    ;      misr_version_id = ><
+   ;      IDL> PRINT, 'misrhr_product_id = >' + misrhr_product_id + '<'
+   ;      misrhr_product_id = >TIP<
    ;      IDL> PRINT, 'misrhr_version_id = >' + misrhr_version_id + '<'
-   ;      misrhr_version_id = ><
+   ;      misrhr_version_id = >V2.00-0<
    ;
    ;  REFERENCES: None.
    ;
@@ -205,6 +210,11 @@ FUNCTION fn2mpocbv, $
    ;      documentation standards (in particular regarding the assignment
    ;      of numeric return codes), and switch to 3-parts version
    ;      identifiers.
+   ;
+   ;  *   2019–11–06: Version 2.2.0 — Major rewrite of the function to add
+   ;      the output positional parameters misr_cat_id, misr_product_id
+   ;      and misrhr_product_id, recognize more MISR and MISR-HR products,
+   ;      and update the documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -258,26 +268,30 @@ FUNCTION fn2mpocbv, $
    excpt_cond = ''
 
    ;  Initialize the output positional parameter(s):
+   misr_cat_id = ''
    misr_mode_id = ''
    misr_path_id = ''
    misr_orbit_id = ''
    misr_camera_id = ''
    misr_block_id = ''
+   misr_product_id = ''
    misr_version_id = ''
+   misrhr_product_id = ''
    misrhr_version_id = ''
 
    IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-      n_reqs = 8
+      n_reqs = 11
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameter(s): filespec, misr_mode_id, ' + $
-            'misr_path_id, misr_orbit_id, misr_camera_id, ' + $
-            'misr_block_id, misr_version_id, misrhr_version_id.'
+            ' positional parameter(s): filespec, misr_cat_id, ' + $
+            'misr_mode_id, misr_path_id, misr_orbit_id, misr_camera_id, ' + $
+            'misr_block_id, misr_product_id, misr_version_id, ' + $
+            'misrhr_product_id, misrhr_version_id.'
          RETURN, error_code
       ENDIF
 
@@ -291,65 +305,112 @@ FUNCTION fn2mpocbv, $
       ENDIF
    ENDIF
 
-   ;  Split the basename of the input positional parameter 'filespec' using the
-   ;  underscore, dash and full stop characters as separators:
-   parts = STRSPLIT(FILE_BASENAME(filespec), '_-.', COUNT = count, /EXTRACT)
+   ;  Distinguish the file category. WARNING: The sequence of IF statements
+   ;  is important because MISR-HR L1B3 files will first be identified as
+   ;  being of category 'MISR' before being reassigned to 'MISR-HR' since
+   ;  those filenames include both identifiers:
+   cat_misr = STRPOS(filespec, 'MISR')
+   cat_misrhr = STRPOS(filespec, 'MISRHR')
+   cat_misr_hr = STRPOS(filespec, 'MISR_HR')
 
-   ;  Inspect each components and extract possible MISR metadata information:
-   FOR i = 0, count - 1 DO BEGIN
-      p = STRUPCASE(parts[i])
-      IF ((STRLEN(p) EQ 2) AND $
-         ((first_char(p) EQ 'G') OR (first_char(p) EQ 'L')) AND $
-         (last_char(p) EQ 'M')) THEN BEGIN
-         misr_mode_id = p
-         CONTINUE
+   IF (cat_misr GE 0) THEN misr_cat_id = 'MISR'
+   IF (cat_misrhr GE 0) THEN misr_cat_id = 'MISR-HR'
+   IF (cat_misr_hr GE 0) THEN misr_cat_id = 'MISR-HR'
+   IF (misr_cat_id EQ '') THEN misr_cat_id = 'Other'
+
+   ;  Extract the Mode and/or Product from MISR files:
+   IF (misr_cat_id EQ 'MISR') THEN BEGIN
+
+      pos = STRPOS(filespec, '_BR_GM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'GM'
+         misr_product_id = 'BR'
       ENDIF
-      IF ((STRLEN(p) EQ 4) AND $
-         (first_char(p) EQ 'P') AND $
-         (is_numstring(STRMID(p, 1)) EQ 1)) THEN BEGIN
-         misr_path_id = p
-         CONTINUE
+
+      pos = STRPOS(filespec, '_GRP_TERRAIN_GM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'GM'
+         misr_product_id = 'L1B2'
       ENDIF
-      IF ((STRLEN(p) EQ 7) AND $
-         (first_char(p) EQ 'O') AND $
-         (is_numstring(STRMID(p, 1)) EQ 1)) THEN BEGIN
-         misr_orbit_id = p
-         CONTINUE
+
+      pos = STRPOS(filespec, '_GRP_ELLIPSOID_GM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'GM'
+         misr_product_id = 'L1B2'
       ENDIF
-      IF ((STRLEN(p) EQ 2) AND $
-         ((first_char(p) EQ 'A') OR (first_char(p) EQ 'B') OR $
-            (first_char(p) EQ 'C') OR (first_char(p) EQ 'D')) AND $
-         ((last_char(p) EQ 'A') OR (last_char(p) EQ 'F'))) THEN BEGIN
-         misr_camera_id = p
-         CONTINUE
+
+      pos = STRPOS(filespec, '_GRP_TERRAIN_LM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'LM'
+         misr_product_id = 'L1B2'
       ENDIF
-      IF ((STRLEN(p) EQ 4) AND $
-         (first_char(p) EQ 'B') AND $
-         (is_numstring(STRMID(p, 1)) EQ 1)) THEN BEGIN
-         misr_block_id = p
-         CONTINUE
+
+      pos = STRPOS(filespec, '_GRP_ELLIPSOID_LM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'LM'
+         misr_product_id = 'L1B2'
       ENDIF
-      IF ((STRLEN(p) EQ 3) AND $
-         (first_char(p) EQ 'F')) THEN BEGIN
-         IF ((is_numstring(STRMID(p, 1)) EQ 1) AND $
-            (i EQ (count - 3)) AND $
-            (STRLEN(parts[i + 1]) EQ 4) AND $
-            (is_numstring(parts[i + 1]) EQ 1)) THEN BEGIN
-            misr_version_id = p + '_' + parts[i + 1]
-            CONTINUE
-         ENDIF
+
+      pos = STRPOS(filespec, '_GRP_RCCM_GM_')
+      IF (pos GT 0) THEN BEGIN
+         misr_mode_id = 'GM'
+         misr_product_id = 'RCCM'
       ENDIF
-      IF ((STRLEN(p) EQ 2) AND $
-         (first_char(p) EQ 'V')) THEN BEGIN
-         IF ((is_numstring(STRMID(p, 1)) EQ 1) AND $
-            (i EQ (count - 4)) AND $
-            (is_numstring(parts[i + 1]) EQ 1) AND $
-            (is_numstring(parts[i + 2]) EQ 1)) THEN BEGIN
-            misrhr_version_id = p + '.' + parts[i + 1] + '-' + parts[i + 2]
-            CONTINUE
-         ENDIF
+
+      pos = STRPOS(filespec, '_GP_GMP_')
+      IF (pos GT 0) THEN misr_product_id = 'GMP'
+
+      pos = STRPOS(filespec, '_AS_AEROSOL_')
+      IF (pos GT 0) THEN misr_product_id = 'L2AERO'
+
+      pos = STRPOS(filespec, '_AS_LAND_')
+      IF (pos GT 0) THEN misr_product_id = 'L2LAND'
+   ENDIF
+
+   ;  Extract the Product from MISR-HR files (note that L1B3 files are the
+   ;  only ones that contain the identifier '_GRP_TERRAIN_GM_' while being
+   ;  assigned to the category 'MISR-HR'):
+   IF (misr_cat_id EQ 'MISR-HR') THEN BEGIN
+
+      pos = STRPOS(filespec, '_GRP_TERRAIN_GM_')
+      IF (pos GT 0) THEN BEGIN
+         misrhr_product_id = 'L1B3'
+         misr_mode_id = ''
       ENDIF
-   ENDFOR
+
+      pos = STRPOS(filespec, '_BRF_')
+      IF (pos GT 0) THEN misrhr_product_id = 'BRF'
+
+      pos = STRPOS(filespec, '_RPV_')
+      IF (pos GT 0) THEN misrhr_product_id = 'RPV'
+
+      pos = STRPOS(filespec, '_TIP_')
+      IF (pos GT 0) THEN misrhr_product_id = 'TIP'
+   ENDIF
+
+   ;  Extract the Path, Orbit, Camera and Block:
+   str = STREGEX(filespec, 'P[0-9]{3}', /EXTRACT)
+   IF (str NE '') THEN misr_path_id = str
+
+   str = STREGEX(filespec, 'O[0-9]{6}', /EXTRACT)
+   IF (str NE '') THEN misr_orbit_id = str
+
+   str = STREGEX(filespec, '_[ABCD][AFN]_', /EXTRACT)
+   IF (str NE '') THEN misr_camera_id = STRMID(str, 1, 2)
+
+   str = STREGEX(filespec, 'B[0-9]{3}', /EXTRACT)
+   IF (str NE '') THEN misr_block_id = str
+
+   ;  Extract the version numbers:
+   IF (misr_cat_id EQ 'MISR') THEN BEGIN
+      str = STREGEX(filespec, 'F[0-9]{2}_[0-9]{4}', /EXTRACT)
+      misr_version_id = str
+   ENDIF
+
+   IF (misr_cat_id EQ 'MISR-HR') THEN BEGIN
+      str = STREGEX(filespec, 'V[0-9]{1,2}\.[0-9]{2}-[0-9]{1,2}', /EXTRACT)
+      misrhr_version_id = str
+   ENDIF
 
    RETURN, return_code
 
