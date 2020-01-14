@@ -202,6 +202,11 @@ FUNCTION set_roots_vers, $
    ;      documentation standards (in particular regarding the assignment
    ;      of numeric return codes), and switch to 3-parts version
    ;      identifiers.
+   ;
+   ;  *   2020–01–05: Version 2.1.1 — Update the code to exit gracefully
+   ;      if the operating system and computer names were properly
+   ;      identified but the corresponding values of root_dirs were not
+   ;      set.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -306,6 +311,13 @@ FUNCTION set_roots_vers, $
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
 
+         ELSE: BEGIN
+            error_code = 99
+            excpt_cond = 'Warning ' + strstr(error_code) + ' in ' + $
+               rout_name + ': ' + excpt_cond + ', the variable root_dirs ' + $
+               'was not set for computer ' + comp_name + '.'
+         RETURN, error_code
+         END
       ENDCASE
    ENDIF
 
@@ -347,6 +359,14 @@ FUNCTION set_roots_vers, $
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
 
+         ELSE: BEGIN
+            error_code = 99
+            excpt_cond = 'Warning ' + strstr(error_code) + ' in ' + $
+               rout_name + ': ' + excpt_cond + ', the variable root_dirs ' + $
+               'was not set for computer ' + comp_name + '.'
+         RETURN, error_code
+         END
+
       ENDCASE
    ENDIF
 
@@ -366,6 +386,14 @@ FUNCTION set_roots_vers, $
    ;        root_dirs[1] = 'Folder containing MISR data'
    ;        root_dirs[2] = 'Folder containing MISR-HR products'
    ;        root_dirs[3] = 'Folder containing MISR-HR outcomes'
+
+         ELSE: BEGIN
+            error_code = 99
+            excpt_cond = 'Warning ' + strstr(error_code) + ' in ' + $
+               rout_name + ': ' + excpt_cond + ', the variable root_dirs ' + $
+               'was not set for computer ' + comp_name + '.'
+         RETURN, error_code
+         END
 
 		ENDCASE
    ENDIF
