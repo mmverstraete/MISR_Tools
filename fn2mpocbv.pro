@@ -211,14 +211,14 @@ FUNCTION fn2mpocbv, $
    ;      of numeric return codes), and switch to 3-parts version
    ;      identifiers.
    ;
-   ;  *   2019–11–06: Version 2.2.0 — Major rewrite of the function to add
+   ;  *   2019–11–06: Version 2.1.1 — Major rewrite of the function to add
    ;      the output positional parameters misr_cat_id, misr_product_id
    ;      and misrhr_product_id, recognize more MISR and MISR-HR products,
    ;      and update the documentation.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2020 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -230,7 +230,7 @@ FUNCTION fn2mpocbv, $
    ;      conditions:
    ;
    ;      1. The above copyright notice and this permission notice shall
-   ;      be included in its entirety in all copies or substantial
+   ;      be included in their entirety in all copies or substantial
    ;      portions of the Software.
    ;
    ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY

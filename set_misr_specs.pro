@@ -51,15 +51,21 @@ FUNCTION set_misr_specs
    ;
    ;  *   ChannelOrder = [0, 1, 2, ..., 33, 34, 35].
    ;
-   ;  *   ChannelNames = [’DF_Blue’, ’DF_Green’, ’DF_Red’, ..., ’DA_Green’, ’DA_Red’, ’DA_NIR’].
+   ;  *   ChannelNames = [’DF_Blue’, ’DF_Green’, ’DF_Red’, ..., $
+   ;      ’DA_Green’, ’DA_Red’, ’DA_NIR’].
    ;
    ;  *   GMChannelLines = 128 or 512.
    ;
    ;  *   GMChannelSamples = 512 or 2048.
    ;
+   ;  *   GMChannelResolution = 1100 or 275.
+   ;
+   ;  *   LMChannelResolution = 275.
+   ;
    ;  *   NL1B2Grids = 6.
    ;
-   ;  *   L1B2GridNames = [’BlueBand’, ’GreenBand’, ’RedBand’, ’NIRBand’, ’BRF Conversion Factors’, ’GeometricParameters’]
+   ;  *   L1B2GridNames = [’BlueBand’, ’GreenBand’, ’RedBand’, $
+   ;      ’NIRBand’, ’BRF Conversion Factors’, ’GeometricParameters’]
    ;
    ;  EXCEPTION CONDITIONS: None.
    ;
@@ -76,25 +82,26 @@ FUNCTION set_misr_specs
    ;
    ;      IDL> misr_specs = set_misr_specs()
    ;      IDL> HELP, misr_specs
-   ;      ** Structure <9acc3608>, 18 tags, length=1288, data length=1268, refs=1:
-   ;      TITLE             STRING    'MISR Instrument Specifications'
-   ;      NMODES            LONG                 2
-   ;      MODENAMES         STRING    Array[2]
-   ;      NCAMERAS          LONG                 9
-   ;      CAMERANAMES       STRING    Array[9]
-   ;      CAMERAIDS         LONG      Array[9]
-   ;      CAMERAANGLES      FLOAT     Array[9]
-   ;      NBANDS            LONG                 4
-   ;      BANDNAMES         STRING    Array[4]
-   ;      BANDIDS           LONG      Array[4]
-   ;      BANDPOSITIONS     FLOAT     Array[4]
-   ;      NCHANNELS         LONG                36
-   ;      CHANNELORDER      INT       Array[36]
-   ;      CHANNELNAMES      STRING    Array[36]
-   ;      GMCHANNELLINES    INT       Array[36]
-   ;      GMCHANNELSAMPLES  INT       Array[36]
-   ;      NL1B2GRIDS        LONG                 6
-   ;      L1B2GRIDNAMES     STRING    Array[6]
+   ;      ** Structure <342e1208>, 20 tags, length=1432, data length=1412, refs=1:
+   ;      TITLE                 STRING   'MISR Instrument Specifications'
+   ;      NMODES                LONG     2
+   ;      MODENAMES             STRING   Array[2]
+   ;      NCAMERAS              LONG     9
+   ;      CAMERANAMES           STRING   Array[9]
+   ;      CAMERAIDS             LONG     Array[9]
+   ;      CAMERAANGLES          FLOAT    Array[9]
+   ;      NBANDS                LONG     4
+   ;      BANDNAMES             STRING   Array[4]
+   ;      BANDIDS               LONG     Array[4]
+   ;      BANDPOSITIONS         FLOAT    Array[4]
+   ;      NCHANNELS             LONG     36
+   ;      CHANNELORDER          INT      Array[9, 4]
+   ;      GMCHANNELLINES        INT      Array[9, 4]
+   ;      GMCHANNELSAMPLES      INT      Array[9, 4]
+   ;      GMCHANNELRESOLUTION   INT      Array[9, 4]
+   ;      LMCHANNELRESOLUTION   INT      Array[9, 4]
+   ;      NL1B2GRIDS            LONG     6
+   ;      L1B2GRIDNAMES         STRING   Array[6]
    ;      IDL> PRINT, misr_specs.CAMERANAMES
    ;      DF CF BF AF AN AA BA CA DA
    ;      IDL> PRINT, misr_specs.BANDPOSITIONS
@@ -138,11 +145,15 @@ FUNCTION set_misr_specs
    ;  *   2019–09–15: Version 2.1.1 — Change the definition of the output
    ;      structure element ChannelOrder from a 1-D array of 36 elements
    ;      to a 2-D array dimensioned [9, 4]; add the GMChannelLines and
-   ;      GMChannelSamples items to the output structure. gmchannelsamples
+   ;      GMChannelSamples items to the output structure misr_specs.
+   ;
+   ;  *   2020–04–04: Version 2.1.2 — Add the fields GMChannelResolution
+   ;      and LMChannelResolution, both INT arrays dimensioned [9, 4], to
+   ;      the output structure misr_specs.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
-   ;  *   Copyright (C) 2017-2019 Michel M. Verstraete.
+   ;  *   Copyright (C) 2017-2020 Michel M. Verstraete.
    ;
    ;      Permission is hereby granted, free of charge, to any person
    ;      obtaining a copy of this software and associated documentation
@@ -154,7 +165,7 @@ FUNCTION set_misr_specs
    ;      conditions:
    ;
    ;      1. The above copyright notice and this permission notice shall
-   ;      be included in its entirety in all copies or substantial
+   ;      be included in their entirety in all copies or substantial
    ;      portions of the Software.
    ;
    ;      2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY
@@ -203,6 +214,8 @@ FUNCTION set_misr_specs
    channelnames = STRARR(nchannels)
    gmchannellines = INTARR(ncameras, nbands)
    gmchannelsamples = INTARR(ncameras, nbands)
+   gmchannelresol = INTARR(ncameras, nbands)
+   lmchannelresol = MAKE_ARRAY(ncameras, nbands, TYPE = 2, VALUE = 275)
    k = 0
    FOR i = 0, ncameras - 1 DO BEGIN
       FOR j = 0, nbands - 1 DO BEGIN
@@ -210,9 +223,11 @@ FUNCTION set_misr_specs
          channelnames[k] = cameranames[i] + '_' + bandnames[j]
          gmchannellines[i, j] = 128
          gmchannelsamples[i, j] = 512
+         gmchannelresol[i, j] = 1100
          IF ((i EQ 4) OR (j EQ 2)) THEN BEGIN
             gmchannellines[i, j] = 512
             gmchannelsamples[i, j] = 2048
+            gmchannelresol[i, j] = 275
          ENDIF
          k = k + 1
       ENDFOR
@@ -239,6 +254,8 @@ FUNCTION set_misr_specs
    misr_specs = CREATE_STRUCT(misr_specs, 'ChannelNames', channelnames)
    misr_specs = CREATE_STRUCT(misr_specs, 'GMChannelLines', gmchannellines)
    misr_specs = CREATE_STRUCT(misr_specs, 'GMChannelSamples', gmchannelsamples)
+   misr_specs = CREATE_STRUCT(misr_specs, 'GMChannelResolution', gmchannelresol)
+   misr_specs = CREATE_STRUCT(misr_specs, 'LMChannelResolution', lmchannelresol)
    misr_specs = CREATE_STRUCT(misr_specs, 'NL1B2Grids', nl1b2grids)
    misr_specs = CREATE_STRUCT(misr_specs, 'L1B2GridNames', l1b2gridnames)
 

@@ -1,30 +1,27 @@
-FUNCTION find_orbits_paths_dates, $
-   misr_path_1, $
-   misr_path_2, $
+FUNCTION find_orbits_path_dates, $
+   misr_path, $
    date_1, $
    date_2, $
-   misr_orbits, $
+   orbits, $
    DEBUG = debug, $
    EXCPT_COND = excpt_cond
 
    ;Sec-Doc
    ;  PURPOSE: This function returns a structure containing the MISR
-   ;  ORBITs belonging to the MISR PATHs in the range misr_path_1 to
-   ;  misr_path_2 and between the dates date_1 and date_2.
+   ;  ORBITs belonging to the specified misr_path and acquired between the
+   ;  dates date_1 and date_2.
    ;
    ;  ALGORITHM: This function relies on the MISR TOOLKIT functions
-   ;  MTK_PATH_TIMERANGE_TO_ORBITLIST to deliver the required information.
+   ;  MTK_PATH_TIMERANGE_TO_ORBITLIST and MTK_ORBIT_TO_TIMERANGE to
+   ;  deliver the required information.
    ;
-   ;  SYNTAX: rc = find_orbits_paths_dates (misr_path_1, misr_path_2, $
+   ;  SYNTAX: rc = find_orbits_paths_dates (misr_path, $
    ;  date_1, date_2, misr_orbits, DEBUG = debug, EXCPT_COND = excpt_cond)
    ;
    ;  POSITIONAL PARAMETERS [INPUT/OUTPUT]:
    ;
-   ;  *   misr_path_1 {INT} [I] (Default value: None): The first MISR PATH
-   ;      to be considered.
-   ;
-   ;  *   misr_path_2 {INT} [I] (Default value: None): The last MISR PATH
-   ;      to be considered.
+   ;  *   misr_path {INT} [I] (Default value: None): The MISR PATH to be
+   ;      considered.
    ;
    ;  *   date_1 {STRING} [I/O] (Default value: None): The first date to
    ;      be considered, formatted as YYYY-MM-DD, where YYYY, MM and DD
@@ -37,9 +34,9 @@ FUNCTION find_orbits_paths_dates, $
    ;      date is formatted as YYYY-MM-DDT23:59:59Z.
    ;
    ;  *   misr_orbits {STRUCTURE} [O]: A structure containing the MISR
-   ;      ORBITs belonging to each PATH within the range
-   ;      [misr_path_1, misr_path_2] and acquired in the time period
-   ;      [date_1, date_2].
+   ;      ORBITs belonging to misr_path and acquired in the time period
+   ;      [date_1, date_2]. The dates, as well as the timing of the start
+   ;      and end of each orbit are also provided.
    ;
    ;  KEYWORD PARAMETERS [INPUT/OUTPUT]:
    ;
@@ -60,8 +57,8 @@ FUNCTION find_orbits_paths_dates, $
    ;      set and if the optional output keyword parameter EXCPT_COND was
    ;      provided in the call. The output positional parameter
    ;      misr_orbits is a stucture containing a list of the MISR ORBITS
-   ;      belonging to the PATHS in the range misr_path_1 to misr_path_2
-   ;      and between the dates date_1 and date_2.
+   ;      belonging to the misr_path and acquired between date_1 and
+   ;      date_2.
    ;
    ;  *   If an exception condition has been detected, this function
    ;      returns a non-zero error code, and the output keyword parameter
@@ -77,15 +74,17 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   Error 110: Positional parameter misr_path_1 is invalid.
    ;
-   ;  *   Error 120: Positional parameter misr_path_2 is invalid.
+   ;  *   Error 120: Positional parameter date_1 is invalid.
    ;
-   ;  *   Error 130: Positional parameter date_1 is invalid.
-   ;
-   ;  *   Error 140: Positional parameter date_2 is invalid.
+   ;  *   Error 130: Positional parameter date_2 is invalid.
    ;
    ;  *   Error 600: An exception condition occurred in the MISR TOOLKIT
    ;      routine
    ;      MTK_PATH_TIMERANGE_TO_ORBITLIST.
+   ;
+   ;  *   Error 610: An exception condition occurred in the MISR TOOLKIT
+   ;      routine
+   ;      MTK_ORBIT_TO_TIMERANGE.
    ;
    ;  DEPENDENCIES:
    ;
@@ -116,13 +115,8 @@ FUNCTION find_orbits_paths_dates, $
    ;
    ;  *   NOTE 4: The positional parameters date_1 and date_2 are both
    ;      expected to be provided as STRINGs formatted as YYYY-MM-DD on
-   ;      input, and are reformatted as YYYY-MM-DDT00:00:00Z and
-   ;      YYYY-MM-DDT23:59:59Z on output, respectively, as required by the
-   ;      MISR TOOLKIT.
-   ;
-   ;  *   NOTE 5: If the value of the input positional parameter date_1
-   ;      precedes the start of MISR’s operational phase, it is reset to
-   ;      that date.
+   ;      input, and are reformatted as YYYY-MM-DDT00:00:00Z on output, as
+   ;      required by the MISR TOOLKIT.
    ;
    ;  EXAMPLES:
    ;
@@ -133,24 +127,21 @@ FUNCTION find_orbits_paths_dates, $
    ;      IDL> rc = find_orbits_paths_dates(misr_path_1, misr_path_2, $
    ;         date_1, date_2, misr_orbits, /DEBUG, EXCPT_COND = excpt_cond)
    ;      IDL> PRINT, 'rc = ', rc, ' and excpt_cond = >' + excpt_cond + '<'
-   ;      rc =            0 and excpt_cond = ><
+   ;      rc =        0 and excpt_cond = ><
    ;      IDL> HELP, misr_orbits
-   ;      ** Structure <30305c78>, 8 tags, length=56, data length=48, refs=1:
+   ;      ** Structure <1abeedc8>, 8 tags, length=40, data length=38, refs=1:
    ;         TITLE           STRING    'MISR_Orbits'
-   ;         N_MISR_PATHS    LONG                 2
-   ;         MISR_PATH_0     INT            168
-   ;         MISR_PATH_0_NORBITS
-   ;                         LONG                 2
-   ;         MISR_PATH_0_ORBITS
-   ;                         LONG      Array[2]
-   ;         MISR_PATH_1     INT            169
-   ;         MISR_PATH_1_NORBITS
-   ;                         LONG                 2
-   ;         MISR_PATH_1_ORBITS
-   ;                         LONG      Array[2]
-   ;      IDL> PRINT, misr_orbits
-   ;      { MISR_Orbits   2   168   2   53604   53837
-   ;                          169   2   53473   53706}
+   ;         N_MISR_PATHS    INT              2
+   ;         MISR_PATH_168   INT            168
+   ;         MISR_PATH_168_ORBIT_0
+   ;                         LONG             53604
+   ;         MISR_PATH_168_ORBIT_1
+   ;                         LONG             53837
+   ;         MISR_PATH_169   INT            169
+   ;         MISR_PATH_169_ORBIT_0
+   ;                         LONG             53473
+   ;         MISR_PATH_169_ORBIT_1
+   ;                         LONG             53706
    ;      IDL> PRINT, misr_orbits
    ;      { MISR_Orbits 2 168 53604 53837 169 53473 53706}
    ;
@@ -171,7 +162,7 @@ FUNCTION find_orbits_paths_dates, $
    ;  *   2019–01–28: Version 2.00 — Systematic update of all routines to
    ;      implement stricter coding standards and improve documentation.
    ;
-   ;  *   2019–04–04: Version 2.01 — Code update: Use the new function
+   ;  *   2019–04–04: Version 2.01 — Bug fix: Use the new function
    ;      chk_ymddate.pro instead of the old function chk_date_ymd.pro.
    ;
    ;  *   2019–04–04: Version 2.02 — Update the output structure to report
@@ -186,9 +177,8 @@ FUNCTION find_orbits_paths_dates, $
    ;      of numeric return codes), and switch to 3-parts version
    ;      identifiers.
    ;
-   ;  *   2020–03–23: Version 2.1.1 — Update the code to reset date_1 to
-   ;      the date of the start of MISR operations if it preceded it, and
-   ;      update the documentation.
+   ;  *   2020–03–15: Version 2.1.1 — Add dates and times of the start and
+   ;      end of each orbit in the output structure.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -241,47 +231,29 @@ FUNCTION find_orbits_paths_dates, $
    IF (KEYWORD_SET(debug)) THEN debug = 1 ELSE debug = 0
    excpt_cond = ''
 
-   ;  Initialize the output positional parameter(s):
-   misr_orbits = {}
-
    IF (debug) THEN BEGIN
 
    ;  Return to the calling routine with an error message if this function is
    ;  called with the wrong number of required positional parameters:
-      n_reqs = 5
+      n_reqs = 4
       IF (N_PARAMS() NE n_reqs) THEN BEGIN
          error_code = 100
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': Routine must be called with ' + strstr(n_reqs) + $
-            ' positional parameters: misr_path_1, misr_path_2, ' + $
-            'date_1, date_2, misr_orbits.'
+            ' positional parameters: misr_path, date_1, date_2, ' + $
+            'misr_orbits.'
          RETURN, error_code
       ENDIF
 
-   ;  Return to the calling routine with an error message if misr_path_1 or
-   ;  misr_path_2 is invalid:
-      rc1 = chk_misr_path(misr_path_1, DEBUG = debug, EXCPT_COND = excpt_cond)
-      IF (rc1 NE 0) THEN BEGIN
+   ;  Return to the calling routine with an error message if misr_path is
+   ;  invalid:
+      rc = chk_misr_path(misr_path, DEBUG = debug, EXCPT_COND = excpt_cond)
+      IF (rc NE 0) THEN BEGIN
          error_code = 110
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond
          RETURN, error_code
       ENDIF
-      rc2 = chk_misr_path(misr_path_2, DEBUG = debug, EXCPT_COND = excpt_cond)
-      IF (rc2 NE 0) THEN BEGIN
-         error_code = 120
-         excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': ' + excpt_cond
-         RETURN, error_code
-      ENDIF
-   ENDIF
-
-   ;  Verify that 'misr_path_2' is larger than or equal to 'misr_path_1', and
-   ;  if not, exchange the two:
-   IF (misr_path_1 GT misr_path_2) THEN BEGIN
-      temp = misr_path_1
-      misr_path_1 = misr_path_2
-      misr_path_2 = temp
    ENDIF
 
    ;  Define the numeric output date elements of the two string input dates:
@@ -295,13 +267,13 @@ FUNCTION find_orbits_paths_dates, $
    ;  Return to the calling routine with an error message if date_1 or date_2
    ;  is invalid:
       IF (rc1 NE 0) THEN BEGIN
-         error_code = 130
+         error_code = 120
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond1
          RETURN, error_code
       ENDIF
       IF (rc2 NE 0) THEN BEGIN
-         error_code = 140
+         error_code = 130
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
             ': ' + excpt_cond2
          RETURN, error_code
@@ -310,50 +282,78 @@ FUNCTION find_orbits_paths_dates, $
 
    ;  Verify that 'date_2' is later than or equal to 'date_1', and if not,
    ;  exchange the two:
-   d_1 = JULDAY(month_1, day_1, day_1)
+   d_1 = JULDAY(month_1, day_1, year_1)
    d_2 = JULDAY(month_2, day_2, year_2)
    IF (d_1 GT d_2) THEN BEGIN
       temp = date_1
       date_1 = date_2
       date_2 = temp
-      d_1 = d_2
    ENDIF
-
-   ;  Reset date_1 to the first day of MISR operation if it precedes that date:
-   mdat = JULDAY(2, 24, 2000)
-   IF (d_1 LT mdat) THEN date_1 = '2000-02-24'
 
    ;  Update the dates to match the formating requirements of the MISR Toolkit:
    date_1 = date_1 + 'T00:00:00Z'
    date_2 = date_2 + 'T23:59:59Z'
 
-   ;  Compute the number of MISR Paths involved:
-   n_misr_paths = misr_path_2 - misr_path_1 + 1
+   ;  Define the array of dates and times for the start and end of Orbits:
+   orbit_dates = STRARR(2)
 
-   ;  Create the output structure:
-   misr_orbits = CREATE_STRUCT('Title', 'MISR_Orbits')
-   misr_orbits = CREATE_STRUCT(misr_orbits, 'n_misr_paths', n_misr_paths)
+   ;  Create the output structure and add the number of requested Paths:
+   misr_pod = CREATE_STRUCT('Title', 'MISR_Path_Orbits_Dates')
+   misr_pod = CREATE_STRUCT(misr_pod, 'misr_path', misr_path)
 
-   ;  List the MISR Orbits that follow the selected Paths between the selected
-   ;  dates:
-   temp = ''
-   FOR mp = misr_path_1, misr_path_2 DO BEGIN
-      status = MTK_PATH_TIMERANGE_TO_ORBITLIST(mp, date_1, date_2, $
-         n_orbits, orbits_list)
+   ;  Retrieve the array of Orbits that follow the specified Path between
+   ;  the requested dates:
+   status = MTK_PATH_TIMERANGE_TO_ORBITLIST(misr_path, $
+      date_1, date_2, n_orbits, misr_orbits)
+   IF (debug AND (status NE 0)) THEN BEGIN
+      error_code = 600
+      excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
+         ': Error message from MTK_PATH_TIMERANGE_TO_ORBITLIST: ' + $
+         MTK_ERROR_MESSAGE(status)
+      RETURN, error_code
+   ENDIF
+
+   ;  Add the number of concerned Orbits for the output structure:
+   tag = 'P' + strstr(misr_path) + '_NOrbits'
+   val = n_orbits
+   misr_pod = CREATE_STRUCT(misr_pod, tag, val)
+
+   ;  Return to the calling routine if there are no Orbits to report on for
+   ;  the specified Path between the two dates:
+   IF (n_orbits EQ 0) THEN BEGIN
+      warning_code = 10
+      excpt_cond = 'Warning: There are no Orbits belonging to Path ' + $
+         strstr(misr_path) + ' acquired between ' + date_1 + ' and ' + $
+         date_2 + '.'
+      RETURN, warning_code
+   ENDIF
+
+   ;  Define the array of structures to contain the desired information:
+   orbit = CREATE_STRUCT('misr_orbit', 0L, 'Dates', ['', ''])
+   orbits = REPLICATE(orbit, n_orbits)
+
+   ;  Iterate over the Orbits concerned by the current Path:
+   FOR nmo = 0, n_orbits - 1 DO BEGIN
+
+   ;  Retrieve the array of dates and times for the start and end of the
+   ;  current MISR Orbit:
+      status = MTK_ORBIT_TO_TIMERANGE(misr_orbits[nmo], st_date, en_date)
       IF (debug AND (status NE 0)) THEN BEGIN
-         error_code = 600
+         error_code = 610
          excpt_cond = 'Error ' + strstr(error_code) + ' in ' + rout_name + $
-            ': Error message from MTK_PATH_TIMERANGE_TO_ORBITLIST: ' + $
+            ': Error message from MTK_ORBIT_TO_TIMERANGE: ' + $
             MTK_ERROR_MESSAGE(status)
          RETURN, error_code
       ENDIF
-      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
-         strstr(mp - misr_path_1), mp)
-      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
-         strstr(mp - misr_path_1) + '_norbits', n_orbits)
-      misr_orbits = CREATE_STRUCT(misr_orbits, 'misr_path_' + $
-         strstr(mp - misr_path_1) + '_orbits', orbits_list)
+
+   ;  Populate the structure for the current Orbit:
+      orbits[nmo].misr_orbit = misr_orbits[nmo]
+      orbits[nmo].Dates = [st_date, en_date]
    ENDFOR
+
+   ;  Add the current Orbit and the start and end dates/time to the output
+   ;  structure:
+   misr_pod = CREATE_STRUCT(misr_pod, orbits)
 
    RETURN, return_code
 

@@ -7,6 +7,21 @@
    </head>
 <body>
 <h1>Documentation for the IDL routines in project MISR_Tools</h1>
+<ul>
+<li><p><strong>Intellectual property rights</strong></p>
+<ul>
+<li><p>Copyright (C) 2017-2020 Michel M. Verstraete.</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following three conditions:</p>
+<p>1. The above copyright notice and this permission notice shall be included in their entirety in all copies or substantial portions of the Software.</p>
+<p>2. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<p>See: <a href="https://opensource.org/licenses/MIT" class="uri">https://opensource.org/licenses/MIT</a>.</p>
+<p>3. The current version of this Software is freely available from</p>
+<p><a href="https://github.com/mmverstraete" class="uri">https://github.com/mmverstraete</a>.</p></li>
+<li><p>Feedback</p>
+<p>Please send comments and suggestions to the author at<br />
+<a href="mailto:MMVerstraete@gmail.com">MMVerstraete@gmail.com</a></p></li>
+</ul></li>
+</ul>
 <h2>block2str</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function converts a valid <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> number into a properly formatted <code>STRING</code>, with or without the <code>B</code> header.</p></li>
@@ -547,7 +562,7 @@ rc = 200, excpt_cond = &gt;Error 200 in CHK_MISR_resol:
 <h2>find_orbits_paths_dates</h2>
 <ul>
 <li><p><strong>Purpose:</strong> This function returns a structure containing the <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span>s belonging to the <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span>s in the range <code>misr_path_1</code> to <code>misr_path_2</code> and between the dates <code>date_1</code> and <code>date_2</code>.</p></li>
-<li><p><strong>Algorithm:</strong> This function relies on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> function<br />
+<li><p><strong>Algorithm:</strong> This function relies on the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> functions<br />
 <code>MTK_PATH_TIMERANGE_TO_ORBITLIST</code> to deliver the required information.</p></li>
 <li><p><strong>Syntax:</strong> <code>rc = find_orbits_paths_dates (misr_path_1, misr_path_2, $</code><br />
 <code>date_1, date_2, misr_orbits, DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
@@ -591,7 +606,8 @@ rc = 200, excpt_cond = &gt;Error 200 in CHK_MISR_resol:
 <li><p><strong>Note 1:</strong> This function returns information on the <span class="smallcaps">Orbit</span>s that are theoretically available within the specified <span class="smallcaps">Path</span>s and between the given dates. Data for those <span class="smallcaps">Orbit</span>s may not be available at all if there was a technical problem on the platform, or may not be available locally if they have not been explicitly downloaded from the NASA Langley DAAC. Similarly, this function does not report on the eventual availability of partially available <span class="smallcaps">Orbit</span>s or of subsetted data files.</p></li>
 <li><p><strong>Note 2:</strong> The input argument <code>misr_path_1</code> is deemed smaller than <code>misr_path_2</code>; however, if this is not the case, the values of the two <span class="smallcaps">Paths</span> are interchanged.</p></li>
 <li><p><strong>Note 3:</strong> Similarly, the input arguments <code>date_1</code> and <code>date_2</code> are expected to be given in chronological order; however, if this is not the case, the values of the two dates are interchanged.</p></li>
-<li><p><strong>Note 4:</strong> The positional parameters <code>date_1</code> and <code>date_2</code> are both expected to be provided as <code>STRING</code>s formatted as <code>YYYY-MM-DD</code> on input, and are reformatted as <code>YYYY-MM-DDT00:00:00Z</code> on output, as required by the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span>.</p></li>
+<li><p><strong>Note 4:</strong> The positional parameters <code>date_1</code> and <code>date_2</code> are both expected to be provided as <code>STRING</code>s formatted as <code>YYYY-MM-DD</code> on input, and are reformatted as <code>YYYY-MM-DDT00:00:00Z</code> and <code>YYYY-MM-DDT23:59:59Z</code> on output, respectively, as required by the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span>.</p></li>
+<li><p><strong>Note 5:</strong> If the value of the input positional parameter <code>date_1</code> precedes the start of <span class="smallcaps">MISR</span>&#8217;s operational phase, it is reset to that date.</p></li>
 </ul></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; misr_path_1 = 168
@@ -601,21 +617,24 @@ IDL&gt; date_2 = &#39;2010-01-31&#39;
 IDL&gt; rc = find_orbits_paths_dates(misr_path_1, misr_path_2, $
    date_1, date_2, misr_orbits, /DEBUG, EXCPT_COND = excpt_cond)
 IDL&gt; PRINT, &#39;rc = &#39;, rc, &#39; and excpt_cond = &gt;&#39; + excpt_cond + &#39;&lt;&#39;
-rc =        0 and excpt_cond = &gt;&lt;
+rc =            0 and excpt_cond = &gt;&lt;
 IDL&gt; HELP, misr_orbits
-** Structure &lt;1abeedc8&gt;, 8 tags, length=40, data length=38, refs=1:
+** Structure &lt;30305c78&gt;, 8 tags, length=56, data length=48, refs=1:
    TITLE           STRING    &#39;MISR_Orbits&#39;
-   N_MISR_PATHS    INT              2
-   MISR_PATH_168   INT            168
-   MISR_PATH_168_ORBIT_0
-                   LONG             53604
-   MISR_PATH_168_ORBIT_1
-                   LONG             53837
-   MISR_PATH_169   INT            169
-   MISR_PATH_169_ORBIT_0
-                   LONG             53473
-   MISR_PATH_169_ORBIT_1
-                   LONG             53706
+   N_MISR_PATHS    LONG                 2
+   MISR_PATH_0     INT            168
+   MISR_PATH_0_NORBITS
+                   LONG                 2
+   MISR_PATH_0_ORBITS
+                   LONG      Array[2]
+   MISR_PATH_1     INT            169
+   MISR_PATH_1_NORBITS
+                   LONG                 2
+   MISR_PATH_1_ORBITS
+                   LONG      Array[2]
+IDL&gt; PRINT, misr_orbits
+{ MISR_Orbits   2   168   2   53604   53837
+                    169   2   53473   53706}
 IDL&gt; PRINT, misr_orbits
 { MISR_Orbits 2 168 53604 53837 169 53473 53706}</code></pre></li>
 <li><p><strong>References:</strong> None.</p></li>
@@ -627,10 +646,11 @@ IDL&gt; PRINT, misr_orbits
 <li><p>2018&#8211;06&#8211;01: Version 1.5 &#8212; Implement new coding standards.</p></li>
 <li><p>2018&#8211;08&#8211;21: Version 1.6 &#8212; Documentation update.</p></li>
 <li><p>2019&#8211;01&#8211;28: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
-<li><p>2019&#8211;04&#8211;04: Version 2.01 &#8212; Bug fix: Use the new function <code>chk_ymddate.pro</code> instead of the old function <code>chk_date_ymd.pro</code>.</p></li>
+<li><p>2019&#8211;04&#8211;04: Version 2.01 &#8212; Code update: Use the new function <code>chk_ymddate.pro</code> instead of the old function <code>chk_date_ymd.pro</code>.</p></li>
 <li><p>2019&#8211;04&#8211;04: Version 2.02 &#8212; Update the output structure to report on the number of <span class="smallcaps">Orbits</span> found in each <span class="smallcaps">Path</span>, and to include the list of <span class="smallcaps">Orbits</span> as an array rather than individual items.</p></li>
 <li><p>2019&#8211;05&#8211;04: Version 2.03 &#8212; Update the code to report the specific error message of MTK routines.</p></li>
 <li><p>2019&#8211;08&#8211;20: Version 2.1.0 &#8212; Adopt revised coding and documentation standards (in particular regarding the assignment of numeric return codes), and switch to 3-parts version identifiers.</p></li>
+<li><p>2020&#8211;03&#8211;23: Version 2.1.1 &#8212; Update the code to reset <code>date_1</code> to the date of the start of <span class="smallcaps">MISR</span> operations if it preceded it, and update the documentation.</p></li>
 </ul></li>
 </ul>
 <h2>fn2mpocbv</h2>
@@ -748,7 +768,7 @@ misrhr_version_id = &gt;V2.00-0&lt;</code></pre></li>
 <li><p>2019&#8211;02&#8211;26: Version 1.7 &#8212; Generalize the applicability of this function by extracting the <span class="smallcaps">MISR</span> <span class="smallcaps">Mode</span>, <span class="smallcaps">Path</span>, <span class="smallcaps">Orbit</span>, <span class="smallcaps">Camera</span>, <span class="smallcaps">Block</span> and <span class="smallcaps">Version</span> identifiers on the basis of string patterns rather than relying on <span class="smallcaps">MISR</span> Toolkit, change its name from <code>fn2mpocv_l1b2.pro</code> to<code>fn2mpocbv.pro</code> and move this function to the <span class="smallcaps">MISR_Tools</span> repository.</p></li>
 <li><p>2019&#8211;03&#8211;01: Version 2.00 &#8212; Systematic update of all routines to implement stricter coding standards and improve documentation.</p></li>
 <li><p>2019&#8211;08&#8211;20: Version 2.1.0 &#8212; Adopt revised coding and documentation standards (in particular regarding the assignment of numeric return codes), and switch to 3-parts version identifiers.</p></li>
-<li><p>2019&#8211;11&#8211;06: Version 2.2.0 &#8212; Major rewrite of the function to add the output positional parameters <code>misr_cat_id</code>, <code>misr_product_id</code> and <code>misrhr_product_id</code>, recognize more <span class="smallcaps">MISR</span> and <span class="smallcaps">MISR-HR</span> products, and update the documentation.</p></li>
+<li><p>2019&#8211;11&#8211;06: Version 2.1.1 &#8212; Major rewrite of the function to add the output positional parameters <code>misr_cat_id</code>, <code>misr_product_id</code> and <code>misrhr_product_id</code>, recognize more <span class="smallcaps">MISR</span> and <span class="smallcaps">MISR-HR</span> products, and update the documentation.</p></li>
 </ul></li>
 </ul>
 <h2>hr2lr</h2>
@@ -1489,11 +1509,15 @@ end_block = 162</code></pre></li>
 <li><p><code>BandPositions = [446.4, 557.5, 671.7, 866.4]</code>.</p></li>
 <li><p><code>NChannels = 36</code>.</p></li>
 <li><p><code>ChannelOrder = [0, 1, 2, ..., 33, 34, 35]</code>.</p></li>
-<li><p><code>ChannelNames = [&#8217;DF_Blue&#8217;, &#8217;DF_Green&#8217;, &#8217;DF_Red&#8217;, ..., &#8217;DA_Green&#8217;, &#8217;DA_Red&#8217;, &#8217;DA_NIR&#8217;]</code>.</p></li>
+<li><p><code>ChannelNames = [&#8217;DF_Blue&#8217;, &#8217;DF_Green&#8217;, &#8217;DF_Red&#8217;, ..., $</code><br />
+<code>&#8217;DA_Green&#8217;, &#8217;DA_Red&#8217;, &#8217;DA_NIR&#8217;]</code>.</p></li>
 <li><p><code>GMChannelLines = 128 or 512</code>.</p></li>
 <li><p><code>GMChannelSamples = 512 or 2048</code>.</p></li>
+<li><p><code>GMChannelResolution = 1100 or 275</code>.</p></li>
+<li><p><code>LMChannelResolution = 275</code>.</p></li>
 <li><p><code>NL1B2Grids = 6</code>.</p></li>
-<li><p><code>L1B2GridNames = [&#8217;BlueBand&#8217;, &#8217;GreenBand&#8217;, &#8217;RedBand&#8217;, &#8217;NIRBand&#8217;, &#8217;BRF Conversion Factors&#8217;, &#8217;GeometricParameters&#8217;]</code></p></li>
+<li><p><code>L1B2GridNames = [&#8217;BlueBand&#8217;, &#8217;GreenBand&#8217;, &#8217;RedBand&#8217;, $</code><br />
+<code>&#8217;NIRBand&#8217;, &#8217;BRF Conversion Factors&#8217;, &#8217;GeometricParameters&#8217;]</code></p></li>
 </ul></li>
 <li><p><strong>Exception conditions:</strong> None.</p></li>
 <li><p><strong>Dependencies:</strong> None.</p></li>
@@ -1504,25 +1528,26 @@ end_block = 162</code></pre></li>
 <li><p><strong>Examples:</strong></p>
 <pre><code>IDL&gt; misr_specs = set_misr_specs()
 IDL&gt; HELP, misr_specs
-** Structure &lt;9acc3608&gt;, 18 tags, length=1288, data length=1268, refs=1:
-TITLE             STRING    &#39;MISR Instrument Specifications&#39;
-NMODES            LONG                 2
-MODENAMES         STRING    Array[2]
-NCAMERAS          LONG                 9
-CAMERANAMES       STRING    Array[9]
-CAMERAIDS         LONG      Array[9]
-CAMERAANGLES      FLOAT     Array[9]
-NBANDS            LONG                 4
-BANDNAMES         STRING    Array[4]
-BANDIDS           LONG      Array[4]
-BANDPOSITIONS     FLOAT     Array[4]
-NCHANNELS         LONG                36
-CHANNELORDER      INT       Array[36]
-CHANNELNAMES      STRING    Array[36]
-GMCHANNELLINES    INT       Array[36]
-GMCHANNELSAMPLES  INT       Array[36]
-NL1B2GRIDS        LONG                 6
-L1B2GRIDNAMES     STRING    Array[6]
+** Structure &lt;342e1208&gt;, 20 tags, length=1432, data length=1412, refs=1:
+TITLE                 STRING   &#39;MISR Instrument Specifications&#39;
+NMODES                LONG     2
+MODENAMES             STRING   Array[2]
+NCAMERAS              LONG     9
+CAMERANAMES           STRING   Array[9]
+CAMERAIDS             LONG     Array[9]
+CAMERAANGLES          FLOAT    Array[9]
+NBANDS                LONG     4
+BANDNAMES             STRING   Array[4]
+BANDIDS               LONG     Array[4]
+BANDPOSITIONS         FLOAT    Array[4]
+NCHANNELS             LONG     36
+CHANNELORDER          INT      Array[9, 4]
+GMCHANNELLINES        INT      Array[9, 4]
+GMCHANNELSAMPLES      INT      Array[9, 4]
+GMCHANNELRESOLUTION   INT      Array[9, 4]
+LMCHANNELRESOLUTION   INT      Array[9, 4]
+NL1B2GRIDS            LONG     6
+L1B2GRIDNAMES         STRING   Array[6]
 IDL&gt; PRINT, misr_specs.CAMERANAMES
 DF CF BF AF AN AA BA CA DA
 IDL&gt; PRINT, misr_specs.BANDPOSITIONS
@@ -1544,7 +1569,8 @@ IDL&gt; PRINT, misr_specs.BANDPOSITIONS
 <li><p>2019&#8211;02&#8211;24: Version 2.01 &#8212; Add the <code>ChannelOrder</code> array to the output structure <code>misr_specs</code>, and update the documentation.</p></li>
 <li><p>2019&#8211;02&#8211;25: Version 2.02 &#8212; Reset the <span class="smallcaps">MISR</span> camera indices to range from 0 to 8 instead of 1 to 9.</p></li>
 <li><p>2019&#8211;08&#8211;20: Version 2.1.0 &#8212; Adopt revised coding and documentation standards (in particular regarding the assignment of numeric return codes), and switch to 3-parts version identifiers.</p></li>
-<li><p>2019&#8211;09&#8211;15: Version 2.1.1 &#8212; Change the definition of the output structure element <code>ChannelOrder</code> from a 1-D array of 36 elements to a 2-D array dimensioned [9, 4]; add the <code>GMChannelLines</code> and <code>GMChannelSamples</code> items to the output structure. gmchannelsamples</p></li>
+<li><p>2019&#8211;09&#8211;15: Version 2.1.1 &#8212; Change the definition of the output structure element <code>ChannelOrder</code> from a 1-D array of 36 elements to a 2-D array dimensioned [9, 4]; add the <code>GMChannelLines</code> and <code>GMChannelSamples</code> items to the output structure <code>misr_specs</code>.</p></li>
+<li><p>2020&#8211;04&#8211;04: Version 2.1.2 &#8212; Add the fields <code>GMChannelResolution</code> and <code>LMChannelResolution</code>, both <code>INT</code> arrays dimensioned [9, 4], to the output structure <code>misr_specs</code>.</p></li>
 </ul></li>
 </ul>
 <h2>set_roots_vers</h2>
