@@ -189,6 +189,9 @@ FUNCTION find_orbits_paths_dates, $
    ;  *   2020–03–23: Version 2.1.1 — Update the code to reset date_1 to
    ;      the date of the start of MISR operations if it preceded it, and
    ;      update the documentation.
+   ;
+   ;  *   2020–04–17: Version 2.1.2 — Bug fix in the conversion of
+   ;      variable d_1 to a Julian date.
    ;Sec-Lic
    ;  INTELLECTUAL PROPERTY RIGHTS
    ;
@@ -310,7 +313,7 @@ FUNCTION find_orbits_paths_dates, $
 
    ;  Verify that 'date_2' is later than or equal to 'date_1', and if not,
    ;  exchange the two:
-   d_1 = JULDAY(month_1, day_1, day_1)
+   d_1 = JULDAY(month_1, day_1, year_1)
    d_2 = JULDAY(month_2, day_2, year_2)
    IF (d_1 GT d_2) THEN BEGIN
       temp = date_1
